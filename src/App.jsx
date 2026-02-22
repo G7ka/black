@@ -20,6 +20,7 @@ import SchoolAdminHome from './pages/schooladmin/SchoolAdminHome'
 import SchoolAdminTeachers from './pages/schooladmin/SchoolAdminTeachers'
 import SchoolAdminStudents from './pages/schooladmin/SchoolAdminStudents'
 import SchoolAdminFees from './pages/schooladmin/SchoolAdminFees'
+import SchoolAdminParents from './pages/schooladmin/SchoolAdminParents'
 
 // Teacher
 import TeacherHome from './pages/teacher/TeacherHome'
@@ -75,7 +76,7 @@ export default function App() {
                 <Route path="/schooladmin/students" element={<SchoolAdminStudents />} />
                 <Route path="/schooladmin/fees" element={<SchoolAdminFees />} />
                 <Route path="/schooladmin/payments" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/parents" element={<SchoolAdminStudents />} />
+                <Route path="/schooladmin/parents" element={<SchoolAdminParents />} />
                 <Route path="/schooladmin/classes" element={<SchoolAdminStudents />} />
                 <Route path="/schooladmin/attendance" element={<SchoolAdminHome />} />
                 <Route path="/schooladmin/reports" element={<SchoolAdminHome />} />

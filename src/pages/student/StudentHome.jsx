@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
+import Modal from '../../components/ui/Modal'
 import { LineChart } from '../../components/charts/Charts'
-import { BookOpen, CalendarDays, ClipboardList, TrendingUp, TrendingDown, Clock, Bell, Award } from 'lucide-react'
+import { BookOpen, CalendarDays, ClipboardList, TrendingUp, TrendingDown, Clock, Bell, Award, AlertTriangle, Send } from 'lucide-react'
 
 const performanceData = {
     labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
@@ -38,6 +39,14 @@ const dueAssignments = [
 ]
 
 export default function StudentHome() {
+    const [modal, setModal] = useState(null)
+    const [selectedClass, setSelectedClass] = useState(null)
+
+    const openReportModal = (s) => {
+        setSelectedClass(s)
+        setModal('report')
+    }
+
     return (
         <DashboardLayout role="student">
             <div className="space-y-6">
@@ -93,9 +102,14 @@ export default function StudentHome() {
                             {schedule.map((s, i) => (
                                 <div key={i} className={`flex items-center gap-3 p-2.5 rounded-xl ${s.subject === 'Break' || s.subject === 'Lunch' ? 'bg-gray-50' : 'bg-blue-50/50'}`}>
                                     <span className="text-xs font-mono text-gray-400 w-12 flex-shrink-0">{s.time}</span>
-                                    <div className="flex-1">
-                                        <p className={`text-sm font-medium ${s.subject === 'Break' || s.subject === 'Lunch' ? 'text-gray-400' : 'text-gray-800'}`}>{s.subject}</p>
-                                        {s.teacher && <p className="text-xs text-gray-400">{s.teacher} · {s.room}</p>}
+                                    <div className="flex-1 flex items-center justify-between">
+                                        <div>
+                                            <p className={`text-sm font-medium ${s.subject === 'Break' || s.subject === 'Lunch' ? 'text-gray-400' : 'text-gray-800'}`}>{s.subject}</p>
+                                            {s.teacher && <p className="text-xs text-gray-400">{s.teacher} · {s.room}</p>}
+                                        </div>
+                                        {s.teacher && (
+                                            <button onClick={() => openReportModal(s)} className="text-xs font-semibold text-red-500 hover:bg-red-50 px-2 py-1 rounded transition-colors hidden sm:block">Report Absence</button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -117,6 +131,31 @@ export default function StudentHome() {
                     </div>
                 </div>
             </div>
+
+            <Modal isOpen={modal === 'report'} onClose={() => setModal(null)} title="Report Teacher Absence"
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-danger" onClick={() => setModal(null)}><Send size={14} /> Submit Anonymous Report</button></>}>
+                {selectedClass && (
+                    <div className="space-y-4">
+                        <div className="bg-red-50 p-4 border border-red-200 rounded-xl flex items-start gap-3">
+                            <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-semibold text-red-800">100% Anonymous Report</p>
+                                <p className="text-xs text-red-600 mt-1">Your identity will be strictly hidden from the teacher and administration. Only the date, time, and class will be reported.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-700 font-medium mb-1">You are reporting that:</p>
+                            <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <strong>{selectedClass.teacher}</strong> did not attend the <strong>{selectedClass.subject}</strong> class at <strong>{selectedClass.time}</strong> today.
+                            </p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Additional details (Optional)</label>
+                            <textarea className="input-field resize-none" rows="3" placeholder="e.g., The teacher arrived 40 minutes late..." />
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </DashboardLayout>
     )
 }

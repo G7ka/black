@@ -5,21 +5,23 @@ import Modal from '../../components/ui/Modal'
 import { Search, Plus, Eye, CheckCircle, XCircle, Pause, Trash2, LogIn, Filter, ChevronDown } from 'lucide-react'
 
 const schools = [
-    { id: 1, name: 'Greenhill Academy', location: 'Kampala', students: 1240, teachers: 58, subdomain: 'greenhill', plan: 'Pro', status: 'active', payment: 'paid' },
-    { id: 2, name: 'St. Mary\'s College', location: 'Wakiso', students: 890, teachers: 42, subdomain: 'stmarys', plan: 'Basic', status: 'active', payment: 'overdue' },
-    { id: 3, name: 'Kabale Primary School', location: 'Kabale', students: 430, teachers: 18, subdomain: 'kabale-ps', plan: 'Basic', status: 'pending', payment: 'pending' },
-    { id: 4, name: 'Nile International School', location: 'Jinja', students: 720, teachers: 35, subdomain: 'nile-int', plan: 'Enterprise', status: 'active', payment: 'paid' },
-    { id: 5, name: 'Buganda Road Primary', location: 'Kampala', students: 560, teachers: 24, subdomain: 'buganda-ps', plan: 'Basic', status: 'suspended', payment: 'overdue' },
-    { id: 6, name: 'Aga Khan School', location: 'Kampala', students: 980, teachers: 47, subdomain: 'agakhan', plan: 'Pro', status: 'active', payment: 'paid' },
-    { id: 7, name: 'Mbarara High School', location: 'Mbarara', students: 630, teachers: 29, subdomain: 'mbarara-hs', plan: 'Basic', status: 'pending', payment: 'pending' },
-    { id: 8, name: 'Gulu Excellence School', location: 'Gulu', students: 340, teachers: 15, subdomain: 'gulu-excl', plan: 'Basic', status: 'active', payment: 'paid' },
+    { id: 1, name: 'Greenhill Academy', level: 'Primary', location: 'Kampala', students: 1240, teachers: 58, subdomain: 'greenhill', plan: 'Pro', status: 'active', payment: 'paid' },
+    { id: 2, name: 'St. Mary\'s College', level: 'Secondary', location: 'Wakiso', students: 890, teachers: 42, subdomain: 'stmarys', plan: 'Basic', status: 'active', payment: 'overdue' },
+    { id: 3, name: 'Kabale Primary School', level: 'Primary', location: 'Kabale', students: 430, teachers: 18, subdomain: 'kabale-ps', plan: 'Basic', status: 'pending', payment: 'pending' },
+    { id: 4, name: 'Nile International School', level: 'Secondary', location: 'Jinja', students: 720, teachers: 35, subdomain: 'nile-int', plan: 'Enterprise', status: 'active', payment: 'paid' },
+    { id: 5, name: 'Buganda Road Primary', level: 'Primary', location: 'Kampala', students: 560, teachers: 24, subdomain: 'buganda-ps', plan: 'Basic', status: 'suspended', payment: 'overdue' },
+    { id: 6, name: 'Aga Khan School', level: 'Primary', location: 'Kampala', students: 980, teachers: 47, subdomain: 'agakhan', plan: 'Pro', status: 'active', payment: 'paid' },
+    { id: 7, name: 'Mbarara High School', level: 'Secondary', location: 'Mbarara', students: 630, teachers: 29, subdomain: 'mbarara-hs', plan: 'Basic', status: 'pending', payment: 'pending' },
+    { id: 8, name: 'Gulu Excellence School', level: 'Primary', location: 'Gulu', students: 340, teachers: 15, subdomain: 'gulu-excl', plan: 'Basic', status: 'active', payment: 'paid' },
 ]
 
 const statusVariant = { active: 'success', pending: 'warning', suspended: 'danger' }
 const paymentVariant = { paid: 'success', overdue: 'danger', pending: 'warning' }
+const levelVariant = { Primary: 'sky', Secondary: 'indigo' }
 
 export default function SASchools() {
     const [filter, setFilter] = useState('all')
+    const [levelFilter, setLevelFilter] = useState('all')
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
@@ -27,9 +29,10 @@ export default function SASchools() {
 
     const filtered = schools.filter(s => {
         const matchStatus = filter === 'all' || s.status === filter
+        const matchLevel = levelFilter === 'all' || s.level === levelFilter
         const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
             s.location.toLowerCase().includes(search.toLowerCase())
-        return matchStatus && matchSearch
+        return matchStatus && matchLevel && matchSearch
     })
 
     const openModal = (type, school) => { setModal(type); setSelected(school) }
@@ -60,6 +63,17 @@ export default function SASchools() {
                             {t} {t !== 'all' && <span className="ml-1 text-xs opacity-70">({schools.filter(s => s.status === t).length})</span>}
                         </button>
                     ))}
+                    <div className="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
+                    {['all', 'Primary', 'Secondary'].map(l => (
+                        <button
+                            key={l}
+                            onClick={() => setLevelFilter(l)}
+                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${levelFilter === l ? 'bg-slate-700 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                }`}
+                        >
+                            {l === 'all' ? 'All Levels' : l}
+                        </button>
+                    ))}
                     <div className="ml-auto relative">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
@@ -77,7 +91,7 @@ export default function SASchools() {
                         <table className="w-full">
                             <thead>
                                 <tr>
-                                    {['School Name', 'Location', 'Students', 'Teachers', 'Subdomain', 'Plan', 'Status', 'Payment', 'Actions'].map(h => (
+                                    {['School Name', 'Level', 'Location', 'Students', 'Teachers', 'Subdomain', 'Plan', 'Status', 'Payment', 'Actions'].map(h => (
                                         <th key={h} className="table-header">{h}</th>
                                     ))}
                                 </tr>
@@ -86,6 +100,7 @@ export default function SASchools() {
                                 {filtered.map(s => (
                                     <tr key={s.id} className="hover:bg-blue-50/30 transition-colors">
                                         <td className="table-cell font-semibold text-gray-900">{s.name}</td>
+                                        <td className="table-cell"><Badge variant={levelVariant[s.level]}>{s.level}</Badge></td>
                                         <td className="table-cell text-gray-500">{s.location}</td>
                                         <td className="table-cell">{s.students.toLocaleString()}</td>
                                         <td className="table-cell">{s.teachers}</td>
@@ -224,10 +239,11 @@ export default function SASchools() {
                 {selected && (
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         {[
-                            ['School Name', selected.name], ['Location', selected.location],
-                            ['Subdomain', `${selected.subdomain}.edumanage.ug`], ['Plan', selected.plan],
-                            ['Status', selected.status], ['Payment', selected.payment],
-                            ['Students', selected.students], ['Teachers', selected.teachers],
+                            ['School Name', selected.name], ['Level', selected.level],
+                            ['Location', selected.location], ['Subdomain', `${selected.subdomain}.edumanage.ug`],
+                            ['Plan', selected.plan], ['Status', selected.status],
+                            ['Payment', selected.payment], ['Students', selected.students],
+                            ['Teachers', selected.teachers],
                         ].map(([k, v]) => (
                             <div key={k} className="bg-gray-50 rounded-lg p-3">
                                 <p className="text-xs text-gray-500 font-medium">{k}</p>
@@ -243,19 +259,34 @@ export default function SASchools() {
                 footer={<><button className="btn-secondary" onClick={closeModal}>Cancel</button><button className="btn-primary" onClick={closeModal}><Plus size={14} /> Create School</button></>}
             >
                 <div className="grid grid-cols-2 gap-4">
-                    {[
-                        ['School Name', 'text', 'e.g., Greenhill Academy'],
-                        ['Location / District', 'text', 'e.g., Kampala'],
-                        ['Email', 'email', 'admin@school.ug'],
-                        ['Phone', 'tel', '+256 700 000000'],
-                        ['Subdomain', 'text', 'greenhill'],
-                    ].map(([label, type, placeholder]) => (
-                        <div key={label} className={label === 'School Name' ? 'col-span-2' : ''}>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                            <input type={type} placeholder={placeholder} className="input-field" />
-                            {label === 'Subdomain' && <p className="text-xs text-gray-400 mt-1">Will be: {'{value}'}.edumanage.ug</p>}
-                        </div>
-                    ))}
+                    <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">School Name</label>
+                        <input type="text" placeholder="e.g., Greenhill Academy" className="input-field" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">School Level</label>
+                        <select className="select-field">
+                            <option value="Primary">Primary</option>
+                            <option value="Secondary">Secondary</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Location / District</label>
+                        <input type="text" placeholder="e.g., Kampala" className="input-field" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" placeholder="admin@school.ug" className="input-field" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="tel" placeholder="+256 700 000000" className="input-field" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Subdomain</label>
+                        <input type="text" placeholder="greenhill" className="input-field" />
+                        <p className="text-xs text-gray-400 mt-1">Will be: {'{value}'}.edumanage.ug</p>
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Plan</label>
                         <select className="select-field">

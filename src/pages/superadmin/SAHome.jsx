@@ -4,7 +4,7 @@ import StatCard from '../../components/ui/StatCard'
 import { LineChart, BarChart, DoughnutChart } from '../../components/charts/Charts'
 import {
     Building2, Users, DollarSign, TrendingUp,
-    GraduationCap, AlertCircle, CheckCircle, Clock
+    GraduationCap, AlertCircle, CheckCircle, Clock, BookOpen, Book
 } from 'lucide-react'
 
 const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb']
@@ -83,7 +83,9 @@ export default function SAHome() {
                 </div>
 
                 {/* Secondary stats */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <StatCard title="Primary Schools" value="164" subtitle="66.4% of total" icon={BookOpen} color="sky" />
+                    <StatCard title="Secondary Schools" value="83" subtitle="33.6% of total" icon={Book} color="indigo" />
                     <StatCard title="Total Teachers" value="4,218" icon={Users} color="indigo" />
                     <StatCard title="Pending Applications" value="16" icon={Clock} color="amber" />
                     <StatCard title="Overdue Payments" value="23" icon={AlertCircle} color="red" />

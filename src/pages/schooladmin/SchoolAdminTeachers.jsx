@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, Edit2, Trash2, Upload } from 'lucide-react'
+import { Search, Plus, Eye, Edit2, Trash2, Upload, AlertTriangle, CheckCircle } from 'lucide-react'
 
 const teachers = [
     { id: 'TCH-001', name: 'Mr. Kenneth Okello', subject: 'Mathematics', class: 'P6, P7', phone: '+256 779 123456', email: 'k.okello@kps.ug', status: 'active', attendance: 96 },
@@ -12,73 +12,110 @@ const teachers = [
     { id: 'TCH-005', name: 'Mr. Samuel Waiswa', subject: 'Religious Ed.', class: 'P3, P4', phone: '+256 755 567890', email: 's.waiswa@kps.ug', status: 'active', attendance: 94 },
 ]
 
+const anonymousReports = [
+    { id: 1, date: 'Feb 21, 2026', time: '8:30 AM', teacher: 'Mr. Kenneth Okello', subject: 'Mathematics', details: 'Teacher did not show up for the entire lesson.', status: 'pending' },
+    { id: 2, date: 'Feb 19, 2026', time: '11:00 AM', teacher: 'Mr. Ivan Byaruhanga', subject: 'Science', details: 'Arrived 40 minutes late.', status: 'reviewed' },
+]
+
 export default function SchoolAdminTeachers() {
+    const [view, setView] = useState('staff') // 'staff' or 'reports'
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
-    const filtered = teachers.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase()))
+
+    const filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase()))
 
     return (
         <DashboardLayout role="schooladmin">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <div><h1 className="page-title">Teachers</h1><p className="page-subtitle">Manage all teaching staff at Kampala Primary School</p></div>
-                    <div className="flex gap-2">
-                        <button className="btn-secondary" onClick={() => setModal('import')}><Upload size={15} /> Import</button>
-                        <button className="btn-primary" onClick={() => setModal('add')}><Plus size={15} /> Add Teacher</button>
+                    <div>
+                        <h1 className="page-title">{view === 'staff' ? 'Teachers' : 'Anonymous Reports'}</h1>
+                        <p className="page-subtitle">{view === 'staff' ? 'Manage all teaching staff at Kampala Primary School' : 'Student-submitted anonymous absence reports'}</p>
                     </div>
+                    {view === 'staff' && (
+                        <div className="flex gap-2">
+                            <button className="btn-secondary" onClick={() => setModal('import')}><Upload size={15} /> Import</button>
+                            <button className="btn-primary" onClick={() => setModal('add')}><Plus size={15} /> Add Teacher</button>
+                        </div>
+                    )}
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input value={search} onChange={e => setSearch(e.target.value)} className="input-field pl-9" placeholder="Search by name or subject..." />
-                    </div>
-                    <div className="flex gap-2">
-                        {['All', 'Active', 'On Leave'].map(f => (
-                            <button key={f} className="px-3 py-1.5 rounded-full text-sm font-medium bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">{f}</button>
-                        ))}
-                    </div>
+                <div className="flex items-center border-b border-gray-200">
+                    <button onClick={() => setView('staff')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'staff' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Staff Directory</button>
+                    <button onClick={() => setView('reports')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${view === 'reports' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Anonymous Reports <span className="bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">2</span></button>
                 </div>
 
-                <div className="card p-0">
-                    <table className="w-full">
-                        <thead><tr>{['Teacher', 'Subject', 'Classes', 'Phone', 'Attendance', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
-                        <tbody>
-                            {filtered.map(t => (
-                                <tr key={t.id} className="hover:bg-blue-50/30">
-                                    <td className="table-cell">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">{t.name.split(' ').pop()[0]}</div>
-                                            <div><p className="text-sm font-semibold text-gray-900">{t.name}</p><p className="text-xs text-gray-400">{t.email}</p></div>
-                                        </div>
-                                    </td>
-                                    <td className="table-cell"><Badge variant="info">{t.subject}</Badge></td>
-                                    <td className="table-cell text-sm text-gray-600">{t.class}</td>
-                                    <td className="table-cell text-sm text-gray-500">{t.phone}</td>
-                                    <td className="table-cell">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 bg-gray-100 rounded-full h-1.5 w-16"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${t.attendance}%` }} /></div>
-                                            <span className="text-xs font-medium text-gray-600">{t.attendance}%</span>
-                                        </div>
-                                    </td>
-                                    <td className="table-cell"><Badge variant={t.status === 'active' ? 'success' : 'warning'}>{t.status}</Badge></td>
-                                    <td className="table-cell">
-                                        <div className="flex gap-1">
-                                            <button onClick={() => { setSelected(t); setModal('view') }} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600" title="View"><Eye size={14} /></button>
-                                            <button className="p-1.5 rounded-lg hover:bg-amber-100 text-amber-600" title="Edit"><Edit2 size={14} /></button>
-                                            <button className="p-1.5 rounded-lg hover:bg-red-100 text-red-600" title="Remove"><Trash2 size={14} /></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
-                        <p className="text-xs text-gray-500">Showing {filtered.length} of {teachers.length} teachers</p>
-                        <div className="flex gap-2"><button className="btn-secondary text-xs py-1 px-3">Previous</button><button className="btn-primary text-xs py-1 px-3">Next</button></div>
+                {view === 'staff' ? (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="relative flex-1 max-w-sm">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <input value={search} onChange={e => setSearch(e.target.value)} className="input-field pl-9" placeholder="Search by name or subject..." />
+                            </div>
+                            <div className="flex gap-2">
+                                {['All', 'Active', 'On Leave'].map(f => (
+                                    <button key={f} className="px-3 py-1.5 rounded-full text-sm font-medium bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">{f}</button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="card p-0">
+                            <table className="w-full">
+                                <thead><tr>{['Teacher', 'Subject', 'Classes', 'Phone', 'Attendance', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
+                                <tbody>
+                                    {filteredTeachers.map(t => (
+                                        <tr key={t.id} className="hover:bg-blue-50/30">
+                                            <td className="table-cell">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">{t.name.split(' ').pop()[0]}</div>
+                                                    <div><p className="text-sm font-semibold text-gray-900">{t.name}</p><p className="text-xs text-gray-400">{t.email}</p></div>
+                                                </div>
+                                            </td>
+                                            <td className="table-cell"><Badge variant="info">{t.subject}</Badge></td>
+                                            <td className="table-cell text-sm text-gray-600">{t.class}</td>
+                                            <td className="table-cell text-sm text-gray-500">{t.phone}</td>
+                                            <td className="table-cell">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 bg-gray-100 rounded-full h-1.5 w-16"><div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${t.attendance}%` }} /></div>
+                                                    <span className="text-xs font-medium text-gray-600">{t.attendance}%</span>
+                                                </div>
+                                            </td>
+                                            <td className="table-cell"><Badge variant={t.status === 'active' ? 'success' : 'warning'}>{t.status}</Badge></td>
+                                            <td className="table-cell">
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => { setSelected(t); setModal('view') }} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600" title="View"><Eye size={14} /></button>
+                                                    <button className="p-1.5 rounded-lg hover:bg-amber-100 text-amber-600" title="Edit"><Edit2 size={14} /></button>
+                                                    <button className="p-1.5 rounded-lg hover:bg-red-100 text-red-600" title="Remove"><Trash2 size={14} /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="card p-0">
+                        <table className="w-full">
+                            <thead><tr>{['Date Reported', 'Teacher', 'Class Subject', 'Details', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
+                            <tbody>
+                                {anonymousReports.map(r => (
+                                    <tr key={r.id} className="hover:bg-red-50/30">
+                                        <td className="table-cell text-sm font-medium text-gray-900">{r.date}<p className="text-xs text-gray-500 font-normal">{r.time}</p></td>
+                                        <td className="table-cell font-semibold text-gray-900">{r.teacher}</td>
+                                        <td className="table-cell"><Badge variant="gray">{r.subject}</Badge></td>
+                                        <td className="table-cell text-sm text-gray-600 max-w-xs truncate" title={r.details}>{r.details}</td>
+                                        <td className="table-cell"><Badge variant={r.status === 'pending' ? 'danger' : 'success'}>{r.status === 'pending' ? 'Pending Review' : 'Reviewed'}</Badge></td>
+                                        <td className="table-cell">
+                                            {r.status === 'pending' && <button className="btn-secondary text-xs px-2 py-1 flex items-center gap-1 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200"><CheckCircle size={12} /> Mark Reviewed</button>}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             <Modal isOpen={modal === 'add'} onClose={() => setModal(null)} title="Add New Teacher" size="lg"
