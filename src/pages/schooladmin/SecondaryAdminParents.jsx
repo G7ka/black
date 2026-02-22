@@ -11,7 +11,7 @@ const parents = [
     { id: 'PAR-004', name: 'David Opio', students: ['Daniel Opio (P1)', 'Esther Opio (P2)'], phone: '+256 780 777888', email: 'david.o@email.com', status: 'active', balance: 'UGX 0' },
 ]
 
-export default function SchoolAdminParents() {
+export default function SecondaryAdminParents() {
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
@@ -19,7 +19,7 @@ export default function SchoolAdminParents() {
     const filtered = parents.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.phone.includes(search))
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role="schooladmin-secondary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">Parents & Guardians</h1><p className="page-subtitle">Register and manage parent accounts in the system</p></div>

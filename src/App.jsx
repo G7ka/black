@@ -15,13 +15,20 @@ import SADeveloperTools from './pages/superadmin/SADeveloperTools'
 import SAMarketing from './pages/superadmin/SAMarketing'
 import SAEmergency from './pages/superadmin/SAEmergency'
 
-// School Admin
+// Primary Admin
 import SchoolAdminHome from './pages/schooladmin/SchoolAdminHome'
 import SchoolAdminTeachers from './pages/schooladmin/SchoolAdminTeachers'
 import SchoolAdminStudents from './pages/schooladmin/SchoolAdminStudents'
 import SchoolAdminFees from './pages/schooladmin/SchoolAdminFees'
 import SchoolAdminParents from './pages/schooladmin/SchoolAdminParents'
 import SchoolAdminClasses from './pages/schooladmin/SchoolAdminClasses'
+
+// Secondary Admin
+import SecondaryAdminHome from './pages/schooladmin/SecondaryAdminHome'
+import SecondaryAdminTeachers from './pages/schooladmin/SecondaryAdminTeachers'
+import SecondaryAdminStudents from './pages/schooladmin/SecondaryAdminStudents'
+import SecondaryAdminParents from './pages/schooladmin/SecondaryAdminParents'
+import SecondaryAdminClasses from './pages/schooladmin/SecondaryAdminClasses'
 
 // Teacher
 import TeacherHome from './pages/teacher/TeacherHome'
@@ -71,18 +78,31 @@ export default function App() {
                 <Route path="/superadmin/marketing" element={<SAMarketing />} />
                 <Route path="/superadmin/emergency" element={<SAEmergency />} />
 
-                {/* School Admin */}
-                <Route path="/schooladmin" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/teachers" element={<SchoolAdminTeachers />} />
-                <Route path="/schooladmin/students" element={<SchoolAdminStudents />} />
-                <Route path="/schooladmin/fees" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/payments" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/parents" element={<SchoolAdminParents />} />
-                <Route path="/schooladmin/classes" element={<SchoolAdminClasses />} />
-                <Route path="/schooladmin/attendance" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/reports" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/configuration" element={<SAConfiguration />} />
-                <Route path="/schooladmin/support" element={<SASupport />} />
+                {/* Primary Admin */}
+                <Route path="/schooladmin/primary" element={<SchoolAdminHome />} />
+                <Route path="/schooladmin/primary/teachers" element={<SchoolAdminTeachers />} />
+                <Route path="/schooladmin/primary/students" element={<SchoolAdminStudents />} />
+                <Route path="/schooladmin/primary/fees" element={<SchoolAdminFees />} />
+                <Route path="/schooladmin/primary/payments" element={<SchoolAdminFees />} />
+                <Route path="/schooladmin/primary/parents" element={<SchoolAdminParents />} />
+                <Route path="/schooladmin/primary/classes" element={<SchoolAdminClasses />} />
+                <Route path="/schooladmin/primary/attendance" element={<SchoolAdminHome />} />
+                <Route path="/schooladmin/primary/reports" element={<SchoolAdminHome />} />
+                <Route path="/schooladmin/primary/configuration" element={<SAConfiguration />} />
+                <Route path="/schooladmin/primary/support" element={<SASupport />} />
+
+                {/* Secondary Admin */}
+                <Route path="/schooladmin/secondary" element={<SecondaryAdminHome />} />
+                <Route path="/schooladmin/secondary/teachers" element={<SecondaryAdminTeachers />} />
+                <Route path="/schooladmin/secondary/students" element={<SecondaryAdminStudents />} />
+                <Route path="/schooladmin/secondary/fees" element={<SchoolAdminFees />} />
+                <Route path="/schooladmin/secondary/payments" element={<SchoolAdminFees />} />
+                <Route path="/schooladmin/secondary/parents" element={<SecondaryAdminParents />} />
+                <Route path="/schooladmin/secondary/classes" element={<SecondaryAdminClasses />} />
+                <Route path="/schooladmin/secondary/attendance" element={<SecondaryAdminHome />} />
+                <Route path="/schooladmin/secondary/reports" element={<SecondaryAdminHome />} />
+                <Route path="/schooladmin/secondary/configuration" element={<SAConfiguration />} />
+                <Route path="/schooladmin/secondary/support" element={<SASupport />} />
 
                 {/* Teacher */}
                 <Route path="/teacher" element={<TeacherHome />} />

@@ -16,7 +16,7 @@ export default function TeacherProfile() {
                     {/* Avatar */}
                     <div className="card flex flex-col items-center text-center gap-4">
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-700 flex items-center justify-center text-white text-4xl font-bold shadow-lg">K</div>
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Kenneth Okello" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white" />
                             <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-primary-700 transition-colors">
                                 <Camera size={14} />
                             </button>

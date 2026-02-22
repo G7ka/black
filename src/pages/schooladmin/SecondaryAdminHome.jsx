@@ -25,10 +25,10 @@ const recentPayments = [
     { parent: 'Daniel Ssali', student: 'Samuel Ssali', amount: '0', date: '—', status: 'overdue' },
 ]
 
-export default function SchoolAdminHome() {
+export default function SecondaryAdminHome() {
     const [modal, setModal] = useState(null)
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role="schooladmin-secondary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>

@@ -4,25 +4,25 @@ import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
 import { Search, Plus, Edit2, Trash2, Library, Users } from 'lucide-react'
 
-// Dummy data for classes and subjects
+// Dummy data for secondary classes and subjects
 const classesData = [
-    { id: 'C-P1', name: 'Primary 1', level: 'Lower Primary', students: 120, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P2', name: 'Primary 2', level: 'Lower Primary', students: 115, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P3', name: 'Primary 3', level: 'Lower Primary', students: 108, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P4', name: 'Primary 4', level: 'Upper Primary', students: 130, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education', 'Physical Education'] },
-    { id: 'C-P5', name: 'Primary 5', level: 'Upper Primary', students: 125, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
-    { id: 'C-P6', name: 'Primary 6', level: 'Upper Primary', students: 140, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
-    { id: 'C-P7', name: 'Primary 7', level: 'Upper Primary', students: 110, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
+    { id: 'C-S1', name: 'Senior 1', level: 'O Level', students: 150, teachers: 8, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S2', name: 'Senior 2', level: 'O Level', students: 145, teachers: 8, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S3', name: 'Senior 3', level: 'O Level', students: 130, teachers: 10, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S4', name: 'Senior 4', level: 'O Level', students: 125, teachers: 10, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S5', name: 'Senior 5', level: 'A Level', students: 80, teachers: 6, subjects: ['Mathematics', 'Physics', 'Economics', 'General Paper'] },
+    { id: 'C-S6', name: 'Senior 6', level: 'A Level', students: 75, teachers: 6, subjects: ['Mathematics', 'Physics', 'Economics', 'General Paper'] },
 ]
 
-// System-wide subjects that can be assigned to classes
-const primarySubjects = [
-    'Mathematics', 'English', 'Science', 'Social Studies',
-    'Religious Education', 'Literacy I', 'Literacy II',
-    'Physical Education', 'Art and Craft', 'Luganda', 'Kiswahili'
+// System-wide subjects that can be assigned to secondary classes
+const secondarySubjects = [
+    'Mathematics', 'English', 'Physics', 'Chemistry', 'Biology',
+    'History', 'Geography', 'Agriculture', 'Literature',
+    'Fine Art', 'Computer Studies', 'Entrepreneurship', 'CRE',
+    'General Paper', 'Economics', 'Sub-Math'
 ]
 
-export default function SchoolAdminClasses() {
+export default function SecondaryAdminClasses() {
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selectedClass, setSelectedClass] = useState(null)
@@ -48,12 +48,12 @@ export default function SchoolAdminClasses() {
     }
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role="schooladmin-secondary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="page-title">Primary Classes</h1>
-                        <p className="page-subtitle">Manage class streams and assign subjects</p>
+                        <h1 className="page-title">Secondary Classes & Streams</h1>
+                        <p className="page-subtitle">Manage O-Level and A-Level classes and assign subjects</p>
                     </div>
                     <button className="btn-primary" onClick={() => setModal('addClass')}><Plus size={15} /> Add New Class</button>
                 </div>
@@ -125,7 +125,7 @@ export default function SchoolAdminClasses() {
                     <p className="text-sm text-gray-600">Select which subjects should be taught in <strong>{selectedClass?.name}</strong>. Teachers can only assign grades for subjects selected here.</p>
 
                     <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl">
-                        {primarySubjects.map(subject => {
+                        {secondarySubjects.map(subject => {
                             const isSelected = selectedSubjects.includes(subject);
                             return (
                                 <label
@@ -155,9 +155,8 @@ export default function SchoolAdminClasses() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Education Level</label>
                         <select className="select-field">
-                            <option>Nursery</option>
-                            <option>Lower Primary</option>
-                            <option>Upper Primary</option>
+                            <option>O Level (Secondary)</option>
+                            <option>A Level (Secondary)</option>
                         </select>
                     </div>
                 </div>

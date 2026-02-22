@@ -13,7 +13,7 @@ const students = [
     { id: 'STU-006', name: 'Ruth Nabirye', class: 'P3', age: 9, parent: 'James Nabirye', phone: '+256 779 666777', performance: 88, attendance: 100, fees: 'paid' },
 ]
 
-export default function SchoolAdminStudents() {
+export default function SecondaryAdminStudents() {
     const [classFilter, setClassFilter] = useState('All')
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
@@ -25,7 +25,7 @@ export default function SchoolAdminStudents() {
     const openAutoPromote = () => setModal('autopromote')
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role="schooladmin-secondary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">Students</h1><p className="page-subtitle">Manage all enrolled students</p></div>

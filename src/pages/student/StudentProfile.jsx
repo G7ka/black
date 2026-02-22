@@ -14,7 +14,7 @@ export default function StudentProfile() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="card flex flex-col items-center text-center gap-4">
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">I</div>
+                            <img src="https://randomuser.me/api/portraits/men/12.jpg" alt="Ivan Namukasa" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white" />
                             <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-primary-700 transition-colors"><Camera size={14} /></button>
                         </div>
                         <div><p className="font-bold text-gray-900 text-lg">Ivan Namukasa</p><p className="text-sm text-gray-500">Class P6A</p><p className="text-xs text-gray-400 mt-1">STU-001 · Age 12</p></div>

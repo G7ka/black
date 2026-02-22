@@ -17,7 +17,7 @@ const absenceReports = [
     { id: 2, date: 'Feb 19, 2026', time: '11:00 AM', teacher: 'Mr. Ivan Byaruhanga', subject: 'Science', reporter: 'Sarah Kemigisha (P5B)', details: 'Arrived 40 minutes late.', status: 'reviewed' },
 ]
 
-export default function SchoolAdminTeachers() {
+export default function SecondaryAdminTeachers() {
     const [view, setView] = useState('staff') // 'staff' or 'reports'
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
@@ -26,7 +26,7 @@ export default function SchoolAdminTeachers() {
     const filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase()))
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role="schooladmin-secondary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>

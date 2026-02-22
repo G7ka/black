@@ -24,18 +24,31 @@ const navConfigs = {
         { label: 'Marketing', icon: Megaphone, path: '/superadmin/marketing' },
         { label: 'Emergency', icon: AlertTriangle, path: '/superadmin/emergency' },
     ],
-    schooladmin: [
-        { label: 'Dashboard', icon: Home, path: '/schooladmin' },
-        { label: 'Teachers', icon: Users, path: '/schooladmin/teachers' },
-        { label: 'Students', icon: GraduationCap, path: '/schooladmin/students' },
-        { label: 'Parents', icon: User, path: '/schooladmin/parents' },
-        { label: 'Classes', icon: School, path: '/schooladmin/classes' },
-        { label: 'Attendance', icon: CalendarDays, path: '/schooladmin/attendance' },
-        { label: 'Fee Structure', icon: CreditCard, path: '/schooladmin/fees' },
-        { label: 'Payments', icon: BarChart3, path: '/schooladmin/payments' },
-        { label: 'Reports', icon: FileText, path: '/schooladmin/reports' },
-        { label: 'Configuration', icon: Settings, path: '/schooladmin/configuration' },
-        { label: 'Support', icon: LifeBuoy, path: '/schooladmin/support' },
+    'schooladmin-primary': [
+        { label: 'Overview', icon: Home, path: '/schooladmin/primary' },
+        { label: 'Teachers', icon: Users, path: '/schooladmin/primary/teachers' },
+        { label: 'Students', icon: GraduationCap, path: '/schooladmin/primary/students' },
+        { label: 'Parents', icon: User, path: '/schooladmin/primary/parents' },
+        { label: 'Classes', icon: School, path: '/schooladmin/primary/classes' },
+        { label: 'Attendance', icon: CalendarDays, path: '/schooladmin/primary/attendance' },
+        { label: 'Fee Structure', icon: CreditCard, path: '/schooladmin/primary/fees' },
+        { label: 'Payments', icon: BarChart3, path: '/schooladmin/primary/payments' },
+        { label: 'Reports', icon: FileText, path: '/schooladmin/primary/reports' },
+        { label: 'Configuration', icon: Settings, path: '/schooladmin/primary/configuration' },
+        { label: 'Support', icon: LifeBuoy, path: '/schooladmin/primary/support' },
+    ],
+    'schooladmin-secondary': [
+        { label: 'Overview', icon: Home, path: '/schooladmin/secondary' },
+        { label: 'Teachers', icon: Users, path: '/schooladmin/secondary/teachers' },
+        { label: 'Students', icon: GraduationCap, path: '/schooladmin/secondary/students' },
+        { label: 'Parents', icon: User, path: '/schooladmin/secondary/parents' },
+        { label: 'Classes', icon: Building2, path: '/schooladmin/secondary/classes' },
+        { label: 'Attendance', icon: CalendarDays, path: '/schooladmin/secondary/attendance' },
+        { label: 'Fee Structure', icon: CreditCard, path: '/schooladmin/secondary/fees' },
+        { label: 'Payments', icon: BarChart3, path: '/schooladmin/secondary/payments' },
+        { label: 'Reports', icon: FileText, path: '/schooladmin/secondary/reports' },
+        { label: 'Configuration', icon: Settings, path: '/schooladmin/secondary/configuration' },
+        { label: 'Support', icon: LifeBuoy, path: '/schooladmin/secondary/support' },
     ],
     teacher: [
         { label: 'Home', icon: Home, path: '/teacher' },
@@ -66,15 +79,23 @@ const navConfigs = {
 
 const roleLabels = {
     superadmin: 'Super Admin',
-    schooladmin: 'School Admin',
+    'schooladmin-primary': 'Primary Admin',
+    'schooladmin-secondary': 'Secondary Admin',
     teacher: 'Teacher',
     student: 'Student',
     parent: 'Parent',
 }
 
+const roleAvatars = {
+    teacher: 'https://randomuser.me/api/portraits/men/32.jpg',
+    student: 'https://randomuser.me/api/portraits/men/12.jpg',
+    parent: 'https://randomuser.me/api/portraits/women/68.jpg',
+}
+
 const roleAvatarColors = {
     superadmin: 'from-violet-500 to-purple-700',
-    schooladmin: 'from-blue-500 to-blue-700',
+    'schooladmin-primary': 'from-blue-500 to-blue-700',
+    'schooladmin-secondary': 'from-indigo-500 to-indigo-700',
     teacher: 'from-emerald-500 to-teal-700',
     student: 'from-sky-400 to-cyan-600',
     parent: 'from-orange-400 to-amber-600',
@@ -87,10 +108,11 @@ export default function DashboardLayout({ role, children }) {
     const navItems = navConfigs[role] || navConfigs.teacher
 
     const userName = role === 'superadmin' ? 'Admin Platform'
-        : role === 'schooladmin' ? 'Kampala Primary'
-            : role === 'teacher' ? 'Mr. Kenneth Okello'
-                : role === 'student' ? 'Ivan Namukasa'
-                    : 'Mary Namukasa'
+        : role === 'schooladmin-primary' ? 'Kampala Primary'
+            : role === 'schooladmin-secondary' ? 'Kampala Secondary'
+                : role === 'teacher' ? 'Mr. Kenneth Okello'
+                    : role === 'student' ? 'Ivan Namukasa'
+                        : 'Mary Namukasa'
 
     const userTitle = roleLabels[role] || 'User'
 
@@ -159,7 +181,7 @@ export default function DashboardLayout({ role, children }) {
                 <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0 shadow-sm">
                     <div>
                         <h1 className="text-sm font-semibold text-gray-900">
-                            {role === 'superadmin' ? 'EduManage Platform' : role === 'schooladmin' ? 'Kampala Primary School' : role === 'teacher' ? 'Teacher Portal' : role === 'student' ? 'Student Portal' : 'Parent Portal'}
+                            {role === 'superadmin' ? 'EduManage Platform' : role === 'schooladmin-primary' ? 'Kampala Primary School' : role === 'schooladmin-secondary' ? 'Kampala Secondary School' : role === 'teacher' ? 'Teacher Portal' : role === 'student' ? 'Student Portal' : 'Parent Portal'}
                         </h1>
                         <p className="text-xs text-gray-500">
                             {new Date().toLocaleDateString('en-UG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
@@ -179,9 +201,13 @@ export default function DashboardLayout({ role, children }) {
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-gray-100 transition-colors"
                             >
-                                <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${roleAvatarColors[role]} flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
-                                    {userName[0]}
-                                </div>
+                                {roleAvatars[role] ? (
+                                    <img src={roleAvatars[role]} alt={userName} className="w-8 h-8 rounded-xl object-cover shadow-sm border border-gray-200" />
+                                ) : (
+                                    <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${roleAvatarColors[role]} flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
+                                        {userName[0]}
+                                    </div>
+                                )}
                                 <div className="text-left hidden sm:block">
                                     <p className="text-xs font-semibold text-gray-900 leading-tight">{userName}</p>
                                     <p className="text-[10px] text-gray-500">{userTitle}</p>

@@ -32,7 +32,7 @@ export default function SchoolAdminFees() {
     const filteredPayments = payments.filter(p => p.parent.toLowerCase().includes(search.toLowerCase()) || p.student.toLowerCase().includes(search.toLowerCase()))
 
     return (
-        <DashboardLayout role="schooladmin">
+        <DashboardLayout role="schooladmin-primary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">Fees & Payments</h1><p className="page-subtitle">Fee structures, collection tracking, and reminders</p></div>

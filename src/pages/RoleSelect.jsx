@@ -14,14 +14,24 @@ const roles = [
         path: '/superadmin',
     },
     {
-        role: 'schooladmin',
-        title: 'School Admin',
-        desc: 'School-level admin — teachers, students, fees and reports.',
+        role: 'schooladmin-primary',
+        title: 'Primary Admin',
+        desc: 'Kampala Primary — manage primary teachers, students, fees and reports.',
         icon: School,
         gradient: 'from-blue-500 to-blue-700',
         border: 'border-blue-200 hover:border-blue-400 hover:shadow-blue-100',
-        features: ['Teacher & student management', 'Fee collection & reports', 'School-wide oversight'],
-        path: '/schooladmin',
+        features: ['P1-P7 oversight', 'Fee collection & reports', 'Teacher tracking'],
+        path: '/schooladmin/primary',
+    },
+    {
+        role: 'schooladmin-secondary',
+        title: 'Secondary Admin',
+        desc: 'Kampala Secondary — manage secondary teachers, students, streams and reports.',
+        icon: Building2,
+        gradient: 'from-indigo-500 to-indigo-700',
+        border: 'border-indigo-200 hover:border-indigo-400 hover:shadow-indigo-100',
+        features: ['O-Level & A-Level', 'Advanced subject tracking', 'Stream management'],
+        path: '/schooladmin/secondary',
     },
     {
         role: 'teacher',
@@ -88,7 +98,7 @@ export default function RoleSelect() {
                     <p className="text-slate-400 text-lg mt-3">Multi-tenant SaaS for Ugandan schools. Click any role to enter that dashboard.</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-6xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 w-full max-w-7xl">
                     {roles.map(r => (
                         <div key={r.role} onClick={() => navigate(r.path)}
                             className={`group bg-white rounded-2xl p-5 border-2 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 ${r.border}`}>
