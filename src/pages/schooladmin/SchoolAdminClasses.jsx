@@ -13,27 +13,41 @@ const classesData = [
     { id: 'C-P5', name: 'Primary 5', level: 'Upper Primary', students: 125, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
     { id: 'C-P6', name: 'Primary 6', level: 'Upper Primary', students: 140, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
     { id: 'C-P7', name: 'Primary 7', level: 'Upper Primary', students: 110, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
+    { id: 'C-S1', name: 'Senior 1', level: 'O Level', students: 150, teachers: 8, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S2', name: 'Senior 2', level: 'O Level', students: 145, teachers: 8, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S3', name: 'Senior 3', level: 'O Level', students: 130, teachers: 10, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S4', name: 'Senior 4', level: 'O Level', students: 125, teachers: 10, subjects: ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'] },
+    { id: 'C-S5', name: 'Senior 5', level: 'A Level', students: 80, teachers: 6, subjects: ['Mathematics', 'Physics', 'Economics', 'General Paper'] },
+    { id: 'C-S6', name: 'Senior 6', level: 'A Level', students: 75, teachers: 6, subjects: ['Mathematics', 'Physics', 'Economics', 'General Paper'] },
 ]
 
 // System-wide subjects that can be assigned to classes
-const availableSubjects = [
+const primarySubjects = [
     'Mathematics', 'English', 'Science', 'Social Studies',
     'Religious Education', 'Literacy I', 'Literacy II',
     'Physical Education', 'Art and Craft', 'Luganda', 'Kiswahili'
 ]
 
+const secondarySubjects = [
+    'Mathematics', 'English', 'Physics', 'Chemistry', 'Biology',
+    'History', 'Geography', 'Agriculture', 'Literature',
+    'Fine Art', 'Computer Studies', 'Entrepreneurship', 'CRE',
+    'General Paper', 'Economics', 'Sub-Math'
+]
+
 export default function SchoolAdminClasses() {
+    const [view, setView] = useState('primary') // 'primary' or 'secondary'
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selectedClass, setSelectedClass] = useState(null)
 
-    // For subject assignment modal
     const [selectedSubjects, setSelectedSubjects] = useState([])
 
-    const filteredClasses = classesData.filter(c =>
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.level.toLowerCase().includes(search.toLowerCase())
-    )
+    const filteredClasses = classesData.filter(c => {
+        const matchView = view === 'primary' ? c.level.includes('Primary') : c.level.includes('Level')
+        const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.level.toLowerCase().includes(search.toLowerCase())
+        return matchView && matchSearch
+    })
 
     const openSubjectModal = (cls) => {
         setSelectedClass(cls)
@@ -58,6 +72,11 @@ export default function SchoolAdminClasses() {
                         <p className="page-subtitle">Manage class streams and assign subjects</p>
                     </div>
                     <button className="btn-primary" onClick={() => setModal('addClass')}><Plus size={15} /> Add New Class</button>
+                </div>
+
+                <div className="flex items-center border-b border-gray-200">
+                    <button onClick={() => setView('primary')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'primary' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Primary Section</button>
+                    <button onClick={() => setView('secondary')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'secondary' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Secondary Section</button>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
@@ -127,7 +146,7 @@ export default function SchoolAdminClasses() {
                     <p className="text-sm text-gray-600">Select which subjects should be taught in <strong>{selectedClass?.name}</strong>. Teachers can only assign grades for subjects selected here.</p>
 
                     <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl">
-                        {availableSubjects.map(subject => {
+                        {(selectedClass?.level.includes('Primary') ? primarySubjects : secondarySubjects).map(subject => {
                             const isSelected = selectedSubjects.includes(subject);
                             return (
                                 <label
