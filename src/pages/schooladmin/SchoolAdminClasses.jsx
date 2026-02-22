@@ -36,7 +36,7 @@ const secondarySubjects = [
 ]
 
 export default function SchoolAdminClasses() {
-    const [view, setView] = useState('primary') // 'primary' or 'secondary'
+    const [schoolLevel, setSchoolLevel] = useState('Primary') // 'Primary' or 'Secondary' - simulates the school's configuration
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selectedClass, setSelectedClass] = useState(null)
@@ -44,9 +44,9 @@ export default function SchoolAdminClasses() {
     const [selectedSubjects, setSelectedSubjects] = useState([])
 
     const filteredClasses = classesData.filter(c => {
-        const matchView = view === 'primary' ? c.level.includes('Primary') : c.level.includes('Level')
+        const matchLevel = schoolLevel === 'Primary' ? c.level.includes('Primary') : c.level.includes('Level')
         const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.level.toLowerCase().includes(search.toLowerCase())
-        return matchView && matchSearch
+        return matchLevel && matchSearch
     })
 
     const openSubjectModal = (cls) => {
@@ -74,9 +74,19 @@ export default function SchoolAdminClasses() {
                     <button className="btn-primary" onClick={() => setModal('addClass')}><Plus size={15} /> Add New Class</button>
                 </div>
 
-                <div className="flex items-center border-b border-gray-200">
-                    <button onClick={() => setView('primary')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'primary' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Primary Section</button>
-                    <button onClick={() => setView('secondary')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'secondary' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Secondary Section</button>
+                <div className="flex items-center justify-between bg-blue-50 border border-blue-100 p-3 rounded-xl mb-4">
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm font-semibold text-blue-800">Simulate School Type:</span>
+                        <select
+                            value={schoolLevel}
+                            onChange={(e) => setSchoolLevel(e.target.value)}
+                            className="select-field py-1 text-sm bg-white border-blue-200"
+                        >
+                            <option value="Primary">Primary School</option>
+                            <option value="Secondary">Secondary School</option>
+                        </select>
+                    </div>
+                    <p className="text-xs text-blue-600">This setting determines which classes & subjects are available to the admin based on their subscription tier.</p>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
@@ -146,7 +156,7 @@ export default function SchoolAdminClasses() {
                     <p className="text-sm text-gray-600">Select which subjects should be taught in <strong>{selectedClass?.name}</strong>. Teachers can only assign grades for subjects selected here.</p>
 
                     <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl">
-                        {(selectedClass?.level.includes('Primary') ? primarySubjects : secondarySubjects).map(subject => {
+                        {(schoolLevel === 'Primary' ? primarySubjects : secondarySubjects).map(subject => {
                             const isSelected = selectedSubjects.includes(subject);
                             return (
                                 <label
@@ -176,11 +186,18 @@ export default function SchoolAdminClasses() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Education Level</label>
                         <select className="select-field">
-                            <option>Nursery</option>
-                            <option>Lower Primary</option>
-                            <option>Upper Primary</option>
-                            <option>O Level (Secondary)</option>
-                            <option>A Level (Secondary)</option>
+                            {schoolLevel === 'Primary' ? (
+                                <>
+                                    <option>Nursery</option>
+                                    <option>Lower Primary</option>
+                                    <option>Upper Primary</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option>O Level (Secondary)</option>
+                                    <option>A Level (Secondary)</option>
+                                </>
+                            )}
                         </select>
                     </div>
                 </div>
