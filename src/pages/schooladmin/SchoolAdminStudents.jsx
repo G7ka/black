@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, TrendingUp, TrendingDown, Upload, Filter } from 'lucide-react'
+import { Search, Plus, Eye, TrendingUp, TrendingDown, Upload, Filter, Zap, CheckSquare } from 'lucide-react'
 
 const students = [
     { id: 'STU-001', name: 'Ivan Namukasa', class: 'P7', age: 13, parent: 'Mary Namukasa', phone: '+256 772 111222', performance: 82, attendance: 94, fees: 'paid' },
@@ -22,6 +22,8 @@ export default function SchoolAdminStudents() {
     const classes = ['All', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7']
     const filtered = students.filter(s => (classFilter === 'All' || s.class === classFilter) && (s.name.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search)))
 
+    const openAutoPromote = () => setModal('autopromote')
+
     return (
         <DashboardLayout role="schooladmin">
             <div className="space-y-6">
@@ -29,6 +31,7 @@ export default function SchoolAdminStudents() {
                     <div><h1 className="page-title">Students</h1><p className="page-subtitle">Manage all enrolled students</p></div>
                     <div className="flex gap-2">
                         <button className="btn-secondary" onClick={() => setModal('import')}><Upload size={15} /> Import</button>
+                        <button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-md shadow-emerald-500/20 px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2" onClick={openAutoPromote}><Zap size={15} /> Auto-Promote</button>
                         <button className="btn-primary" onClick={() => setModal('enroll')}><Plus size={15} /> Enroll</button>
                     </div>
                 </div>
@@ -88,6 +91,48 @@ export default function SchoolAdminStudents() {
                         <div><label className="block text-sm font-medium text-gray-700 mb-1">Reason if repeating</label><textarea className="input-field resize-none" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
                     </div>
                 )}
+            </Modal>
+
+            <Modal isOpen={modal === 'autopromote'} onClose={() => setModal(null)} title="Auto-Promote Students" size="lg"
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors" onClick={() => setModal(null)}><CheckSquare size={16} /> Confirm Auto-Promotion</button></>}>
+                <div className="space-y-5">
+                    <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                        <h4 className="font-bold text-emerald-800 flex items-center gap-2"><Zap size={18} /> System Auto-Promotion</h4>
+                        <p className="text-sm text-emerald-700 mt-1">
+                            The system will automatically promote all students with an average performance score of <strong>40% or higher</strong> to the next class level, according to the standard Ugandan curriculum passing threshold. Students below 40% will be marked to repeat.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                            <h3 className="font-semibold text-gray-900">Promotion Preview</h3>
+                            <select className="select-field w-auto py-1.5 text-xs"><option>All Classes</option><option>P6 only</option></select>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full text-sm">
+                                <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                                    <tr><th className="px-4 py-3 text-left">Student</th><th className="px-4 py-3 text-center">Score</th><th className="px-4 py-3 text-left">Action</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {students.map(s => {
+                                        const isPassing = s.performance >= 40;
+                                        const nextClass = s.class === 'P7' ? 'Graduated' : s.class.replace(/\d/, d => +d + 1);
+                                        return (
+                                            <tr key={s.id} className={isPassing ? 'bg-emerald-50/10' : 'bg-red-50/30'}>
+                                                <td className="px-4 py-3 font-medium text-gray-900">{s.name} <span className="text-gray-400 font-normal text-xs ml-1">({s.class})</span></td>
+                                                <td className="px-4 py-3 text-center font-bold text-gray-700">{s.performance}%</td>
+                                                <td className={`px-4 py-3 font-semibold ${isPassing ? 'text-emerald-600' : 'text-danger-600'}`}>
+                                                    {isPassing ? `Promote to ${nextClass}` : `Repeat ${s.class}`}
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </Modal>
 
             <Modal isOpen={modal === 'view'} onClose={() => setModal(null)} title="Student Profile"
