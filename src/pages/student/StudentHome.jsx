@@ -139,8 +139,8 @@ export default function StudentHome() {
                         <div className="bg-red-50 p-4 border border-red-200 rounded-xl flex items-start gap-3">
                             <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
                             <div>
-                                <p className="text-sm font-semibold text-red-800">100% Anonymous Report</p>
-                                <p className="text-xs text-red-600 mt-1">Your identity will be strictly hidden from the teacher and administration. Only the date, time, and class will be reported.</p>
+                                <p className="text-sm font-semibold text-red-800">Anonymous to Teacher</p>
+                                <p className="text-xs text-red-600 mt-1">Your identity will be completely hidden from the teacher. However, to prevent false reporting, the <strong>School Administration</strong> will be able to see who submitted this report.</p>
                             </div>
                         </div>
                         <div>

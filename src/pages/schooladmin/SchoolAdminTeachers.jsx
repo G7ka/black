@@ -12,9 +12,9 @@ const teachers = [
     { id: 'TCH-005', name: 'Mr. Samuel Waiswa', subject: 'Religious Ed.', class: 'P3, P4', phone: '+256 755 567890', email: 's.waiswa@kps.ug', status: 'active', attendance: 94 },
 ]
 
-const anonymousReports = [
-    { id: 1, date: 'Feb 21, 2026', time: '8:30 AM', teacher: 'Mr. Kenneth Okello', subject: 'Mathematics', details: 'Teacher did not show up for the entire lesson.', status: 'pending' },
-    { id: 2, date: 'Feb 19, 2026', time: '11:00 AM', teacher: 'Mr. Ivan Byaruhanga', subject: 'Science', details: 'Arrived 40 minutes late.', status: 'reviewed' },
+const absenceReports = [
+    { id: 1, date: 'Feb 21, 2026', time: '8:30 AM', teacher: 'Mr. Kenneth Okello', subject: 'Mathematics', reporter: 'Ivan Namukasa (P6A)', details: 'Teacher did not show up for the entire lesson.', status: 'pending' },
+    { id: 2, date: 'Feb 19, 2026', time: '11:00 AM', teacher: 'Mr. Ivan Byaruhanga', subject: 'Science', reporter: 'Sarah Kemigisha (P5B)', details: 'Arrived 40 minutes late.', status: 'reviewed' },
 ]
 
 export default function SchoolAdminTeachers() {
@@ -30,8 +30,8 @@ export default function SchoolAdminTeachers() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="page-title">{view === 'staff' ? 'Teachers' : 'Anonymous Reports'}</h1>
-                        <p className="page-subtitle">{view === 'staff' ? 'Manage all teaching staff at Kampala Primary School' : 'Student-submitted anonymous absence reports'}</p>
+                        <h1 className="page-title">{view === 'staff' ? 'Teachers' : 'Absence Reports'}</h1>
+                        <p className="page-subtitle">{view === 'staff' ? 'Manage all teaching staff at Kampala Primary School' : 'Student-submitted teacher absence reports'}</p>
                     </div>
                     {view === 'staff' && (
                         <div className="flex gap-2">
@@ -43,7 +43,7 @@ export default function SchoolAdminTeachers() {
 
                 <div className="flex items-center border-b border-gray-200">
                     <button onClick={() => setView('staff')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${view === 'staff' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Staff Directory</button>
-                    <button onClick={() => setView('reports')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${view === 'reports' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Anonymous Reports <span className="bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">2</span></button>
+                    <button onClick={() => setView('reports')} className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${view === 'reports' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Absence Reports <span className="bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">2</span></button>
                 </div>
 
                 {view === 'staff' ? (
@@ -98,13 +98,14 @@ export default function SchoolAdminTeachers() {
                 ) : (
                     <div className="card p-0">
                         <table className="w-full">
-                            <thead><tr>{['Date Reported', 'Teacher', 'Class Subject', 'Details', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
+                            <thead><tr>{['Date Reported', 'Teacher', 'Class Subject', 'Reporter', 'Details', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                             <tbody>
-                                {anonymousReports.map(r => (
+                                {absenceReports.map(r => (
                                     <tr key={r.id} className="hover:bg-red-50/30">
                                         <td className="table-cell text-sm font-medium text-gray-900">{r.date}<p className="text-xs text-gray-500 font-normal">{r.time}</p></td>
                                         <td className="table-cell font-semibold text-gray-900">{r.teacher}</td>
                                         <td className="table-cell"><Badge variant="gray">{r.subject}</Badge></td>
+                                        <td className="table-cell text-sm font-semibold text-blue-600 underline cursor-pointer">{r.reporter}</td>
                                         <td className="table-cell text-sm text-gray-600 max-w-xs truncate" title={r.details}>{r.details}</td>
                                         <td className="table-cell"><Badge variant={r.status === 'pending' ? 'danger' : 'success'}>{r.status === 'pending' ? 'Pending Review' : 'Reviewed'}</Badge></td>
                                         <td className="table-cell">
