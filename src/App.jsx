@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { isMainDomain } from './utils/tenant'
 
 // Super Admin
 import SAHome from './pages/superadmin/SAHome'
@@ -55,14 +56,89 @@ import ParentFees from './pages/parent/ParentFees'
 import ParentMessages from './pages/parent/ParentMessages'
 import ParentNotifications from './pages/parent/ParentNotifications'
 
-// Landing
+// Landing & Auth
+import Landing from './pages/Landing'
 import RoleSelect from './pages/RoleSelect'
+import SchoolRegistration from './pages/auth/SchoolRegistration'
+import MainLogin from './pages/auth/MainLogin'
+import TenantLogin from './pages/auth/TenantLogin'
 
 export default function App() {
+    const mainDomain = isMainDomain();
+
+    if (!mainDomain) {
+        // --- TENANT SUBDOMAIN ROUTES ---
+        return (
+            <BrowserRouter>
+                <Routes>
+                    {/* Tenant Public/Login Page */}
+                    <Route path="/" element={<TenantLogin />} />
+
+                    {/* School Admin */}
+                    <Route path="/schooladmin/primary" element={<SchoolAdminHome />} />
+                    <Route path="/schooladmin/primary/teachers" element={<SchoolAdminTeachers />} />
+                    <Route path="/schooladmin/primary/students" element={<SchoolAdminStudents />} />
+                    <Route path="/schooladmin/primary/fees" element={<SchoolAdminFees />} />
+                    <Route path="/schooladmin/primary/payments" element={<SchoolAdminFees />} />
+                    <Route path="/schooladmin/primary/parents" element={<SchoolAdminParents />} />
+                    <Route path="/schooladmin/primary/classes" element={<SchoolAdminClasses />} />
+                    <Route path="/schooladmin/primary/attendance" element={<SchoolAdminHome />} />
+                    <Route path="/schooladmin/primary/reports" element={<SchoolAdminHome />} />
+                    <Route path="/schooladmin/primary/configuration" element={<SAConfiguration />} />
+                    <Route path="/schooladmin/primary/support" element={<SASupport />} />
+
+                    <Route path="/schooladmin/secondary" element={<SecondaryAdminHome />} />
+                    <Route path="/schooladmin/secondary/teachers" element={<SecondaryAdminTeachers />} />
+                    <Route path="/schooladmin/secondary/students" element={<SecondaryAdminStudents />} />
+                    <Route path="/schooladmin/secondary/fees" element={<SchoolAdminFees />} />
+                    <Route path="/schooladmin/secondary/payments" element={<SchoolAdminFees />} />
+                    <Route path="/schooladmin/secondary/parents" element={<SecondaryAdminParents />} />
+                    <Route path="/schooladmin/secondary/classes" element={<SecondaryAdminClasses />} />
+                    <Route path="/schooladmin/secondary/attendance" element={<SecondaryAdminHome />} />
+                    <Route path="/schooladmin/secondary/reports" element={<SecondaryAdminHome />} />
+                    <Route path="/schooladmin/secondary/configuration" element={<SAConfiguration />} />
+                    <Route path="/schooladmin/secondary/support" element={<SASupport />} />
+
+                    {/* Teacher */}
+                    <Route path="/teacher" element={<TeacherHome />} />
+                    <Route path="/teacher/students" element={<TeacherStudents />} />
+                    <Route path="/teacher/attendance" element={<TeacherAttendance />} />
+                    <Route path="/teacher/grades" element={<TeacherGrades />} />
+                    <Route path="/teacher/assignments" element={<TeacherAssignments />} />
+                    <Route path="/teacher/profile" element={<TeacherProfile />} />
+                    <Route path="/teacher/support" element={<TeacherSupport />} />
+
+                    {/* Student */}
+                    <Route path="/student" element={<StudentHome />} />
+                    <Route path="/student/grades" element={<StudentGrades />} />
+                    <Route path="/student/attendance" element={<StudentAttendance />} />
+                    <Route path="/student/assignments" element={<StudentAssignments />} />
+                    <Route path="/student/messages" element={<StudentMessages />} />
+                    <Route path="/student/profile" element={<StudentProfile />} />
+
+                    {/* Parent */}
+                    <Route path="/parent" element={<ParentHome />} />
+                    <Route path="/parent/grades" element={<ParentGrades />} />
+                    <Route path="/parent/attendance" element={<ParentAttendance />} />
+                    <Route path="/parent/fees" element={<ParentFees />} />
+                    <Route path="/parent/messages" element={<ParentMessages />} />
+                    <Route path="/parent/notifications" element={<ParentNotifications />} />
+
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </BrowserRouter>
+        );
+    }
+
+    // --- MAIN DOMAIN ROUTES (edumanage.com) ---
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<RoleSelect />} />
+                {/* Public Main Domain Pages */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/register" element={<SchoolRegistration />} />
+                <Route path="/login" element={<MainLogin />} />
+                <Route path="/demo-hub" element={<RoleSelect />} />
 
                 {/* Super Admin */}
                 <Route path="/superadmin" element={<SAHome />} />
@@ -77,57 +153,6 @@ export default function App() {
                 <Route path="/superadmin/devtools" element={<SADeveloperTools />} />
                 <Route path="/superadmin/marketing" element={<SAMarketing />} />
                 <Route path="/superadmin/emergency" element={<SAEmergency />} />
-
-                {/* Primary Admin */}
-                <Route path="/schooladmin/primary" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/primary/teachers" element={<SchoolAdminTeachers />} />
-                <Route path="/schooladmin/primary/students" element={<SchoolAdminStudents />} />
-                <Route path="/schooladmin/primary/fees" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/primary/payments" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/primary/parents" element={<SchoolAdminParents />} />
-                <Route path="/schooladmin/primary/classes" element={<SchoolAdminClasses />} />
-                <Route path="/schooladmin/primary/attendance" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/primary/reports" element={<SchoolAdminHome />} />
-                <Route path="/schooladmin/primary/configuration" element={<SAConfiguration />} />
-                <Route path="/schooladmin/primary/support" element={<SASupport />} />
-
-                {/* Secondary Admin */}
-                <Route path="/schooladmin/secondary" element={<SecondaryAdminHome />} />
-                <Route path="/schooladmin/secondary/teachers" element={<SecondaryAdminTeachers />} />
-                <Route path="/schooladmin/secondary/students" element={<SecondaryAdminStudents />} />
-                <Route path="/schooladmin/secondary/fees" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/secondary/payments" element={<SchoolAdminFees />} />
-                <Route path="/schooladmin/secondary/parents" element={<SecondaryAdminParents />} />
-                <Route path="/schooladmin/secondary/classes" element={<SecondaryAdminClasses />} />
-                <Route path="/schooladmin/secondary/attendance" element={<SecondaryAdminHome />} />
-                <Route path="/schooladmin/secondary/reports" element={<SecondaryAdminHome />} />
-                <Route path="/schooladmin/secondary/configuration" element={<SAConfiguration />} />
-                <Route path="/schooladmin/secondary/support" element={<SASupport />} />
-
-                {/* Teacher */}
-                <Route path="/teacher" element={<TeacherHome />} />
-                <Route path="/teacher/students" element={<TeacherStudents />} />
-                <Route path="/teacher/attendance" element={<TeacherAttendance />} />
-                <Route path="/teacher/grades" element={<TeacherGrades />} />
-                <Route path="/teacher/assignments" element={<TeacherAssignments />} />
-                <Route path="/teacher/profile" element={<TeacherProfile />} />
-                <Route path="/teacher/support" element={<TeacherSupport />} />
-
-                {/* Student */}
-                <Route path="/student" element={<StudentHome />} />
-                <Route path="/student/grades" element={<StudentGrades />} />
-                <Route path="/student/attendance" element={<StudentAttendance />} />
-                <Route path="/student/assignments" element={<StudentAssignments />} />
-                <Route path="/student/messages" element={<StudentMessages />} />
-                <Route path="/student/profile" element={<StudentProfile />} />
-
-                {/* Parent */}
-                <Route path="/parent" element={<ParentHome />} />
-                <Route path="/parent/grades" element={<ParentGrades />} />
-                <Route path="/parent/attendance" element={<ParentAttendance />} />
-                <Route path="/parent/fees" element={<ParentFees />} />
-                <Route path="/parent/messages" element={<ParentMessages />} />
-                <Route path="/parent/notifications" element={<ParentNotifications />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

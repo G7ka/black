@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GraduationCap, Shield, School, Users, BookOpen, BarChart3, ArrowRight, UserSquare2, Heart } from 'lucide-react'
+import { GraduationCap, Shield, School, Users, BookOpen, BarChart3, ArrowRight, UserSquare2, Heart, Building2 } from 'lucide-react'
 
 const roles = [
     {
