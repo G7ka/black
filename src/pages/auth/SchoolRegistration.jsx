@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, MapPin, FileText, Globe, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Building2, MapPin, FileText, Globe, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, PersonStanding, User, MailIcon, Phone } from 'lucide-react';
 
 export default function SchoolRegistration() {
     const navigate = useNavigate();
@@ -8,6 +8,7 @@ export default function SchoolRegistration() {
     const [subdomain, setSubdomain] = useState('');
     const [isChecking, setIsChecking] = useState(false);
     const [isAvailable, setIsAvailable] = useState(null);
+    const [level, setLevel] = useState('primary');
 
     const checkSubdomain = (val) => {
         setSubdomain(val);
@@ -57,27 +58,73 @@ export default function SchoolRegistration() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">School Level</label>
                                 <div className="mt-3 grid grid-cols-2 gap-3">
-                                    <button className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-primary-500 bg-primary-50 rounded-xl text-primary-700 font-semibold transition-all">
+                                    <button
+                                        type="button"
+                                        aria-pressed={level === 'primary'}
+                                        onClick={() => setLevel('primary')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 border-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/40
+                                            ${level === 'primary'
+                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                                : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                    >
                                         Primary
                                     </button>
-                                    <button className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 hover:border-slate-300 rounded-xl text-slate-600 font-semibold transition-all">
+                                    <button
+                                        type="button"
+                                        aria-pressed={level === 'secondary'}
+                                        onClick={() => setLevel('secondary')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 border-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/40
+                                            ${level === 'secondary'
+                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                                : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                    >
                                         Secondary
                                     </button>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700">School Name</label>
+                                <label className="block text-sm font-medium text-slate-700">Name</label>
                                 <div className="mt-1 relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Building2 className="h-5 w-5 text-slate-400" />
+                                        < User className="h-5 w-5 text-slate-400" />
                                     </div>
-                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Sunrise High School" />
+                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. John Doe" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700">Location / District</label>
+                                <label className="block text-sm font-medium text-slate-700">Email</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < MailIcon className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="email" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. john.doe@example.com" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">Contact</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Phone className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="tel" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. +256 700 000000" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">Position</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < PersonStanding className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Principal" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">Address</label>
                                 <div className="mt-1 relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <MapPin className="h-5 w-5 text-slate-400" />
@@ -93,10 +140,50 @@ export default function SchoolRegistration() {
                                 Continue <ArrowRight size={16} />
                             </button>
                         </div>
+                        
                     )}
 
                     {step === 2 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">School Name</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < Building2 className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" 
+                                    placeholder={level === 'primary' ? 'e.g. John Doe Primary School' : 'e.g. John Doe Secondary School'} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">School Address</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < MapPin className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Kampala" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">Students range</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < PersonStanding className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="number" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. 100-200" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700">School website (optional)</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        < Globe className="h-5 w-5 text-slate-400" />
+                                    </div>
+                                    <input type="url" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. https://www.john-doe.com" />
+                                </div>
+                            </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Choose your subdomain</label>
@@ -186,7 +273,11 @@ export default function SchoolRegistration() {
                         </div>
                     )}
                 </div>
+                <div>
+                <p className="text-sm text-slate-500">Already have an account? <a href="/TenantLogin" className="text-primary-600 hover:text-primary-500 transition-colors">Login</a></p>
             </div>
+            </div>
+            
         </div>
     );
 }

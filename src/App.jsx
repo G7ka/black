@@ -139,6 +139,7 @@ export default function App() {
                 <Route path="/register" element={<SchoolRegistration />} />
                 <Route path="/login" element={<MainLogin />} />
                 <Route path="/demo-hub" element={<RoleSelect />} />
+                <Route path="/TenantLogin" element={<TenantLogin />} />
 
                 {/* Super Admin */}
                 <Route path="/superadmin" element={<SAHome />} />
