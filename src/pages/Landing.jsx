@@ -1,248 +1,380 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Building2, Users, ArrowRight, PlayCircle, Globe, GraduationCap, Menu, X } from 'lucide-react';
+import {
+    Shield, Building2, Users, ArrowRight, Globe, GraduationCap,
+    Menu, X, CheckCircle2, ChevronDown, BookOpen, BarChart3,
+    Smartphone, HeartHandshake, Zap, Lock, Search
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const NAV_LINKS = [
+    { label: 'About Us', href: '#about' },
+    { label: 'How We Work', href: '#how' },
+    { label: 'Why Us', href: '#why' },
+    { label: 'Register', href: '/register', isRoute: true },
+];
 
 export default function Landing() {
     const navigate = useNavigate();
-    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [schoolSearch, setSchoolSearch] = useState('');
+    const [openFaq, setOpenFaq] = useState(null);
+
+    const handleNavClick = (link) => {
+        setMenuOpen(false);
+        if (link.isRoute) {
+            navigate(link.href);
+        } else {
+            const el = document.querySelector(link.href);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    const handleSchoolSearch = (e) => {
+        e.preventDefault();
+        const slug = schoolSearch.trim().toLowerCase().replace(/\s+/g, '');
+        if (!slug) return;
+        window.location.href = `http://${slug}.lvh.me:5173`;
+    };
+
+    const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i);
 
     return (
         <div className="min-h-screen bg-slate-900 overflow-x-hidden font-sans scroll-smooth">
-            {/* Header */}
-            <header className="px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-4 sticky top-0 bg-slate-900/80 backdrop-blur-md z-50 border-b border-white/10">
-                {/* Logo */}
+
+            {/* ─── NAVBAR ─── */}
+            <header className="px-5 py-4 flex items-center justify-between sticky top-0 bg-slate-900/90 backdrop-blur-md z-50 border-b border-white/10">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/40">
                         <GraduationCap size={22} className="text-white" />
                     </div>
-                    <div>
-                        <p className="text-white font-extrabold text-xl leading-none tracking-tight">EduManage</p>
-                    </div>
+                    <span className="text-white font-extrabold text-xl tracking-tight">EduManage</span>
                 </div>
 
-                {/* Navigation links (desktop) */}
-                <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                    <a href="#why-choose-us" className="hover:text-white transition-colors">
-                        Why choose us
-                    </a>
-                    <a href="#about-us" className="hover:text-white transition-colors">
-                        About us
-                    </a>
-                    <a href="#features" className="hover:text-white transition-colors">
-                        Features
-                    </a>
+                {/* Desktop nav */}
+                <nav className="hidden md:flex items-center gap-6">
+                    {NAV_LINKS.map((l) => (
+                        <button
+                            key={l.label}
+                            onClick={() => handleNavClick(l)}
+                            className={l.isRoute
+                                ? 'bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-all flex items-center gap-2'
+                                : 'text-slate-300 hover:text-white font-medium text-sm transition-colors'
+                            }
+                        >
+                            {l.label} {l.isRoute && <ArrowRight size={14} />}
+                        </button>
+                    ))}
                 </nav>
 
-                {/* Auth / CTA buttons & mobile toggle */}
-                <div className="flex items-center gap-2 md:gap-4">
-                    <button
-                        onClick={() => navigate('/login')}
-                        className="text-slate-300 hover:text-white font-medium text-xs sm:text-sm transition-colors hidden sm:block"
-                    >
-                        SuperAdmin Login
-                    </button>
-                    <button
-                        onClick={() => navigate('/register')}
-                        className="bg-primary-600 hover:bg-primary-500 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-lg transition-all shadow-lg flex items-center gap-2"
-                    >
-                        Register School <ArrowRight size={16} />
-                    </button>
-
-                    {/* Mobile hamburger */}
-                    <button
-                        type="button"
-                        className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 text-slate-200 hover:bg-white/10 md:hidden"
-                        onClick={() => setIsMobileNavOpen((prev) => !prev)}
-                        aria-label="Toggle navigation"
-                        aria-expanded={isMobileNavOpen}
-                    >
-                        {isMobileNavOpen ? <X size={18} /> : <Menu size={18} />}
-                    </button>
-                </div>
+                {/* Mobile hamburger */}
+                <button
+                    className="md:hidden text-slate-300 hover:text-white p-2 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
             </header>
 
-            {/* Mobile navigation drawer */}
-            {isMobileNavOpen && (
-                <div className="md:hidden bg-slate-950/95 border-b border-white/10 px-4 pb-4 pt-2 space-y-2">
-                    <nav className="flex flex-col gap-2 text-sm font-medium text-slate-200">
-                        <a
-                            href="#why-choose-us"
-                            className="py-2 rounded-lg px-2 hover:bg-white/5"
-                            onClick={() => setIsMobileNavOpen(false)}
+            {/* Mobile drawer */}
+            {menuOpen && (
+                <div className="md:hidden fixed inset-0 top-[65px] bg-slate-900/98 backdrop-blur-md z-40 flex flex-col gap-2 px-5 pt-6">
+                    {NAV_LINKS.map((l) => (
+                        <button
+                            key={l.label}
+                            onClick={() => handleNavClick(l)}
+                            className="w-full text-left px-4 py-4 text-white font-semibold text-lg border-b border-white/10 hover:text-blue-400 transition-colors"
                         >
-                            Why choose us
-                        </a>
-                        <a
-                            href="#about-us"
-                            className="py-2 rounded-lg px-2 hover:bg-white/5"
-                            onClick={() => setIsMobileNavOpen(false)}
-                        >
-                            About us
-                        </a>
-                        <a
-                            href="#features"
-                            className="py-2 rounded-lg px-2 hover:bg-white/5"
-                            onClick={() => setIsMobileNavOpen(false)}
-                        >
-                            Features
-                        </a>
-                    </nav>
+                            {l.label}
+                        </button>
+                    ))}
                 </div>
             )}
 
-            {/* Hero Section */}
-            <section className="relative pt-20 md:pt-24 pb-24 md:pb-32 px-4 md:px-6">
-                {/* Background decorative blobs */}
-                <div className="absolute top-20 left-10 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl -z-10 mix-blend-screen" />
-                <div className="absolute top-40 right-20 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-3xl -z-10 mix-blend-screen" />
+            {/* ─── HERO ─── */}
+            <section className="relative pt-20 pb-28 px-5">
+                <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-10 left-0 w-[500px] h-[500px] bg-blue-700/20 rounded-full blur-3xl -z-10" />
+                <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute top-32 right-0 w-[400px] h-[400px] bg-violet-700/20 rounded-full blur-3xl -z-10" />
 
-                <div className="max-w-6xl mx-auto text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-primary-300 text-sm font-semibold mb-8 backdrop-blur-sm">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> The Standard for African Education
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-blue-300 text-sm font-semibold mb-8">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        The Standard for Ugandan Schools
                     </div>
 
-                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 sm:mb-8 leading-tight">
-                        One Platform.<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-indigo-400 to-violet-400">
+                    <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+                        One Platform.{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400">
                             Every School in Uganda.
                         </span>
                     </h1>
 
-                    <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed">
-                        The ultimate multi-tenant OS for education. Whether you're a parent paying fees, a teacher grading, or a headteacher managing streams — it all happens here.
+                    <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        The complete school management system built for Ugandan institutions — from attendance and fees to performance reports and parent communication.
                     </p>
+
+                    {/* School Finder */}
+                    <div className="max-w-xl mx-auto mb-8">
+                        <p className="text-slate-400 text-sm mb-3 font-medium">
+                            Parents, Students, Teachers &amp; Schools — find your school portal:
+                        </p>
+                        <form onSubmit={handleSchoolSearch} className="flex gap-2">
+                            <div className="relative flex-1">
+                                <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={schoolSearch}
+                                    onChange={(e) => setSchoolSearch(e.target.value)}
+                                    placeholder="Type your school name…"
+                                    className="w-full pl-10 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap flex items-center gap-2"
+                            >
+                                Go <ArrowRight size={16} />
+                            </button>
+                        </form>
+                        <p className="text-slate-500 text-xs mt-2">e.g. "Kampala High" → takes you straight to your school's dashboard</p>
+                    </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={() => navigate('/register')}
-                            className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg hover:bg-slate-100 transition-colors flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-base hover:bg-slate-100 transition-colors flex items-center justify-center gap-2"
                         >
-                            <Building2 size={20} /> Register Your School
+                            <Building2 size={18} /> Register Your School
                         </button>
                         <button
-                            onClick={() => navigate('/demo-hub')}
-                            className="w-full sm:w-auto px-8 py-4 bg-white/10 text-white border border-white/20 rounded-xl font-bold text-lg hover:bg-white/20 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm shadow-xl"
+                            onClick={() => { const el = document.querySelector('#about'); el?.scrollIntoView({ behavior: 'smooth' }); }}
+                            className="w-full sm:w-auto px-8 py-4 bg-white/10 text-white border border-white/20 rounded-xl font-bold text-base hover:bg-white/20 transition-colors flex items-center justify-center gap-2"
                         >
-                            <PlayCircle size={20} /> Try Demo Dashboards
+                            Learn More <ChevronDown size={18} />
                         </button>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
-            {/* Why Choose Us Section */}
-            <section id="why-choose-us" className="py-20 bg-slate-900 border-t border-white/5 relative z-10">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Why choose us</h2>
-                        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae lectus at neque
-                            feugiat faucibus. Sed dictum, ipsum et placerat vehicula, nibh nisi pulvinar urna, sed
-                            cursus nulla dolor at nisl.
+            {/* ─── ABOUT US ─── */}
+            <section id="about" className="py-20 border-t border-white/5 relative bg-slate-900 z-10">
+                <div className="max-w-6xl mx-auto px-5">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-14"
+                    >
+                        <span className="text-blue-400 font-semibold text-sm uppercase tracking-widest">About Us</span>
+                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">Built for Ugandan Education</h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                            EduManage was founded with a single mission: to digitise and streamline school administration in Uganda so teachers can focus on teaching, parents stay informed, and school leaders can make data-driven decisions.
                         </p>
+                    </motion.div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[
+                            {
+                                icon: <GraduationCap size={26} />, color: 'blue',
+                                title: 'Our Mission',
+                                desc: 'Empower every Ugandan school — urban or rural — with modern management tools that are affordable, reliable, and easy to use.'
+                            },
+                            {
+                                icon: <HeartHandshake size={26} />, color: 'violet',
+                                title: 'Our Values',
+                                desc: 'We put schools first. Transparency, data privacy, and genuine local support are at the core of everything we build.'
+                            },
+                            {
+                                icon: <Globe size={26} />, color: 'emerald',
+                                title: 'Our Reach',
+                                desc: 'Serving hundreds of schools across Uganda, from Kampala to Gulu, with a multi-tenant platform that keeps every school\'s data separate and secure.'
+                            },
+                        ].map((card, i) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                whileHover={{ scale: 1.05, y: -5, boxShadow: `0 20px 40px -10px rgba(var(--color-${card.color}-500), 0.2)` }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: i * 0.1, scale: { duration: 0.2 }, y: { duration: 0.2 } }}
+                                key={card.title}
+                                className={`bg-slate-800/50 border border-white/10 rounded-2xl p-8 hover:border-${card.color}-500/50 transition-colors cursor-pointer`}
+                            >
+                                <div className={`w-12 h-12 bg-${card.color}-500/20 text-${card.color}-400 rounded-xl flex items-center justify-center mb-5 border border-${card.color}-500/30`}>
+                                    {card.icon}
+                                </div>
+                                <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">{card.desc}</p>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* Features/Explanation Section */}
-            <section id="features" className="py-20 bg-slate-900 border-t border-white/5 relative z-10">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Features</h2>
-                        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer hendrerit elit at turpis
-                            tincidunt, vitae interdum erat porta.
+
+            {/* ─── HOW WE WORK ─── */}
+            <section id="how" className="py-20 border-t border-white/5 bg-slate-800/30">
+                <div className="max-w-5xl mx-auto px-5">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-14"
+                    >
+                        <span className="text-violet-400 font-semibold text-sm uppercase tracking-widest">How We Work</span>
+                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">From Registration to Running</h2>
+                        <p className="text-slate-400 max-w-xl mx-auto leading-relaxed">
+                            Getting your school onto EduManage takes less than 24 hours. Here's exactly how it works.
                         </p>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-8">
+                    </motion.div>
 
-                        {/* Feature 1 */}
-                        <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/10 hover:border-primary-500/50 transition-colors">
-                            <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30">
-                                <Globe size={28} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-3">Unique Portals</h3>
-                            <p className="text-slate-400 leading-relaxed text-sm">
-                                Every registered school gets its own branded subdomain (e.g. <code className="text-primary-300 bg-primary-900/50 px-1 rounded">kampala.edumanage.com</code>) shielding its data from others.
-                            </p>
+                    <div className="relative">
+                        {/* Vertical connector line (desktop) */}
+                        <div className="hidden lg:block absolute left-[27px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-blue-500 via-violet-500 to-emerald-500 opacity-30" />
+
+                        <div className="space-y-8">
+                            {[
+                                {
+                                    step: '01', icon: <Building2 size={20} />, color: 'blue',
+                                    title: 'Register Your School',
+                                    desc: 'Fill in your school details, upload your MoES license, and choose a unique subdomain. The whole process takes about 5 minutes.'
+                                },
+                                {
+                                    step: '02', icon: <Shield size={20} />, color: 'violet',
+                                    title: 'Verification & Approval',
+                                    desc: 'Our team reviews your documents within 24 hours. Once approved, your school portal goes live and you receive your admin credentials.'
+                                },
+                                {
+                                    step: '03', icon: <Users size={20} />, color: 'amber',
+                                    title: 'Add Staff, Students & Parents',
+                                    desc: 'Log into your dashboard and add teachers, enroll students, and link parents. Each person gets their own secure login.'
+                                },
+                                {
+                                    step: '04', icon: <BookOpen size={20} />, color: 'emerald',
+                                    title: 'Run Your School Digitally',
+                                    desc: 'Mark attendance, issue fees, record grades, send messages to parents — all in one place, from any device.'
+                                },
+                                {
+                                    step: '05', icon: <BarChart3 size={20} />, color: 'indigo',
+                                    title: 'Insights & Reports',
+                                    desc: 'Generate termly performance reports, fee collection summaries, and attendance analytics with a single click.'
+                                },
+                            ].map((item, i) => (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -30 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true, margin: "-50px" }}
+                                    transition={{ duration: 0.5, delay: i * 0.15 }}
+                                    key={item.step}
+                                    className="flex gap-5 items-start group"
+                                >
+                                    <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-${item.color}-500/20 border border-${item.color}-500/30 text-${item.color}-400 flex items-center justify-center`}>
+                                        {item.icon}
+                                    </div>
+                                    <div className="flex-1 bg-slate-800/60 border border-white/10 rounded-2xl p-6 group-hover:border-white/20 transition-colors">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className={`text-xs font-bold text-${item.color}-400 bg-${item.color}-500/10 px-2 py-0.5 rounded-full`}>Step {item.step}</span>
+                                            <h3 className="text-white font-bold text-base">{item.title}</h3>
+                                        </div>
+                                        <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
-
-                        {/* Feature 2 */}
-                        <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/10 hover:border-violet-500/50 transition-colors relative lg:-translate-y-8">
-                            <div className="w-14 h-14 bg-violet-500/20 text-violet-400 rounded-2xl flex items-center justify-center mb-6 border border-violet-500/30">
-                                <Shield size={28} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-3">SuperAdmin Oversight</h3>
-                            <p className="text-slate-400 leading-relaxed text-sm">
-                                Manage the entire SaaS platform. Approve new school registrations, handle billing, and view overarching national analytics securely.
-                            </p>
-                        </div>
-
-                        {/* Feature 3 */}
-                        <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/10 hover:border-emerald-500/50 transition-colors">
-                            <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/30">
-                                <Users size={28} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-3">Role-Based Access</h3>
-                            <p className="text-slate-400 leading-relaxed text-sm">
-                                Custom interfaces for Secondary Admins, Primary Admins, Teachers, Students, and Parents — all deeply integrated.
-                            </p>
-                        </div>
-
                     </div>
                 </div>
             </section>
 
-            {/* About Us Section */}
-            <section id="about-us" className="py-20 bg-slate-950 border-t border-white/5 relative z-10">
-                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+            {/* ─── WHY US ─── */}
+            <section id="why" className="py-20 border-t border-white/5">
+                <div className="max-w-6xl mx-auto px-5">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-14"
+                    >
+                        <span className="text-emerald-400 font-semibold text-sm uppercase tracking-widest">Why EduManage</span>
+                        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">The Smart Choice for Ugandan Schools</h2>
+                        <p className="text-slate-400 max-w-xl mx-auto leading-relaxed">
+                            There are other systems out there. Here's why hundreds of schools chose EduManage.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {[
+                            { icon: <Lock size={22} />, title: 'Data Privacy First', desc: 'Every school gets an isolated subdomain. Your students\' data is never mixed with another school\'s records.', color: 'blue' },
+                            { icon: <Smartphone size={22} />, title: 'Works on Any Device', desc: 'Parents check grades on a smartphone. Teachers mark attendance on a tablet. Everything is fully responsive.', color: 'violet' },
+                            { icon: <Zap size={22} />, title: 'Lightning Fast Setup', desc: 'Go from registration to a fully live school portal in under 24 hours — no IT team required.', color: 'amber' },
+                            { icon: <BarChart3 size={22} />, title: 'Real-Time Analytics', desc: 'Live dashboards let headteachers track performance, attendance trends, and fee collection instantly.', color: 'emerald' },
+                            { icon: <HeartHandshake size={22} />, title: 'Local Support Team', desc: 'We\'re based in Uganda. When you need help, you speak to someone who understands your school context.', color: 'indigo' },
+                            { icon: <CheckCircle2 size={22} />, title: 'Affordable Pricing', desc: 'Flexible subscription plans designed for Ugandan school budgets — from small primary schools to large secondaries.', color: 'rose' },
+                        ].map((item, i) => (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                key={item.title}
+                                className="bg-slate-800/50 border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-all group"
+                            >
+                                <div className={`w-11 h-11 bg-${item.color}-500/15 text-${item.color}-400 rounded-xl flex items-center justify-center mb-5 border border-${item.color}-500/25 group-hover:scale-110 transition-transform`}>
+                                    {item.icon}
+                                </div>
+                                <h3 className="text-white font-bold mb-2">{item.title}</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ─── CTA BANNER ─── */}
+            <section className="py-20 border-t border-white/5 bg-gradient-to-br from-blue-900/40 to-violet-900/40">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="max-w-3xl mx-auto px-5 text-center"
+                >
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready to join Uganda's fastest-growing school network?</h2>
+                    <p className="text-slate-400 mb-8 leading-relaxed">
+                        Register your school today and get your own secure portal within 24 hours.
+                    </p>
+                    <button
+                        onClick={() => navigate('/register')}
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-base transition-all shadow-lg shadow-blue-900/40"
+                    >
+                        <Building2 size={18} /> Register Your School <ArrowRight size={16} />
+                    </button>
+                </motion.div>
+            </section>
+
+            {/* ─── FOOTER ─── */}
+            <footer className="border-t border-white/10 py-8 px-5 bg-slate-950">
+                <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                            <GraduationCap size={16} className="text-white" />
+                        </div>
+                        <span className="text-white font-bold">EduManage</span>
+                    </div>
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">About us</h2>
-                        <p className="text-slate-400 mb-4 text-sm md:text-base">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris porta, massa at dapibus
-                            faucibus, tortor augue ullamcorper ante, at condimentum lacus sem vel sapien. Nunc
-                            scelerisque justo vitae lacus efficitur, non euismod nisl fermentum.
-                        </p>
-                        <p className="text-slate-400 text-sm md:text-base">
-                            Curabitur suscipit, enim id fermentum tempus, nibh justo volutpat mi, non tristique ex
-                            lectus ac nibh. Suspendisse potenti. Duis dignissim hendrerit consequat. Integer luctus
-                            tellus eu nisl rhoncus, vitae lacinia ipsum tempor.
-                        </p>
-                    </div>
-                    <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-8">
-                        <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas quis sem pretium,
-                            facilisis nulla vitae, condimentum dolor. Aenean placerat, urna id ullamcorper hendrerit,
-                            felis risus fermentum lorem, eget faucibus justo lectus id urna.
+                        <p className="text-slate-500 text-sm text-center md:text-left">
+                            &copy; {new Date().getFullYear()} EduManage. All rights reserved. Built for African education.
                         </p>
                     </div>
                 </div>
-            </section>
-
-            {/* Footer Section */}
-            <section id="footer" className="py-20 bg-slate-950 border-t border-white/5 relative z-10">
-                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
-                            <div>
-                                <p className="text-slate-400 mb-4 text-sm md:text-base">
-                                    &copy; {new Date().getFullYear()} EduManage. All rights reserved. <br />
-                                    Empowering schools, teachers, students, and parents through seamless digital management and analytics.
-                                </p>
-                                <p className="text-slate-400 text-sm md:text-base">
-                                    Built with ♥ for African education. Have questions? <a href="mailto:support@edumanage.com" className="underline hover:text-emerald-400">Contact us</a>.
-                                </p>
-                            </div>
-                            <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-8">
-                                <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-                                    Follow us: &nbsp;
-                                    <a href="https://twitter.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">Twitter</a>
-                                    &nbsp;|&nbsp;
-                                    <a href="https://facebook.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">Facebook</a>
-                                    &nbsp;|&nbsp;
-                                    <a href="https://linkedin.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                                </p>
-                        </div>
-                </div>
-            </section>
-        </div>
+            </footer>
+        </div >
     );
 }
-

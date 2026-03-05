@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getSubdomain } from '../../utils/tenant';
 import { GraduationCap, Mail, Lock, ArrowRight, School, User, BookOpen, Heart } from 'lucide-react';
 
@@ -45,7 +45,7 @@ export default function TenantLogin() {
                                 <label className="block text-sm font-medium text-slate-700">Account Type</label>
                                 <div className="mt-2 grid grid-cols-4 gap-2">
                                     {[
-                                        { id: 'admin', icon: School, label: 'Admin' },
+                                        { id: 'admin', icon: School, label: 'School Admin' },
                                         { id: 'teacher', icon: BookOpen, label: 'Staff' },
                                         { id: 'student', icon: User, label: 'Student' },
                                         { id: 'parent', icon: Heart, label: 'Parent' }
@@ -55,8 +55,8 @@ export default function TenantLogin() {
                                             type="button"
                                             onClick={() => setRole(r.id)}
                                             className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all ${role === r.id
-                                                    ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-sm'
-                                                    : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-sm'
+                                                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
                                                 }`}
                                         >
                                             <r.icon size={18} />
@@ -109,9 +109,12 @@ export default function TenantLogin() {
                                 </div>
 
                                 <div className="text-sm">
-                                    <a href="#" className="font-semibold text-primary-600 hover:text-primary-500 transition-colors">
+                                    <Link
+                                        to="/forgot-password?from=/"
+                                        className="font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+                                    >
                                         Forgot password?
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
 
@@ -125,6 +128,7 @@ export default function TenantLogin() {
                             </div>
                         </form>
                     </div>
+
                 </div>
             </div>
 
@@ -149,7 +153,7 @@ export default function TenantLogin() {
                     </p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

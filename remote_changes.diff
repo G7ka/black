@@ -1,0 +1,482 @@
+﻿commit d47dfea97dd75f49583fed0a74c4fad3849b0a73
+Author: nightmare256-w <bibmarley843@gmail.com>
+Date:   Tue Mar 3 13:57:42 2026 +0300
+
+    feat(ui): improve landing and school registration flows
+    
+    Made-with: Cursor
+
+diff --git a/package-lock.json b/package-lock.json
+index 323f69d..6c2f1fc 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -70,7 +70,6 @@
+       "integrity": "sha512-CGOfOJqWjg2qW/Mb6zNsDm+u5vFQ8DxXfbM09z69p5Z6+mE1ikP2jUXw+j42Pf1XTYED2Rni5f95npYeuwMDQA==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@babel/code-frame": "^7.29.0",
+         "@babel/generator": "^7.29.0",
+@@ -1245,7 +1244,6 @@
+       "integrity": "sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@types/prop-types": "*",
+         "csstype": "^3.2.2"
+@@ -1406,7 +1404,6 @@
+         }
+       ],
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "baseline-browser-mapping": "^2.9.0",
+         "caniuse-lite": "^1.0.30001759",
+@@ -1457,7 +1454,6 @@
+       "resolved": "https://registry.npmjs.org/chart.js/-/chart.js-4.5.1.tgz",
+       "integrity": "sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@kurkle/color": "^0.3.0"
+       },
+@@ -1864,7 +1860,6 @@
+       "integrity": "sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "bin": {
+         "jiti": "bin/jiti.js"
+       }
+@@ -2128,7 +2123,6 @@
+         }
+       ],
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "nanoid": "^3.3.11",
+         "picocolors": "^1.1.1",
+@@ -2298,7 +2292,6 @@
+       "resolved": "https://registry.npmjs.org/react/-/react-18.3.1.tgz",
+       "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "loose-envify": "^1.1.0"
+       },
+@@ -2321,7 +2314,6 @@
+       "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz",
+       "integrity": "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "loose-envify": "^1.1.0",
+         "scheduler": "^0.23.2"
+@@ -2686,7 +2678,6 @@
+       "integrity": "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "engines": {
+         "node": ">=12"
+       },
+@@ -2758,7 +2749,6 @@
+       "integrity": "sha512-o5a9xKjbtuhY6Bi5S3+HvbRERmouabWbyUcpXXUA1u+GNUKoROi9byOJ8M0nHbHYHkYICiMlqxkg1KkYmm25Sw==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "esbuild": "^0.21.3",
+         "postcss": "^8.4.43",
+diff --git a/src/App.jsx b/src/App.jsx
+index 0ccbe36..d3b8db3 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -139,6 +139,7 @@ export default function App() {
+                 <Route path="/register" element={<SchoolRegistration />} />
+                 <Route path="/login" element={<MainLogin />} />
+                 <Route path="/demo-hub" element={<RoleSelect />} />
++                <Route path="/TenantLogin" element={<TenantLogin />} />
+ 
+                 {/* Super Admin */}
+                 <Route path="/superadmin" element={<SAHome />} />
+diff --git a/src/pages/Landing.jsx b/src/pages/Landing.jsx
+index c5090b6..9e5e22a 100644
+--- a/src/pages/Landing.jsx
++++ b/src/pages/Landing.jsx
+@@ -1,14 +1,16 @@
+-import React from 'react';
++import React, { useState } from 'react';
+ import { useNavigate } from 'react-router-dom';
+-import { Shield, Building2, Users, ArrowRight, PlayCircle, Globe, GraduationCap } from 'lucide-react';
++import { Shield, Building2, Users, ArrowRight, PlayCircle, Globe, GraduationCap, Menu, X } from 'lucide-react';
+ 
+ export default function Landing() {
+     const navigate = useNavigate();
++    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+ 
+     return (
+-        <div className="min-h-screen bg-slate-900 overflow-hidden font-sans">
++        <div className="min-h-screen bg-slate-900 overflow-x-hidden font-sans scroll-smooth">
+             {/* Header */}
+-            <header className="px-6 py-4 flex items-center justify-between sticky top-0 bg-slate-900/80 backdrop-blur-md z-50 border-b border-white/10">
++            <header className="px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-4 sticky top-0 bg-slate-900/80 backdrop-blur-md z-50 border-b border-white/10">
++                {/* Logo */}
+                 <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                         <GraduationCap size={22} className="text-white" />
+@@ -18,24 +20,78 @@ export default function Landing() {
+                     </div>
+                 </div>
+ 
+-                <div className="flex items-center gap-4">
++                {/* Navigation links (desktop) */}
++                <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
++                    <a href="#why-choose-us" className="hover:text-white transition-colors">
++                        Why choose us
++                    </a>
++                    <a href="#about-us" className="hover:text-white transition-colors">
++                        About us
++                    </a>
++                    <a href="#features" className="hover:text-white transition-colors">
++                        Features
++                    </a>
++                </nav>
++
++                {/* Auth / CTA buttons & mobile toggle */}
++                <div className="flex items-center gap-2 md:gap-4">
+                     <button
+                         onClick={() => navigate('/login')}
+-                        className="text-slate-300 hover:text-white font-medium text-sm transition-colors hidden sm:block"
++                        className="text-slate-300 hover:text-white font-medium text-xs sm:text-sm transition-colors hidden sm:block"
+                     >
+                         SuperAdmin Login
+                     </button>
+                     <button
+                         onClick={() => navigate('/register')}
+-                        className="bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-all shadow-lg flex items-center gap-2"
++                        className="bg-primary-600 hover:bg-primary-500 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-lg transition-all shadow-lg flex items-center gap-2"
+                     >
+                         Register School <ArrowRight size={16} />
+                     </button>
++
++                    {/* Mobile hamburger */}
++                    <button
++                        type="button"
++                        className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 text-slate-200 hover:bg-white/10 md:hidden"
++                        onClick={() => setIsMobileNavOpen((prev) => !prev)}
++                        aria-label="Toggle navigation"
++                        aria-expanded={isMobileNavOpen}
++                    >
++                        {isMobileNavOpen ? <X size={18} /> : <Menu size={18} />}
++                    </button>
+                 </div>
+             </header>
+ 
++            {/* Mobile navigation drawer */}
++            {isMobileNavOpen && (
++                <div className="md:hidden bg-slate-950/95 border-b border-white/10 px-4 pb-4 pt-2 space-y-2">
++                    <nav className="flex flex-col gap-2 text-sm font-medium text-slate-200">
++                        <a
++                            href="#why-choose-us"
++                            className="py-2 rounded-lg px-2 hover:bg-white/5"
++                            onClick={() => setIsMobileNavOpen(false)}
++                        >
++                            Why choose us
++                        </a>
++                        <a
++                            href="#about-us"
++                            className="py-2 rounded-lg px-2 hover:bg-white/5"
++                            onClick={() => setIsMobileNavOpen(false)}
++                        >
++                            About us
++                        </a>
++                        <a
++                            href="#features"
++                            className="py-2 rounded-lg px-2 hover:bg-white/5"
++                            onClick={() => setIsMobileNavOpen(false)}
++                        >
++                            Features
++                        </a>
++                    </nav>
++                </div>
++            )}
++
+             {/* Hero Section */}
+-            <section className="relative pt-24 pb-32 px-6">
++            <section className="relative pt-20 md:pt-24 pb-24 md:pb-32 px-4 md:px-6">
+                 {/* Background decorative blobs */}
+                 <div className="absolute top-20 left-10 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl -z-10 mix-blend-screen" />
+                 <div className="absolute top-40 right-20 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-3xl -z-10 mix-blend-screen" />
+@@ -45,14 +101,14 @@ export default function Landing() {
+                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> The Standard for African Education
+                     </div>
+ 
+-                    <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-8 leading-tight">
++                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 sm:mb-8 leading-tight">
+                         One Platform.<br />
+                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-indigo-400 to-violet-400">
+                             Every School in Uganda.
+                         </span>
+                     </h1>
+ 
+-                    <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
++                    <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed">
+                         The ultimate multi-tenant OS for education. Whether you're a parent paying fees, a teacher grading, or a headteacher managing streams ÔÇö it all happens here.
+                     </p>
+ 
+@@ -73,9 +129,30 @@ export default function Landing() {
+                 </div>
+             </section>
+ 
++            {/* Why Choose Us Section */}
++            <section id="why-choose-us" className="py-20 bg-slate-900 border-t border-white/5 relative z-10">
++                <div className="max-w-6xl mx-auto px-6">
++                    <div className="text-center mb-12">
++                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Why choose us</h2>
++                        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
++                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae lectus at neque
++                            feugiat faucibus. Sed dictum, ipsum et placerat vehicula, nibh nisi pulvinar urna, sed
++                            cursus nulla dolor at nisl.
++                        </p>
++                    </div>
++                </div>
++            </section>
++
+             {/* Features/Explanation Section */}
+-            <section className="py-20 bg-slate-900 border-t border-white/5 relative z-10">
++            <section id="features" className="py-20 bg-slate-900 border-t border-white/5 relative z-10">
+                 <div className="max-w-6xl mx-auto px-6">
++                    <div className="text-center mb-12">
++                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Features</h2>
++                        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
++                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer hendrerit elit at turpis
++                            tincidunt, vitae interdum erat porta.
++                        </p>
++                    </div>
+                     <div className="grid md:grid-cols-3 gap-8">
+ 
+                         {/* Feature 1 */}
+@@ -114,6 +191,57 @@ export default function Landing() {
+                     </div>
+                 </div>
+             </section>
++
++            {/* About Us Section */}
++            <section id="about-us" className="py-20 bg-slate-950 border-t border-white/5 relative z-10">
++                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
++                    <div>
++                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">About us</h2>
++                        <p className="text-slate-400 mb-4 text-sm md:text-base">
++                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris porta, massa at dapibus
++                            faucibus, tortor augue ullamcorper ante, at condimentum lacus sem vel sapien. Nunc
++                            scelerisque justo vitae lacus efficitur, non euismod nisl fermentum.
++                        </p>
++                        <p className="text-slate-400 text-sm md:text-base">
++                            Curabitur suscipit, enim id fermentum tempus, nibh justo volutpat mi, non tristique ex
++                            lectus ac nibh. Suspendisse potenti. Duis dignissim hendrerit consequat. Integer luctus
++                            tellus eu nisl rhoncus, vitae lacinia ipsum tempor.
++                        </p>
++                    </div>
++                    <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-8">
++                        <p className="text-slate-300 text-sm md:text-base leading-relaxed">
++                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas quis sem pretium,
++                            facilisis nulla vitae, condimentum dolor. Aenean placerat, urna id ullamcorper hendrerit,
++                            felis risus fermentum lorem, eget faucibus justo lectus id urna.
++                        </p>
++                    </div>
++                </div>
++            </section>
++
++            {/* Footer Section */}
++            <section id="footer" className="py-20 bg-slate-950 border-t border-white/5 relative z-10">
++                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
++                            <div>
++                                <p className="text-slate-400 mb-4 text-sm md:text-base">
++                                    &copy; {new Date().getFullYear()} EduManage. All rights reserved. <br />
++                                    Empowering schools, teachers, students, and parents through seamless digital management and analytics.
++                                </p>
++                                <p className="text-slate-400 text-sm md:text-base">
++                                    Built with ÔÖÑ for African education. Have questions? <a href="mailto:support@edumanage.com" className="underline hover:text-emerald-400">Contact us</a>.
++                                </p>
++                            </div>
++                            <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-8">
++                                <p className="text-slate-300 text-sm md:text-base leading-relaxed">
++                                    Follow us: &nbsp;
++                                    <a href="https://twitter.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">Twitter</a>
++                                    &nbsp;|&nbsp;
++                                    <a href="https://facebook.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">Facebook</a>
++                                    &nbsp;|&nbsp;
++                                    <a href="https://linkedin.com/" className="hover:text-emerald-400 underline" target="_blank" rel="noopener noreferrer">LinkedIn</a>
++                                </p>
++                        </div>
++                </div>
++            </section>
+         </div>
+     );
+ }
+diff --git a/src/pages/auth/SchoolRegistration.jsx b/src/pages/auth/SchoolRegistration.jsx
+index ba8ee9c..7135c20 100644
+--- a/src/pages/auth/SchoolRegistration.jsx
++++ b/src/pages/auth/SchoolRegistration.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { useNavigate } from 'react-router-dom';
+-import { Building2, MapPin, FileText, Globe, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
++import { Building2, MapPin, FileText, Globe, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, PersonStanding, User, MailIcon, Phone } from 'lucide-react';
+ 
+ export default function SchoolRegistration() {
+     const navigate = useNavigate();
+@@ -8,6 +8,7 @@ export default function SchoolRegistration() {
+     const [subdomain, setSubdomain] = useState('');
+     const [isChecking, setIsChecking] = useState(false);
+     const [isAvailable, setIsAvailable] = useState(null);
++    const [level, setLevel] = useState('primary');
+ 
+     const checkSubdomain = (val) => {
+         setSubdomain(val);
+@@ -57,27 +58,73 @@ export default function SchoolRegistration() {
+                             <div>
+                                 <label className="block text-sm font-medium text-slate-700">School Level</label>
+                                 <div className="mt-3 grid grid-cols-2 gap-3">
+-                                    <button className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-primary-500 bg-primary-50 rounded-xl text-primary-700 font-semibold transition-all">
++                                    <button
++                                        type="button"
++                                        aria-pressed={level === 'primary'}
++                                        onClick={() => setLevel('primary')}
++                                        className={`flex items-center justify-center gap-2 px-4 py-3 border-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/40
++                                            ${level === 'primary'
++                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
++                                                : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
++                                    >
+                                         Primary
+                                     </button>
+-                                    <button className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 hover:border-slate-300 rounded-xl text-slate-600 font-semibold transition-all">
++                                    <button
++                                        type="button"
++                                        aria-pressed={level === 'secondary'}
++                                        onClick={() => setLevel('secondary')}
++                                        className={`flex items-center justify-center gap-2 px-4 py-3 border-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/40
++                                            ${level === 'secondary'
++                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
++                                                : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
++                                    >
+                                         Secondary
+                                     </button>
+                                 </div>
+                             </div>
+ 
+                             <div>
+-                                <label className="block text-sm font-medium text-slate-700">School Name</label>
++                                <label className="block text-sm font-medium text-slate-700">Name</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < User className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. John Doe" />
++                                </div>
++                            </div>
++
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">Email</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < MailIcon className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="email" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. john.doe@example.com" />
++                                </div>
++                            </div>
++
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">Contact</label>
+                                 <div className="mt-1 relative">
+                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+-                                        <Building2 className="h-5 w-5 text-slate-400" />
++                                        <Phone className="h-5 w-5 text-slate-400" />
+                                     </div>
+-                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Sunrise High School" />
++                                    <input type="tel" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. +256 700 000000" />
+                                 </div>
+                             </div>
+ 
+                             <div>
+-                                <label className="block text-sm font-medium text-slate-700">Location / District</label>
++                                <label className="block text-sm font-medium text-slate-700">Position</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < PersonStanding className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Principal" />
++                                </div>
++                            </div>
++
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">Address</label>
+                                 <div className="mt-1 relative">
+                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                         <MapPin className="h-5 w-5 text-slate-400" />
+@@ -93,10 +140,50 @@ export default function SchoolRegistration() {
+                                 Continue <ArrowRight size={16} />
+                             </button>
+                         </div>
++                        
+                     )}
+ 
+                     {step === 2 && (
+                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">School Name</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < Building2 className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" 
++                                    placeholder={level === 'primary' ? 'e.g. John Doe Primary School' : 'e.g. John Doe Secondary School'} />
++                                </div>
++                            </div>
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">School Address</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < MapPin className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Kampala" />
++                                </div>
++                            </div>
++
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">Students range</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < PersonStanding className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="number" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. 100-200" />
++                                </div>
++                            </div>
++
++                            <div>
++                                <label className="block text-sm font-medium text-slate-700">School website (optional)</label>
++                                <div className="mt-1 relative">
++                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
++                                        < Globe className="h-5 w-5 text-slate-400" />
++                                    </div>
++                                    <input type="url" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. https://www.john-doe.com" />
++                                </div>
++                            </div>
+ 
+                             <div>
+                                 <label className="block text-sm font-medium text-slate-700">Choose your subdomain</label>
+@@ -186,7 +273,11 @@ export default function SchoolRegistration() {
+                         </div>
+                     )}
+                 </div>
++                <div>
++                <p className="text-sm text-slate-500">Already have an account? <a href="/TenantLogin" className="text-primary-600 hover:text-primary-500 transition-colors">Login</a></p>
++            </div>
+             </div>
++            
+         </div>
+     );
+ }

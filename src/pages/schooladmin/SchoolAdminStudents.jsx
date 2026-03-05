@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, TrendingUp, TrendingDown, Upload, Filter, Zap, CheckSquare } from 'lucide-react'
+import { Search, Plus, TrendingUp, TrendingDown, Upload, Filter, Zap, CheckSquare, MoveRight } from 'lucide-react'
 
 const students = [
     { id: 'STU-001', name: 'Ivan Namukasa', class: 'P7', age: 13, parent: 'Mary Namukasa', phone: '+256 772 111222', performance: 82, attendance: 94, fees: 'paid' },
@@ -18,8 +18,11 @@ export default function SchoolAdminStudents() {
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
+    const [relocateTarget, setRelocateTarget] = useState('P1')
 
-    const classes = ['All', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7']
+    const classes = ['All', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6A', 'P6B', 'P7']
+    const relocateClasses = classes.filter(c => c !== 'All')
+
     const filtered = students.filter(s => (classFilter === 'All' || s.class === classFilter) && (s.name.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search)))
 
     const openAutoPromote = () => setModal('autopromote')
@@ -44,11 +47,15 @@ export default function SchoolAdminStudents() {
                 </div>
 
                 <div className="card p-0">
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Student', 'ID', 'Class', 'Parent Contact', 'Performance', 'Fees', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {filtered.map(s => (
-                                <tr key={s.id} className="hover:bg-blue-50/30">
+                                <tr key={s.id} className="hover:bg-blue-50/30 cursor-pointer" onClick={(e) => {
+                                    // Prevent row click if clicking a button
+                                    if (e.target.closest('button')) return;
+                                    setSelected(s); setModal('view');
+                                }}>
                                     <td className="table-cell">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold">{s.name[0]}</div>
@@ -67,15 +74,15 @@ export default function SchoolAdminStudents() {
                                     </td>
                                     <td className="table-cell"><Badge variant={s.fees === 'paid' ? 'success' : s.fees === 'partial' ? 'warning' : 'danger'}>{s.fees}</Badge></td>
                                     <td className="table-cell">
-                                        <div className="flex gap-1">
-                                            <button onClick={() => { setSelected(s); setModal('view') }} className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600"><Eye size={14} /></button>
-                                            <button onClick={() => { setSelected(s); setModal('promote') }} className="btn-primary text-xs py-1 px-2">Promote</button>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => { setSelected(s); setModal('relocate') }} className="btn-secondary py-1 px-2 text-xs flex items-center gap-1"><MoveRight size={12} /> Relocate</button>
+                                            <button onClick={() => { setSelected(s); setModal('promote') }} className="btn-primary text-xs py-1 px-2 text-white bg-blue-600 hover:bg-blue-700">Promote</button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></div>
                     <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
                         <p className="text-xs text-gray-500">{filtered.length} students</p>
                         <div className="flex gap-2"><button className="btn-secondary text-xs py-1 px-3">Previous</button><button className="btn-primary text-xs py-1 px-3">Next</button></div>
@@ -83,12 +90,32 @@ export default function SchoolAdminStudents() {
                 </div>
             </div>
 
+            <Modal isOpen={modal === 'relocate'} onClose={() => setModal(null)} title={`Relocate Student: ${selected?.name}`}
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}>Confirm Relocation</button></>}>
+                {selected && (
+                    <div className="space-y-4">
+                        <p className="text-sm text-gray-600">Move <strong>{selected.name}</strong> to a different class stream or entirely new level.</p>
+                        <div className="p-3 bg-blue-50 rounded-xl mb-4"><p className="text-sm font-semibold text-blue-900">Current Class: {selected.class}</p></div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Target Class</label>
+                            <select className="input-field w-full" value={relocateTarget} onChange={(e) => setRelocateTarget(e.target.value)}>
+                                {relocateClasses.filter(c => c !== selected.class).map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Reason for Relocation</label>
+                            <input className="input-field w-full" placeholder="e.g. Stream balancing, requested by parent" />
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
             <Modal isOpen={modal === 'promote'} onClose={() => setModal(null)} title={`Promote / Repeat — ${selected?.name}`}
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-success" onClick={() => setModal(null)}>Promote to Next Class</button><button className="btn-danger" onClick={() => setModal(null)}>Mark as Repeat</button></>}>
                 {selected && (
                     <div className="space-y-4">
                         <div className="p-3 bg-blue-50 rounded-xl"><p className="text-sm font-semibold">Current Class: <span className="text-primary-600">{selected.class}</span> → Next: <span className="text-emerald-600">{selected.class === 'P7' ? 'Graduated' : selected.class.replace(/\d/, d => +d + 1)}</span></p></div>
-                        <div><label className="block text-sm font-medium text-gray-700 mb-1">Reason if repeating</label><textarea className="input-field resize-none" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
+                        <div><label className="block text-sm font-medium text-gray-700 mb-1">Reason if repeating</label><textarea className="input-field resize-none w-full" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
                     </div>
                 )}
             </Modal>
@@ -106,11 +133,11 @@ export default function SchoolAdminStudents() {
                     <div>
                         <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
                             <h3 className="font-semibold text-gray-900">Promotion Preview</h3>
-                            <select className="select-field w-auto py-1.5 text-xs"><option>All Classes</option><option>P6 only</option></select>
+                            <select className="input-field py-1 text-sm"><option>All Classes</option><option>P6 only</option></select>
                         </div>
 
                         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                            <table className="w-full text-sm">
+                            <div className="overflow-x-auto"><table className="w-full text-sm">
                                 <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
                                     <tr><th className="px-4 py-3 text-left">Student</th><th className="px-4 py-3 text-center">Score</th><th className="px-4 py-3 text-left">Action</th></tr>
                                 </thead>
@@ -129,7 +156,7 @@ export default function SchoolAdminStudents() {
                                         )
                                     })}
                                 </tbody>
-                            </table>
+                            </table></div>
                         </div>
                     </div>
                 </div>

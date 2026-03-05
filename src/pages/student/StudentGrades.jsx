@@ -47,7 +47,7 @@ export default function StudentGrades() {
 
                 <div className="card p-0">
                     <div className="px-6 py-4 border-b border-gray-100"><h2 className="font-semibold text-gray-800">Detailed Breakdown</h2></div>
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Subject', 'Score', 'Grade', 'Status', 'vs Last Term'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {Object.entries(current).map(([subject, score]) => {
@@ -69,7 +69,7 @@ export default function StudentGrades() {
                                 )
                             })}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
             </div>
         </DashboardLayout>

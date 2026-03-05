@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
@@ -26,6 +27,7 @@ const recentPayments = [
 ]
 
 export default function SchoolAdminHome() {
+    const navigate = useNavigate()
     const [modal, setModal] = useState(null)
     return (
         <DashboardLayout role="schooladmin-primary">
@@ -56,7 +58,7 @@ export default function SchoolAdminHome() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="card">
                         <h2 className="section-title">Recent Payments</h2>
-                        <table className="w-full">
+                        <div className="overflow-x-auto"><table className="w-full">
                             <thead><tr>{['Parent', 'Student', 'Amount', 'Status'].map(h => <th key={h} className="table-header text-xs">{h}</th>)}</tr></thead>
                             <tbody>
                                 {recentPayments.map((p, i) => (
@@ -68,18 +70,18 @@ export default function SchoolAdminHome() {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
                     <div className="card">
                         <h2 className="section-title">Quick Actions</h2>
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { label: 'Send Reminder', icon: Bell, color: 'bg-amber-50 text-amber-700 border-amber-200' },
-                                { label: 'Generate Report', icon: FileText, color: 'bg-blue-50 text-blue-700 border-blue-200' },
-                                { label: 'View Overdue', icon: AlertCircle, color: 'bg-red-50 text-red-700 border-red-200' },
-                                { label: 'Add Teacher', icon: Plus, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+                                { label: 'Fee Reminders', icon: Bell, color: 'bg-amber-50 text-amber-700 border-amber-200', path: '/schooladmin/primary/fees' },
+                                { label: 'View Reports', icon: FileText, color: 'bg-blue-50 text-blue-700 border-blue-200', path: '/schooladmin/primary/reports' },
+                                { label: 'Attendance', icon: AlertCircle, color: 'bg-red-50 text-red-700 border-red-200', path: '/schooladmin/primary/attendance' },
+                                { label: 'Add Teacher', icon: Plus, color: 'bg-emerald-50 text-emerald-700 border-emerald-200', path: '/schooladmin/primary/teachers' },
                             ].map(a => (
-                                <button key={a.label} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 font-semibold text-sm transition-all hover:shadow-md ${a.color}`}>
+                                <button key={a.label} onClick={() => navigate(a.path)} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 font-semibold text-sm transition-all hover:shadow-md ${a.color}`}>
                                     <a.icon size={22} />{a.label}
                                 </button>
                             ))}

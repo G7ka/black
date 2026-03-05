@@ -29,23 +29,25 @@ export default function TeacherProfile() {
                         </div>
                     </div>
 
-                    {/* Personal Info */}
+                    {/* Personal Info (Read Only) */}
                     <div className="card lg:col-span-2 space-y-5">
-                        <h2 className="section-title">Personal Information</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className="section-title mb-0">Personal Information</h2>
+                            <p className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-md border border-orange-100">Managed by School Admin</p>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div><label className="block text-sm font-medium text-gray-700 mb-1">First Name</label><input className="input-field" defaultValue="Kenneth" /></div>
-                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label><input className="input-field" defaultValue="Okello" /></div>
-                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input className="input-field" type="email" defaultValue="k.okello@kps.ug" /></div>
-                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone</label><input className="input-field" defaultValue="+256 779 123456" /></div>
+                            <div><label className="block text-sm font-medium text-gray-700 mb-1">First Name</label><input disabled className="input-field bg-slate-100 cursor-not-allowed text-slate-500" defaultValue="Kenneth" /></div>
+                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label><input disabled className="input-field bg-slate-100 cursor-not-allowed text-slate-500" defaultValue="Okello" /></div>
+                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input disabled className="input-field bg-slate-100 cursor-not-allowed text-slate-500" type="email" defaultValue="k.okello@kps.ug" /></div>
+                            <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone</label><input disabled className="input-field bg-slate-100 cursor-not-allowed text-slate-500" defaultValue="+256 779 123456" /></div>
                             <div><label className="block text-sm font-medium text-gray-700 mb-1">Main Subject</label>
-                                <select className="select-field"><option>Mathematics</option><option>English</option><option>Science</option></select>
+                                <select disabled className="select-field bg-slate-100 cursor-not-allowed text-slate-500"><option>Mathematics</option><option>English</option><option>Science</option></select>
                             </div>
-                            <div><label className="block text-sm font-medium text-gray-700 mb-1">National ID</label><input className="input-field" defaultValue="CM8765432" /></div>
+                            <div><label className="block text-sm font-medium text-gray-700 mb-1">National ID</label><input disabled className="input-field bg-slate-100 cursor-not-allowed text-slate-500" defaultValue="CM8765432" /></div>
                             <div className="col-span-2"><label className="block text-sm font-medium text-gray-700 mb-1">Bio / Teaching Philosophy</label>
-                                <textarea className="input-field resize-none" rows={3} defaultValue="Passionate Mathematics educator with 8 years experience in primary education. Focused on making math fun and accessible for Ugandan learners." />
+                                <textarea disabled className="input-field max-h-40 bg-slate-100 cursor-not-allowed text-slate-500 resize-none" rows={3} defaultValue="Passionate Mathematics educator with 8 years experience in primary education. Focused on making math fun and accessible for Ugandan learners." />
                             </div>
                         </div>
-                        <button onClick={() => setSaved(true)} className="btn-primary"><Save size={14} /> {saved ? 'Changes Saved ✓' : 'Save Changes'}</button>
                     </div>
                 </div>
 

@@ -49,7 +49,7 @@ export default function TeacherStudents() {
                 </div>
 
                 <div className="card p-0">
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Student', 'ID', 'Class', 'Parent Contact', 'Performance', 'Attendance', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {filtered.map(s => (
@@ -86,7 +86,7 @@ export default function TeacherStudents() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></div>
                     <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
                         <p className="text-xs text-gray-500">Showing {filtered.length} of {students.length} students</p>
                     </div>

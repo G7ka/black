@@ -46,7 +46,7 @@ export default function SAMarketing() {
                 {/* Leads Table */}
                 <div className="card p-0">
                     <div className="px-6 py-4 border-b border-gray-100"><h2 className="font-semibold text-gray-800">Leads Pipeline</h2></div>
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['School', 'Contact', 'Email', 'Source', 'Status', 'Date', 'Action'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {leads.map(l => (
@@ -61,7 +61,7 @@ export default function SAMarketing() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
 
                 {/* Campaigns */}

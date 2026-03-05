@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+// Force Vite rebuild for dark mode class strategy
 export default {
+    darkMode: 'class',
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     theme: {
         extend: {

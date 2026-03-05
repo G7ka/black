@@ -88,7 +88,7 @@ export default function SASchools() {
                 {/* Table */}
                 <div className="card p-0 overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <div className="overflow-x-auto"><table className="w-full">
                             <thead>
                                 <tr>
                                     {['School Name', 'Level', 'Location', 'Students', 'Teachers', 'Subdomain', 'Plan', 'Status', 'Payment', 'Actions'].map(h => (
@@ -147,7 +147,7 @@ export default function SASchools() {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table></div>
                         {filtered.length === 0 && (
                             <div className="py-12 text-center text-gray-400">No schools found matching the criteria.</div>
                         )}

@@ -47,7 +47,7 @@ export default function ParentFees() {
                 {/* Invoice history */}
                 <div className="card p-0">
                     <div className="px-6 py-4 border-b border-gray-100"><h2 className="font-semibold text-gray-800">Payment History</h2></div>
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Invoice', 'Term', 'Total', 'Paid', 'Balance', 'Due Date', 'Status', ''].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {invoices.map(inv => (
@@ -63,7 +63,7 @@ export default function ParentFees() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
             </div>
 

@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
-import Modal from '../../components/ui/Modal'
 import { LineChart } from '../../components/charts/Charts'
-import { GraduationCap, CalendarDays, ClipboardList, TrendingUp, Bell, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { GraduationCap, CalendarDays, ClipboardList, TrendingUp, Bell, CheckCircle, Clock, AlertCircle, BookOpen, MapPin } from 'lucide-react'
 
 const performanceData = {
     labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
@@ -14,11 +13,17 @@ const performanceData = {
     ],
 }
 
-const upcoming = [
-    { task: 'Mark P6A Term Test papers', due: 'Today', type: 'grading', urgent: true },
-    { task: 'P7B Mathematics Assignment', due: 'Tomorrow', type: 'assignment', urgent: false },
-    { task: 'Submit P6 Progress Reports', due: 'Feb 25', type: 'report', urgent: false },
-    { task: 'Parent-Teacher Meeting', due: 'Feb 28', type: 'meeting', urgent: false },
+// Upcoming lessons auto-populated from timetable schedule
+const todaysLessons = [
+    { time: '8:00 AM - 9:20 AM', subject: 'Mathematics', class: 'P.6A', room: 'Room 12', status: 'completed' },
+    { time: '9:20 AM - 10:40 AM', subject: 'Mathematics', class: 'P.7B', room: 'Room 8', status: 'completed' },
+    { time: '11:00 AM - 12:20 PM', subject: 'Mathematics', class: 'P.6A', room: 'Room 12', status: 'current' },
+    { time: '2:40 PM - 4:00 PM', subject: 'Mathematics', class: 'P.7B', room: 'Room 8', status: 'upcoming' },
+]
+
+const tomorrowsLessons = [
+    { time: '8:00 AM - 9:20 AM', subject: 'Mathematics', class: 'P.7B', room: 'Room 8', status: 'upcoming' },
+    { time: '11:00 AM - 12:20 PM', subject: 'Mathematics', class: 'P.6A', room: 'Room 12', status: 'upcoming' },
 ]
 
 const recentActivity = [
@@ -27,6 +32,12 @@ const recentActivity = [
     { icon: AlertCircle, color: 'text-amber-500', text: 'Grace M. flagged for 3 consecutive absences', time: 'Yesterday' },
     { icon: CheckCircle, color: 'text-emerald-500', text: 'P7B grades submitted for Term 1 Science', time: 'Yesterday' },
 ]
+
+const statusConfig = {
+    completed: { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'Done' },
+    current: { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700', dot: 'bg-blue-500 animate-pulse', label: 'Now' },
+    upcoming: { bg: 'bg-gray-50 border-gray-200', text: 'text-gray-700', dot: 'bg-gray-400', label: 'Next' },
+}
 
 export default function TeacherHome() {
     return (
@@ -41,7 +52,7 @@ export default function TeacherHome() {
                     <StatCard title="My Classes" value="2" subtitle="P6A & P7B" icon={GraduationCap} color="blue" />
                     <StatCard title="Total Students" value="78" subtitle="Across both classes" icon={GraduationCap} color="green" trend="up" trendValue="38 P6A · 40 P7B" />
                     <StatCard title="Attendance Today" value="93.5%" subtitle="73 of 78 present" icon={CalendarDays} color="purple" trend="up" trendValue="+1.5% vs yesterday" />
-                    <StatCard title="Assignments Due" value="3" subtitle="2 ungraded" icon={ClipboardList} color="amber" />
+                    <StatCard title="Lessons Today" value={todaysLessons.length} subtitle={`${todaysLessons.filter(l => l.status === 'completed').length} completed`} icon={BookOpen} color="amber" />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -49,22 +60,46 @@ export default function TeacherHome() {
                         <h2 className="section-title">Student Performance Trends</h2>
                         <LineChart data={performanceData} />
                     </div>
+
+                    {/* Today's Schedule — auto from timetable */}
                     <div className="card">
-                        <h2 className="section-title">Upcoming Tasks</h2>
-                        <div className="space-y-3">
-                            {upcoming.map((u, i) => (
-                                <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${u.urgent ? 'bg-red-50 border border-red-200' : 'bg-gray-50'}`}>
-                                    <div className={`mt-0.5 flex-shrink-0 w-2 h-2 rounded-full mt-1.5 ${u.urgent ? 'bg-red-500' : 'bg-blue-400'}`} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-800">{u.task}</p>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <Clock size={11} className="text-gray-400" />
-                                            <span className={`text-xs font-medium ${u.urgent ? 'text-red-600' : 'text-gray-400'}`}>{u.due}</span>
+                        <h2 className="section-title flex items-center gap-2"><CalendarDays size={16} /> Today's Lessons</h2>
+                        <div className="space-y-2">
+                            {todaysLessons.map((l, i) => {
+                                const cfg = statusConfig[l.status]
+                                return (
+                                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border ${cfg.bg} transition-all`}>
+                                        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <p className={`text-sm font-bold ${cfg.text}`}>{l.subject}</p>
+                                                <Badge variant={l.status === 'current' ? 'info' : l.status === 'completed' ? 'success' : 'gray'}>{l.class}</Badge>
+                                            </div>
+                                            <div className="flex items-center gap-3 mt-1">
+                                                <span className="text-xs text-gray-500 flex items-center gap-1"><Clock size={10} /> {l.time}</span>
+                                                <span className="text-xs text-gray-500 flex items-center gap-1"><MapPin size={10} /> {l.room}</span>
+                                            </div>
                                         </div>
+                                        <span className={`text-xs font-bold ${cfg.text}`}>{cfg.label}</span>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
+
+                        {tomorrowsLessons.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Tomorrow</p>
+                                {tomorrowsLessons.map((l, i) => (
+                                    <div key={i} className="flex items-center gap-2 py-2 text-xs text-gray-500">
+                                        <Clock size={11} />
+                                        <span className="font-medium">{l.time}</span>
+                                        <span>—</span>
+                                        <span className="font-bold text-gray-700">{l.subject}</span>
+                                        <Badge variant="gray">{l.class}</Badge>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 

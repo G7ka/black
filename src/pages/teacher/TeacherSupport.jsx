@@ -20,9 +20,18 @@ export default function TeacherSupport() {
     return (
         <DashboardLayout role="teacher">
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div><h1 className="page-title">Support</h1><p className="page-subtitle">Submit support tickets and stay updated with announcements</p></div>
-                    <button className="btn-primary" onClick={() => setModal('ticket')}><Plus size={15} /> New Ticket</button>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div><h1 className="page-title">Support & Notices</h1><p className="page-subtitle">View school announcements and raise concerns with the administration office.</p></div>
+                    <button className="btn-primary" onClick={() => setModal('ticket')}><Plus size={15} /> New Concern</button>
+                </div>
+
+                {/* Info notice */}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                    <Megaphone size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm font-semibold text-amber-800">How Support Works</p>
+                        <p className="text-xs text-amber-700 mt-1">For any system-related issues or feature requests, please visit the <strong>school administration office</strong>. Your school admin is the direct liaison with the EduManage support team and will relay your concerns.</p>
+                    </div>
                 </div>
 
                 {/* Announcements */}
@@ -51,7 +60,7 @@ export default function TeacherSupport() {
                 <div>
                     <h2 className="section-title">My Support Tickets</h2>
                     <div className="card p-0">
-                        <table className="w-full">
+                        <div className="overflow-x-auto"><table className="w-full">
                             <thead><tr>{['Ticket #', 'Subject', 'Priority', 'Status', 'Date'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                             <tbody>
                                 {myTickets.map(t => (
@@ -64,7 +73,7 @@ export default function TeacherSupport() {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table></div>
                         {myTickets.length === 0 && <div className="p-8 text-center text-gray-400">No tickets submitted yet.</div>}
                     </div>
                 </div>

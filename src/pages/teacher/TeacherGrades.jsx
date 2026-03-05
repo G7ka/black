@@ -62,7 +62,7 @@ export default function TeacherGrades() {
                         </div>
 
                         <div className="card p-0 overflow-x-auto">
-                            <table className="w-full min-w-max">
+                            <div className="overflow-x-auto"><table className="w-full min-w-max">
                                 <thead>
                                     <tr>
                                         <th className="table-header sticky left-0 bg-gray-50">Student</th>
@@ -91,7 +91,7 @@ export default function TeacherGrades() {
                                         )
                                     })}
                                 </tbody>
-                            </table>
+                            </table></div>
                         </div>
 
                         <div className="flex gap-3">
@@ -104,7 +104,7 @@ export default function TeacherGrades() {
                 {tab === 'history' && (
                     <div className="card">
                         <h2 className="section-title">Grade History</h2>
-                        <table className="w-full">
+                        <div className="overflow-x-auto"><table className="w-full">
                             <thead><tr>{['Term', 'Class', 'Subject', 'Class Average', 'Highest', 'Lowest'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                             <tbody>
                                 {history.map((h, i) => (
@@ -118,7 +118,7 @@ export default function TeacherGrades() {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
                 )}
             </div>

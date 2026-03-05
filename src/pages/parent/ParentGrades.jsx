@@ -39,7 +39,7 @@ export default function ParentGrades() {
 
                 <div className="card p-0">
                     <div className="px-6 py-4 border-b border-gray-100"><h2 className="font-semibold text-gray-800">Subject Breakdown — {term}</h2></div>
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Subject', 'Teacher', 'Score', 'Grade', 'vs Previous Term', 'Remark'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {Object.entries(current).map(([subject, score]) => {
@@ -58,7 +58,7 @@ export default function ParentGrades() {
                                 )
                             })}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
 
                 <div className="card bg-blue-50 border border-blue-200">

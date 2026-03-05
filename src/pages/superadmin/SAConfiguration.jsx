@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
-import { Save, Key, ToggleLeft, ToggleRight, Shield, Image, Mail } from 'lucide-react'
+import { Save, Key, ToggleLeft, ToggleRight, Shield, Image, Mail, Moon, Sun } from 'lucide-react'
 
 const features = [
     { key: 'sms', label: 'SMS Notifications', desc: 'Send SMS alerts to parents and teachers', enabled: true },
@@ -18,16 +18,45 @@ export default function SAConfiguration() {
     const [toggles, setToggles] = useState(() => Object.fromEntries(features.map(f => [f.key, f.enabled])))
     const toggle = k => setToggles(p => ({ ...p, [k]: !p[k] }))
 
+    const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true')
+
+    React.useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        localStorage.setItem('darkMode', darkMode)
+    }, [darkMode])
+
     return (
         <DashboardLayout role="superadmin">
             <div className="space-y-6">
                 <div><h1 className="page-title">Configuration</h1><p className="page-subtitle">System settings, integrations, and security policies</p></div>
 
-                <div className="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-2xl">
-                    {['branding', 'features', 'integrations', 'security'].map(t => (
-                        <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t}</button>
+                <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1 max-w-2xl">
+                    {['appearance', 'branding', 'features', 'integrations', 'security'].map(t => (
+                        <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-white dark:bg-slate-700 text-primary-700 dark:text-primary-300 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'}`}>{t}</button>
                     ))}
                 </div>
+
+                {tab === 'appearance' && (
+                    <div className="card space-y-5 max-w-2xl">
+                        <h2 className="section-title">Appearance Settings</h2>
+                        <div className="flex items-center justify-between py-3 border-b border-gray-50 dark:border-slate-700">
+                            <div className="flex items-center gap-3">
+                                {darkMode ? <Moon size={18} className="text-indigo-400" /> : <Sun size={18} className="text-amber-500" />}
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Dark Mode</p>
+                                    <p className="text-xs text-gray-500 dark:text-slate-400">Switch between light and dark interface themes across the platform.</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setDarkMode(!darkMode)} className={`relative w-11 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
+                                <div className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform" style={{ transform: darkMode ? 'translateX(22px)' : 'translateX(2px)' }} />
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {tab === 'branding' && (
                     <div className="card space-y-5 max-w-2xl">

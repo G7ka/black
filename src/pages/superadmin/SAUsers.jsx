@@ -32,7 +32,7 @@ export default function SAUsers() {
 
                 <div className="card">
                     <h2 className="section-title">Super Admin Team</h2>
-                    <table className="w-full">
+                    <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Name', 'Email', 'Role', 'Last Login', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {admins.map(a => (
@@ -56,7 +56,7 @@ export default function SAUsers() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table></div>
                 </div>
 
                 <div className="card"><h2 className="section-title">Platform User Growth</h2><LineChart data={userGrowthData} height={260} /></div>

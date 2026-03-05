@@ -25,16 +25,20 @@ This is a frontend UI prototype for a comprehensive School Management System des
 
 ## How to Run the App Locally
 
-1. Ensure you have Node.js installed on your machine.
-2. Clone or download this repository.
-3. Open a terminal and navigate strictly to the project root folder.
-4. If you have not yet installed modules, run:
+If you turn off the PC or close the terminal, you can restart the application by following these steps:
+
+1. Open a terminal and navigate strictly to the project root folder (`e:\wamp64\www\school_management`).
+2. Start the development server using this command:
    ```bash
-   npm install
+   npm run dev -- --host
    ```
-5. Start the development server using:
-   ```bash
-   npm run dev
-   ```
-6. Open your localized server (typically `http://localhost:5173`) in any modern web browser.
-7. You will be greeted by the Role Switcher home screen, where you can log into any of the 5 included personas.
+3. Once the server says it is ready, you can access the different parts of the application using these specific links:
+
+### Quick Access Links
+
+*   **Main Landing Page (Register your school)** 
+    👉 `http://lvh.me:5173`
+*   **Standalone Platform Admin Login** 
+    👉 `http://lvh.me:5173/admin`
+*   **School Portal (Specific Tenant Login)** 
+    👉 `http://kampala.lvh.me:5173` *(Replace "kampala" with any school name)*

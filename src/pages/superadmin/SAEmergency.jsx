@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Modal from '../../components/ui/Modal'
-import { AlertTriangle, RefreshCw, LogOut, Megaphone, PowerOff, ShieldAlert } from 'lucide-react'
+import { AlertTriangle, RefreshCw, LogOut, Megaphone, PowerOff, ShieldAlert, CheckCircle2 } from 'lucide-react'
 
 const actions = [
     { id: 'shutdown', label: 'Platform Shutdown', desc: 'Immediately shut down all services. Use only in extreme emergencies.', icon: PowerOff, color: 'bg-red-600 hover:bg-red-700', confirm: 'SHUTDOWN' },
@@ -14,16 +14,59 @@ export default function SAEmergency() {
     const [modal, setModal] = useState(null)
     const [confirmText, setConfirmText] = useState('')
     const [broadcastMsg, setBroadcastMsg] = useState('')
+    const [broadcastTitle, setBroadcastTitle] = useState('')
+    const [successMsg, setSuccessMsg] = useState('')
+
+    const [auditLogs, setAuditLogs] = useState([
+        { action: 'Force Logout All', by: 'James Mugisha', time: '2026-01-15 03:22:01', reason: 'Suspected breach' },
+        { action: 'Emergency Broadcast', by: 'Sarah Nakato', time: '2025-12-24 22:10:00', reason: 'System downtime notice' },
+    ])
 
     const currentAction = actions.find(a => a.id === modal)
 
-    const close = () => { setModal(null); setConfirmText(''); setBroadcastMsg('') }
+    const close = () => {
+        setModal(null)
+        setConfirmText('')
+        setBroadcastMsg('')
+        setBroadcastTitle('')
+    }
+
+    const handleAction = () => {
+        if (!currentAction) return;
+
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
+        const newLog = {
+            action: currentAction.label,
+            by: 'Admin Platform (You)',
+            time: now,
+            reason: modal === 'broadcast' ? broadcastTitle || 'Emergency Notice' : 'Emergency protocol invoked'
+        }
+
+        setAuditLogs([newLog, ...auditLogs])
+        setSuccessMsg(`Successfully executed: ${currentAction.label}`)
+        setTimeout(() => setSuccessMsg(''), 5000)
+        close()
+    }
+
     const canConfirm = currentAction?.confirm ? confirmText === currentAction.confirm : true
 
     return (
         <DashboardLayout role="superadmin">
-            <div className="space-y-6">
-                <div><h1 className="page-title flex items-center gap-2"><ShieldAlert className="text-red-500" />Emergency Controls</h1><p className="page-subtitle text-red-500 font-medium">⚠ These actions are critical and may affect all schools and users</p></div>
+            <div className="space-y-6 relative">
+
+                {successMsg && (
+                    <div className="absolute top-0 right-0 z-50 animate-fade-in flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-lg">
+                        <CheckCircle2 size={18} className="text-emerald-600" />
+                        <span className="font-semibold text-sm">{successMsg}</span>
+                    </div>
+                )}
+
+                <div>
+                    <h1 className="page-title flex items-center gap-2">
+                        <ShieldAlert className="text-red-500" /> Emergency Controls
+                    </h1>
+                    <p className="page-subtitle text-red-500 font-medium">⚠ These actions are critical and may affect all schools and users</p>
+                </div>
 
                 <div className="p-4 bg-red-50 border border-red-300 rounded-2xl flex items-start gap-3">
                     <AlertTriangle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
@@ -54,12 +97,13 @@ export default function SAEmergency() {
                 <div className="card">
                     <h2 className="section-title">Emergency Action Audit Log</h2>
                     <div className="space-y-3">
-                        {[
-                            { action: 'Force Logout All', by: 'James Mugisha', time: '2026-01-15 03:22:01', reason: 'Suspected breach' },
-                            { action: 'Emergency Broadcast', by: 'Sarah Nakato', time: '2025-12-24 22:10:00', reason: 'System downtime notice' },
-                        ].map((log, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                <div><p className="text-sm font-semibold text-gray-900">{log.action}</p><p className="text-xs text-gray-500">By {log.by} · {log.time}</p></div>
+                        {auditLogs.map((log, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 relative overflow-hidden">
+                                {i === 0 && successMsg && <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500" />}
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-900">{log.action}</p>
+                                    <p className="text-xs text-gray-500">By {log.by} · {log.time}</p>
+                                </div>
                                 <div className="text-right"><p className="text-xs text-gray-500">{log.reason}</p></div>
                             </div>
                         ))}
@@ -72,7 +116,7 @@ export default function SAEmergency() {
                 footer={
                     <>
                         <button className="btn-secondary" onClick={close}>Cancel</button>
-                        <button disabled={!canConfirm} className={`btn-danger disabled:opacity-40 disabled:cursor-not-allowed`} onClick={close}>
+                        <button disabled={!canConfirm} className={`btn-danger disabled:opacity-40 disabled:cursor-not-allowed`} onClick={handleAction}>
                             <ShieldAlert size={14} /> Confirm {currentAction?.label}
                         </button>
                     </>
@@ -89,11 +133,11 @@ export default function SAEmergency() {
 
             {/* Broadcast Modal */}
             <Modal isOpen={modal === 'broadcast'} onClose={close} title="Emergency Broadcast"
-                footer={<><button className="btn-secondary" onClick={close}>Cancel</button><button className="btn-danger" onClick={close}><Megaphone size={14} /> Send Emergency Broadcast</button></>}
+                footer={<><button className="btn-secondary" onClick={close}>Cancel</button><button disabled={!broadcastMsg.trim()} className="btn-danger disabled:opacity-50" onClick={handleAction}><Megaphone size={14} /> Send Emergency Broadcast</button></>}
             >
                 <div className="space-y-4">
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl"><p className="text-sm text-amber-700">This will send an immediate message to ALL users on all channels.</p></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Title</label><input className="input-field" placeholder="Emergency Notice" /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Title</label><input value={broadcastTitle} onChange={e => setBroadcastTitle(e.target.value)} className="input-field" placeholder="Emergency Notice" /></div>
                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Message *</label><textarea value={broadcastMsg} onChange={e => setBroadcastMsg(e.target.value)} className="input-field resize-none" rows={4} placeholder="Describe the emergency situation..." /></div>
                 </div>
             </Modal>

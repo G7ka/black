@@ -1,90 +1,86 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
-import Modal from '../../components/ui/Modal'
-import { Send, Clock, CheckCircle, MessageCircle } from 'lucide-react'
+import { Phone, Mail, BookOpen, User } from 'lucide-react'
 
-const conversations = [
-    { id: 1, name: 'Mr. Kenneth Okello', role: 'Mathematics Teacher', avatar: 'K', color: 'from-emerald-400 to-teal-600', lastMsg: 'Well done on your Fractions test! Keep up the excellent work.', time: '10:30 AM', unread: 1 },
-    { id: 2, name: 'Ms. Agnes Nassali', role: 'English Teacher', avatar: 'A', color: 'from-violet-400 to-purple-600', lastMsg: 'Please make sure to submit your book review by Friday.', time: 'Yesterday', unread: 0 },
-    { id: 3, name: 'Mrs. Namukasa (Parent)', role: 'Parent', avatar: 'M', color: 'from-orange-400 to-amber-600', lastMsg: 'How was school today? Did you eat lunch?', time: 'Yesterday', unread: 2 },
+const teachers = [
+    { id: 1, name: 'Mr. Kenneth Okello', role: 'Mathematics Teacher & Class Teacher (P6A)', initials: 'KO', phone: '+256 772 123 456', email: 'kokello@kampalahigh.ug', color: 'from-emerald-400 to-teal-600' },
+    { id: 2, name: 'Ms. Agnes Nassali', role: 'English Teacher', initials: 'AN', phone: '+256 752 987 654', email: 'anassali@kampalahigh.ug', color: 'from-violet-400 to-purple-600' },
+    { id: 3, name: 'Mr. David Byaruhanga', role: 'Science Teacher', initials: 'DB', phone: '+256 701 234 567', email: 'dbyaruhanga@kampalahigh.ug', color: 'from-blue-400 to-blue-600' },
+    { id: 4, name: 'Ms. Sarah Acen', role: 'Social Studies Teacher', initials: 'SA', phone: '+256 773 345 678', email: 'sacen@kampalahigh.ug', color: 'from-orange-400 to-amber-600' },
 ]
 
-const messagesMap = {
-    1: [
-        { from: 'teacher', text: 'Hello Ivan, just checking in on how you\'re finding the algebra chapter.', time: '9:00 AM', date: 'Feb 22' },
-        { from: 'me', text: 'Good morning sir! It\'s a bit challenging but I\'m working through the exercises.', time: '9:15 AM', date: 'Feb 22' },
-        { from: 'teacher', text: 'Well done on your Fractions test! Keep up the excellent work.', time: '10:30 AM', date: 'Feb 22' },
-    ],
-    2: [
-        { from: 'teacher', text: 'Please make sure to submit your book review by Friday.', time: '3:00 PM', date: 'Feb 21' },
-        { from: 'me', text: 'Yes Ms. Nassali, I will submit it by Thursday.', time: '4:00 PM', date: 'Feb 21' },
-    ],
-    3: [
-        { from: 'teacher', text: 'How was school today? Did you eat lunch?', time: '4:30 PM', date: 'Feb 21' },
-        { from: 'teacher', text: 'Please let me know when you get home safely.', time: '5:00 PM', date: 'Feb 21' },
-    ],
-}
-
 export default function StudentMessages() {
-    const [active, setActive] = useState(conversations[0])
-    const [msg, setMsg] = useState('')
-    const [localMessages, setLocalMessages] = useState(messagesMap)
+    const [searchTerm, setSearchTerm] = useState('')
 
-    const send = () => {
-        if (!msg.trim()) return
-        const newMsg = { from: 'me', text: msg, time: 'Now', date: 'Feb 22' }
-        setLocalMessages(prev => ({ ...prev, [active.id]: [...(prev[active.id] || []), newMsg] }))
-        setMsg('')
-    }
+    const filteredTeachers = teachers.filter(t =>
+        t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.role.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     return (
         <DashboardLayout role="student">
-            <div className="space-y-4">
-                <div><h1 className="page-title">Messages</h1><p className="page-subtitle">Messages from teachers and family</p></div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[70vh]">
-                    {/* Sidebar */}
-                    <div className="card p-0 overflow-hidden flex flex-col">
-                        <div className="p-4 border-b border-gray-100"><p className="font-semibold text-gray-800">Conversations</p></div>
-                        <div className="flex-1 overflow-y-auto">
-                            {conversations.map(c => (
-                                <div key={c.id} onClick={() => setActive(c)} className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-blue-50 transition-colors border-b border-gray-50 ${active.id === c.id ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''}`}>
-                                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${c.color} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>{c.avatar}</div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between"><p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p><p className="text-xs text-gray-400 flex-shrink-0">{c.time}</p></div>
-                                        <p className="text-xs text-gray-500 truncate mt-0.5">{c.lastMsg}</p>
-                                    </div>
-                                    {c.unread > 0 && <span className="w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{c.unread}</span>}
-                                </div>
-                            ))}
-                        </div>
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="page-title">My Teachers</h1>
+                        <p className="page-subtitle">Contact information for all your subject teachers.</p>
                     </div>
+                    <div className="relative max-w-sm w-full">
+                        <input
+                            type="text"
+                            placeholder="Find a teacher..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm"
+                        />
+                        <User size={16} className="absolute left-3 top-2.5 text-slate-400" />
+                    </div>
+                </div>
 
-                    {/* Chat Window */}
-                    <div className="card p-0 lg:col-span-2 flex flex-col overflow-hidden">
-                        {/* Header */}
-                        <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${active.color} flex items-center justify-center text-white font-bold`}>{active.avatar}</div>
-                            <div><p className="font-semibold text-gray-900">{active.name}</p><p className="text-xs text-gray-400">{active.role}</p></div>
-                        </div>
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-                            {(localMessages[active.id] || []).map((m, i) => (
-                                <div key={i} className={`flex ${m.from === 'me' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-xs xl:max-w-sm px-4 py-2.5 rounded-2xl text-sm ${m.from === 'me' ? 'bg-primary-600 text-white rounded-br-sm' : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'}`}>
-                                        <p>{m.text}</p>
-                                        <p className={`text-xs mt-1 ${m.from === 'me' ? 'text-blue-200' : 'text-gray-400'}`}>{m.time}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredTeachers.map(teacher => (
+                        <div key={teacher.id} className="card p-0 overflow-hidden border-border hover:shadow-lg transition-all hover:-translate-y-1">
+                            <div className={`h-24 bg-gradient-to-r ${teacher.color} relative`}>
+                                <div className="absolute -bottom-8 left-6">
+                                    <div className="w-16 h-16 rounded-xl bg-white p-1 shadow-md">
+                                        <div className={`w-full h-full rounded-lg bg-gradient-to-br ${teacher.color} flex items-center justify-center text-white text-xl font-bold`}>
+                                            {teacher.initials}
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
+                            </div>
+
+                            <div className="pt-12 pb-6 px-6">
+                                <h3 className="text-lg font-bold text-slate-900 mb-1 leading-tight">{teacher.name}</h3>
+                                <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium mb-4">
+                                    <BookOpen size={14} className="text-primary-500" />
+                                    <span>{teacher.role}</span>
+                                </div>
+
+                                <div className="space-y-3 pt-4 border-t border-slate-100">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                            <Phone size={14} />
+                                        </div>
+                                        <p className="text-sm font-semibold text-slate-700">{teacher.phone}</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                            <Mail size={14} />
+                                        </div>
+                                        <p className="text-xs font-semibold text-slate-600 truncate">{teacher.email}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        {/* Input */}
-                        <div className="p-4 border-t border-gray-100 flex gap-2">
-                            <input value={msg} onChange={e => setMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} className="input-field flex-1" placeholder="Type a message..." />
-                            <button onClick={send} className="btn-primary px-4"><Send size={16} /></button>
+                    ))}
+
+                    {filteredTeachers.length === 0 && (
+                        <div className="col-span-full py-12 text-center text-slate-500">
+                            No teachers found matching your search.
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

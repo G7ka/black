@@ -1,0 +1,29 @@
+
+> school-management-system@0.1.0 build
+> cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 1791 modules transformed.
+[31mx[39m Build failed in 5.16s
+[31merror during build:
+[31msrc/App.jsx (32:7): "default" is not exported by "src/pages/schooladmin/SecondaryAdminParents.jsx", imported by "src/App.jsx".[31m
+file: [36mD:/wamp64/www/school_management/src/App.jsx:32:7[31m
+[33m
+30: import SecondaryAdminTeachers from './pages/schooladmin/SecondaryAdminTeachers'
+31: import SecondaryAdminStudents from './pages/schooladmin/SecondaryAdminStudents'
+32: import SecondaryAdminParents from './pages/schooladmin/SecondaryAdminParents'
+           ^
+33: import SecondaryAdminClasses from './pages/schooladmin/SecondaryAdminClasses'
+34: import SecondaryAdminTimetable from './pages/schooladmin/SecondaryAdminTimetable'
+[31m
+    at getRollupError (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at error (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/parseAst.js:398:42)
+    at Module.error (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:17040:16)
+    at Module.traceVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:17452:29)
+    at ModuleScope.findVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at FunctionScope.findVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at TrackingScope.findVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at BlockScope.findVariable (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at Identifier.bind (file:///D:/wamp64/www/school_management/node_modules/rollup/dist/es/shared/node-entry.js:5447:40)[39m
