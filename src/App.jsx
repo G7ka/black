@@ -64,6 +64,7 @@ import ParentProfile from './pages/parent/ParentProfile'
 
 // Landing & Auth
 import Landing from './pages/Landing'
+import RoleSelect from './pages/RoleSelect'
 import SchoolRegistration from './pages/auth/SchoolRegistration'
 import MainLogin from './pages/auth/MainLogin'
 import TenantLogin from './pages/auth/TenantLogin'
