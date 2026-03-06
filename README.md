@@ -42,3 +42,19 @@ If you turn off the PC or close the terminal, you can restart the application by
     👉 `http://lvh.me:5173/admin`
 *   **School Portal (Specific Tenant Login)** 
     👉 `http://kampala.lvh.me:5173` *(Replace "kampala" with any school name)*
+
+## Dashboard Access Links (Local Dev)
+
+This prototype also supports **tenant subdomains** in local development. Use a URL like `http://kampala.localhost:5173` (any subdomain name works) to access the tenant dashboards.
+
+**Tenant dashboards (recommended):**
+
+*   **Student Dashboard:** `http://kampala.localhost:5173/student`
+*   **Teacher Dashboard:** `http://kampala.localhost:5173/teacher`
+*   **Parent Dashboard:** `http://kampala.localhost:5173/parent`
+*   **School Admin Dashboard (Primary):** `http://kampala.localhost:5173/schooladmin/primary`
+*   **School Admin Dashboard (Secondary):** `http://kampala.localhost:5173/schooladmin/secondary`
+
+**Main-domain demo hub:**
+
+*   **Role Switcher / Demo Hub:** `http://localhost:5173/demo-hub`

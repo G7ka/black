@@ -110,8 +110,8 @@ const roleAvatarColors = {
 }
 
 export default function DashboardLayout({ role, children }) {
-    // drawerOpen controls the single slide-in sidebar (same on all screen sizes)
-    const [drawerOpen, setDrawerOpen] = useState(false)
+    const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] = useState(false)
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
     const [userMenuOpen, setUserMenuOpen] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
@@ -124,12 +124,10 @@ export default function DashboardLayout({ role, children }) {
         }
     }, [])
 
-    // Close drawer on any route change
+    // Close mobile sidebar on any route change
     useEffect(() => {
-        setDrawerOpen(false)
+        setIsMobileSidebarOpen(false)
     }, [location.pathname])
-
-    const closeDrawer = () => setDrawerOpen(false)
 
     const userName = role === 'superadmin' ? 'Admin Platform'
         : role === 'schooladmin-primary' ? 'Kampala Primary'
@@ -142,73 +140,121 @@ export default function DashboardLayout({ role, children }) {
 
     return (
         <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-slate-900">
-
-            {/* ── Dark overlay (shown when drawer is open) ── */}
-            <div
-                className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 transition-all duration-300 ${drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                onClick={closeDrawer}
-            />
-
-            {/* ── Sidebar drawer ── modern floating glassmorphism design ── */}
+            {/* Desktop sidebar (collapsed by default, expand on hover) */}
             <aside
-                className={`fixed top-3 bottom-3 left-3 z-40 w-[280px] flex flex-col rounded-[2rem] shadow-2xl shadow-blue-900/20 border border-gray-200 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${drawerOpen ? 'translate-x-0 opacity-100' : '-translate-x-[120%] opacity-0'}`}
+                className={`hidden lg:flex flex-shrink-0 flex-col bg-gradient-to-b from-slate-900 to-primary-950 transition-all duration-300 ${isDesktopSidebarExpanded ? 'w-64' : 'w-20'}`}
+                onMouseEnter={() => setIsDesktopSidebarExpanded(true)}
+                onMouseLeave={() => setIsDesktopSidebarExpanded(false)}
             >
-                {/* Header / Logo */}
-                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-white/10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-blue-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                            <GraduationCap size={20} className="text-white" />
-                        </div>
-                        <div>
-                            <p className="text-gray-900 dark:text-white font-bold text-sm leading-tight">EduManage</p>
-                            <p className="text-blue-600 dark:text-blue-400 text-xs">Uganda SMS</p>
-                        </div>
+                {/* Logo */}
+                <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center shadow-lg">
+                        <GraduationCap size={20} className="text-white" />
                     </div>
-                    <button
-                        onClick={closeDrawer}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-500 hover:text-gray-900 dark:text-white/70 dark:hover:text-white"
-                        aria-label="Close menu"
-                    >
-                        <X size={18} />
-                    </button>
+                    {isDesktopSidebarExpanded && (
+                        <div className="overflow-hidden">
+                            <p className="text-white font-bold text-sm leading-tight">EduManage</p>
+                            <p className="text-primary-400 text-xs">Uganda SMS</p>
+                        </div>
+                    )}
                 </div>
 
-                <div className="mx-4 mt-4 mb-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
-                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold uppercase tracking-wider">Current Role</p>
-                    <p className="text-gray-900 dark:text-white text-sm font-semibold mt-0.5">{roleLabels[role]}</p>
-                </div>
+                {/* Role badge (desktop only when expanded) */}
+                {isDesktopSidebarExpanded && (
+                    <div className="mx-4 mt-4 mb-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                        <p className="text-[10px] text-primary-400 font-semibold uppercase tracking-wider">Current Role</p>
+                        <p className="text-white text-sm font-semibold mt-0.5">{roleLabels[role]}</p>
+                    </div>
+                )}
 
-                {/* Nav links — each click closes the drawer */}
+                {/* Desktop nav */}
                 <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
                             end={!!item.home}
-                            onClick={closeDrawer}
                             className={({ isActive }) =>
                                 `sidebar-link ${isActive ? 'active' : ''}`
                             }
+                            title={item.label}
                         >
                             <item.icon size={18} className="flex-shrink-0" />
-                            <span className="truncate">{item.label}</span>
+                            {isDesktopSidebarExpanded && <span className="truncate">{item.label}</span>}
                         </NavLink>
                     ))}
                 </nav>
             </aside>
 
-            {/* ── Main content ── */}
-            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+            {/* Mobile sidebar (slide-in) */}
+            {isMobileSidebarOpen && (
+                <>
+                    <div
+                        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                    />
+                    <aside className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-900 to-primary-950 z-50 flex flex-col lg:hidden">
+                        {/* Logo and close button */}
+                        <div className="flex items-center justify-between gap-3 px-4 py-5 border-b border-white/10">
+                            <div className="flex items-center gap-3">
+                                <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center shadow-lg">
+                                    <GraduationCap size={20} className="text-white" />
+                                </div>
+                                <div className="overflow-hidden">
+                                    <p className="text-white font-bold text-sm leading-tight">EduManage</p>
+                                    <p className="text-primary-400 text-xs">Uganda SMS</p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                className="p-2 rounded-lg hover:bg-white/10 text-slate-100"
+                                onClick={() => setIsMobileSidebarOpen(false)}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
 
-                {/* Header — always visible, hamburger opens drawer */}
-                <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-sm">
+                        {/* Role badge */}
+                        <div className="mx-4 mt-4 mb-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                            <p className="text-[10px] text-primary-400 font-semibold uppercase tracking-wider">Current Role</p>
+                            <p className="text-white text-sm font-semibold mt-0.5">{roleLabels[role]}</p>
+                        </div>
+
+                        {/* Mobile nav */}
+                        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+                            {navItems.map((item) => (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    end={!!item.home}
+                                    className={({ isActive }) =>
+                                        `sidebar-link ${isActive ? 'active' : ''}`
+                                    }
+                                    title={item.label}
+                                    onClick={() => setIsMobileSidebarOpen(false)}
+                                >
+                                    <item.icon size={18} className="flex-shrink-0" />
+                                    <span className="truncate">{item.label}</span>
+                                </NavLink>
+                            ))}
+                        </nav>
+                    </aside>
+                </>
+            )}
+
+            {/* Main content */}
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+                {/* Header */}
+                <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0 shadow-sm">
                     <div className="flex items-center gap-3">
+                        {/* Mobile hamburger */}
                         <button
-                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-                            onClick={() => setDrawerOpen(true)}
-                            aria-label="Open menu"
+                            type="button"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-100 lg:hidden"
+                            onClick={() => setIsMobileSidebarOpen(true)}
+                            aria-label="Open navigation"
                         >
-                            <Menu size={20} className="text-gray-600 dark:text-slate-300" />
+                            <Menu size={18} className="text-gray-600 dark:text-slate-300" />
                         </button>
                         <div>
                             <h1 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -261,7 +307,6 @@ export default function DashboardLayout({ role, children }) {
                                     <button
                                         onClick={() => {
                                             setUserMenuOpen(false);
-                                            // Provide default routes for profiles depending on role
                                             if (role === 'student' || role === 'teacher' || role === 'parent') {
                                                 navigate(`/${role}/profile`);
                                             } else if (role.includes('schooladmin')) {

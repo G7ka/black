@@ -120,7 +120,7 @@ export default function TenantLogin() {
 
                             <div>
                                 <button
-                                    type="submit"
+                                    onClick={handleLogin}
                                     className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
                                 >
                                     Sign in <ArrowRight size={16} />
