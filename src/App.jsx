@@ -11,9 +11,7 @@ import SAUsers from './pages/superadmin/SAUsers'
 import SASupport from './pages/superadmin/SASupport'
 import SAConfiguration from './pages/superadmin/SAConfiguration'
 import SAMonitoring from './pages/superadmin/SAMonitoring'
-import SABI from './pages/superadmin/SABI'
 import SADeveloperTools from './pages/superadmin/SADeveloperTools'
-import SAMarketing from './pages/superadmin/SAMarketing'
 import SAEmergency from './pages/superadmin/SAEmergency'
 
 // Primary Admin
@@ -174,9 +172,7 @@ export default function App() {
                 <Route path="/superadmin/support" element={<SASupport />} />
                 <Route path="/superadmin/configuration" element={<SAConfiguration />} />
                 <Route path="/superadmin/monitoring" element={<SAMonitoring />} />
-                <Route path="/superadmin/bi" element={<SABI />} />
                 <Route path="/superadmin/devtools" element={<SADeveloperTools />} />
-                <Route path="/superadmin/marketing" element={<SAMarketing />} />
                 <Route path="/superadmin/emergency" element={<SAEmergency />} />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
