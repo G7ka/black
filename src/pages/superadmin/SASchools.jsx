@@ -52,23 +52,27 @@ export default function SASchools() {
                 </div>
 
                 {/* Filter tabs */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    {['all', 'active', 'pending', 'suspended'].map(t => (
-                        <button key={t} onClick={() => setFilter(t)}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${filter === t ? 'bg-primary-600 text-white' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
-                            {t} {t !== 'all' && <span className="ml-1 text-xs opacity-70">({schools.filter(s => s.status === t).length})</span>}
-                        </button>
-                    ))}
-                    <div className="h-6 w-px bg-gray-300 dark:bg-slate-600 mx-2 hidden sm:block"></div>
-                    {['all', 'Primary', 'Secondary'].map(l => (
-                        <button key={l} onClick={() => setLevelFilter(l)}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${levelFilter === l ? 'bg-slate-700 text-white' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
-                            {l === 'all' ? 'All Levels' : l}
-                        </button>
-                    ))}
-                    <div className="ml-auto relative">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2 w-full">
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 hide-scrollbar w-full sm:w-auto">
+                        {['all', 'active', 'pending', 'suspended'].map(t => (
+                            <button key={t} onClick={() => setFilter(t)}
+                                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${filter === t ? 'bg-primary-600 text-white' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
+                                {t} {t !== 'all' && <span className="ml-1 text-xs opacity-70">({schools.filter(s => s.status === t).length})</span>}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="h-6 w-px bg-gray-300 dark:bg-slate-600 mx-1 hidden sm:block"></div>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 hide-scrollbar w-full sm:w-auto">
+                        {['all', 'Primary', 'Secondary'].map(l => (
+                            <button key={l} onClick={() => setLevelFilter(l)}
+                                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${levelFilter === l ? 'bg-slate-700 text-white' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
+                                {l === 'all' ? 'All Levels' : l}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="sm:ml-auto relative w-full sm:w-auto mt-2 sm:mt-0">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search schools..." className="input-field pl-9 w-64" />
+                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search schools..." className="input-field pl-9 w-full sm:w-64" />
                     </div>
                 </div>
 
@@ -261,7 +265,8 @@ export default function SASchools() {
                                     <p className="text-sm font-medium text-gray-800 dark:text-white">MoES License</p>
                                     <p className="text-xs text-gray-500 dark:text-slate-400">{selected.licenseFile}</p>
                                 </div>
-                                <button className="btn-secondary text-xs py-1 px-3">Download</button>
+                                <button onClick={() => openModal('viewDoc', selected)} className="btn-secondary text-xs py-1 px-3"><Eye size={11} /> View</button>
+                                <button onClick={() => { const a = document.createElement('a'); a.href = '#'; a.download = selected.licenseFile; a.click(); alert(`Downloading ${selected.licenseFile}...`) }} className="btn-primary text-xs py-1 px-3"><FileText size={11} /> Download</button>
                             </div>
                         </div>
                     </div>
@@ -348,6 +353,40 @@ export default function SASchools() {
                         </div>
                     </div>
                 </div>
+            </Modal>
+
+            {/* View Document Modal */}
+            <Modal isOpen={modal === 'viewDoc'} onClose={closeModal} title="Document Preview" size="lg"
+                footer={<><button className="btn-secondary" onClick={closeModal}>Close</button><button className="btn-primary" onClick={() => { alert(`Downloading ${selected?.licenseFile}...`); }}><FileText size={14} /> Download File</button></>}
+            >
+                {selected && (
+                    <div className="space-y-4">
+                        <div className="bg-gray-50 dark:bg-slate-700/50 rounded-xl p-4 flex items-center gap-3">
+                            <FileText size={20} className="text-primary-600 dark:text-blue-400" />
+                            <div>
+                                <p className="text-sm font-semibold text-gray-800 dark:text-white">{selected.licenseFile}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400">MoES License · Uploaded during registration</p>
+                            </div>
+                        </div>
+                        <div className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-800 min-h-[350px] flex flex-col items-center justify-center">
+                            <div className="text-center p-8">
+                                <div className="w-20 h-20 mx-auto mb-4 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center">
+                                    <FileText size={36} className="text-blue-500 dark:text-blue-400" />
+                                </div>
+                                <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">{selected.name}</h4>
+                                <p className="text-sm text-gray-500 dark:text-slate-400 mb-1">MoES Registration License</p>
+                                <p className="text-xs text-gray-400 dark:text-slate-500">{selected.licenseFile} · PDF Document</p>
+                                <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-slate-400">
+                                    <span>School: <strong className="text-gray-700 dark:text-slate-300">{selected.name}</strong></span>
+                                    <span>•</span>
+                                    <span>District: <strong className="text-gray-700 dark:text-slate-300">{selected.district}</strong></span>
+                                    <span>•</span>
+                                    <span>Status: <strong className="text-emerald-600 dark:text-emerald-400">Verified</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </Modal>
         </DashboardLayout>
     )

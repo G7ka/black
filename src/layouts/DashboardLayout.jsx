@@ -111,6 +111,7 @@ export default function DashboardLayout({ role, children }) {
     const [isDesktopSidebarExpanded, setIsDesktopSidebarExpanded] = useState(false)
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
     const [userMenuOpen, setUserMenuOpen] = useState(false)
+    const [notificationsOpen, setNotificationsOpen] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
     const navItems = navConfigs[role] || navConfigs.teacher
@@ -271,15 +272,49 @@ export default function DashboardLayout({ role, children }) {
 
                     <div className="flex items-center gap-2">
                         {/* Notifications */}
-                        <button className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
-                            <Bell size={18} className="text-gray-600 dark:text-slate-300" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => { setNotificationsOpen(!notificationsOpen); setUserMenuOpen(false) }}
+                                className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                            >
+                                <Bell size={18} className="text-gray-600 dark:text-slate-300" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                            </button>
+
+                            {notificationsOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 overflow-hidden z-50">
+                                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</p>
+                                        <button className="text-xs text-primary-600 dark:text-primary-400 hover:underline">Mark all as read</button>
+                                    </div>
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                        {[
+                                            { title: 'New Registration', time: '10 min ago', desc: 'Kabale Primary School submitted an application', unread: true },
+                                            { title: 'Payment Received', time: '2 hours ago', desc: 'UGX 400,000 received from Greenhill Academy', unread: true },
+                                            { title: 'System Update', time: 'Yesterday', desc: 'Platform maintenance scheduled for this weekend', unread: false },
+                                        ].map((n, i) => (
+                                            <div key={i} className={`px-4 py-3 border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors ${n.unread ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}>
+                                                <div className="flex items-start justify-between mb-1">
+                                                    <p className={`text-sm ${n.unread ? 'font-semibold text-gray-900 dark:text-white' : 'font-medium text-gray-700 dark:text-slate-300'}`}>{n.title}</p>
+                                                    <span className="text-[10px] text-gray-500 dark:text-slate-400">{n.time}</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-2">{n.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="p-2 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
+                                        <button className="w-full py-1.5 text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                            View all notifications
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         {/* User menu */}
                         <div className="relative">
                             <button
-                                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                onClick={() => { setUserMenuOpen(!userMenuOpen); setNotificationsOpen(false) }}
                                 className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                             >
                                 {roleAvatars[role] ? (
@@ -337,9 +372,9 @@ export default function DashboardLayout({ role, children }) {
                 </main>
             </div>
 
-            {/* Close user menu when clicking outside */}
-            {userMenuOpen && (
-                <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+            {/* Close menus when clicking outside */}
+            {(userMenuOpen || notificationsOpen) && (
+                <div className="fixed inset-0 z-40" onClick={() => { setUserMenuOpen(false); setNotificationsOpen(false) }} />
             )}
         </div>
     )

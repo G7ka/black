@@ -22,9 +22,9 @@ const logs = [
 
 function StatPill({ label, value, colorClass }) {
     return (
-        <div className={`flex flex-col items-center p-4 rounded-2xl ${colorClass}`}>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-xs font-medium mt-1 opacity-80">{label}</p>
+        <div className={`flex flex-col items-center p-4 rounded-2xl ${colorClass.replace('bg-', 'bg-opacity-10 dark:bg-opacity-20 bg-')}`}>
+            <p className="text-2xl font-bold dark:text-white">{value}</p>
+            <p className="text-xs font-medium mt-1 opacity-80 dark:opacity-70 dark:text-slate-200">{label}</p>
         </div>
     )
 }
@@ -49,36 +49,36 @@ export default function SAMonitoring() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">System Monitoring</h1><p className="page-subtitle">Real-time server stats, alerts, and logs</p></div>
-                    <div className="flex items-center gap-2 text-xs text-emerald-600 font-medium bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /> All Systems Operational
+                    <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full animate-pulse" /> All Systems Operational
                     </div>
                 </div>
 
                 {/* Server Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="card text-center">
-                        <div className="flex items-center justify-center mb-2"><Activity size={20} className="text-blue-500" /></div>
-                        <p className="text-xs text-gray-500 font-medium">CPU Usage</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">{cpu}%</p>
-                        <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div className="bg-blue-500 h-1.5 rounded-full transition-all" style={{ width: `${cpu}%` }} /></div>
+                        <div className="flex items-center justify-center mb-2"><Activity size={20} className="text-blue-500 dark:text-blue-400" /></div>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">CPU Usage</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{cpu}%</p>
+                        <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mt-2"><div className="bg-blue-500 dark:bg-blue-400 h-1.5 rounded-full transition-all" style={{ width: `${cpu}%` }} /></div>
                     </div>
                     <div className="card text-center">
-                        <div className="flex items-center justify-center mb-2"><HardDrive size={20} className="text-violet-500" /></div>
-                        <p className="text-xs text-gray-500 font-medium">Memory</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">{mem}%</p>
-                        <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div className={`h-1.5 rounded-full transition-all ${mem > 85 ? 'bg-red-500' : 'bg-violet-500'}`} style={{ width: `${mem}%` }} /></div>
+                        <div className="flex items-center justify-center mb-2"><HardDrive size={20} className="text-violet-500 dark:text-violet-400" /></div>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Memory</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{mem}%</p>
+                        <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 mt-2"><div className={`h-1.5 rounded-full transition-all ${mem > 85 ? 'bg-red-500 dark:bg-red-400' : 'bg-violet-500 dark:bg-violet-400'}`} style={{ width: `${mem}%` }} /></div>
                     </div>
                     <div className="card text-center">
-                        <div className="flex items-center justify-center mb-2"><Server size={20} className="text-emerald-500" /></div>
-                        <p className="text-xs text-gray-500 font-medium">Uptime</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">99.8%</p>
-                        <p className="text-xs text-emerald-600 mt-1 font-medium">↑ 47 days</p>
+                        <div className="flex items-center justify-center mb-2"><Server size={20} className="text-emerald-500 dark:text-emerald-400" /></div>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Uptime</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">99.8%</p>
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">↑ 47 days</p>
                     </div>
                     <div className="card text-center">
-                        <div className="flex items-center justify-center mb-2"><Users size={20} className="text-amber-500" /></div>
-                        <p className="text-xs text-gray-500 font-medium">Active Users</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">1,247</p>
-                        <p className="text-xs text-gray-400 mt-1">right now</p>
+                        <div className="flex items-center justify-center mb-2"><Users size={20} className="text-amber-500 dark:text-amber-400" /></div>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Active Users</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">1,247</p>
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">right now</p>
                     </div>
                 </div>
 
@@ -87,9 +87,9 @@ export default function SAMonitoring() {
                     <h2 className="section-title">Active Alerts</h2>
                     <div className="space-y-3">
                         {initialAlerts.map(a => (
-                            <div key={a.id} className={`flex items-start gap-3 p-3 rounded-xl border ${a.level === 'critical' ? 'bg-red-50 border-red-200' : a.level === 'warning' ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-100'}`}>
-                                {a.level === 'critical' ? <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" /> : a.level === 'warning' ? <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" /> : <CheckCircle size={16} className="text-blue-400 flex-shrink-0 mt-0.5" />}
-                                <div className="flex-1 min-w-0"><p className="text-sm text-gray-700">{a.message}</p><p className="text-xs text-gray-400">{a.time}</p></div>
+                            <div key={a.id} className={`flex items-start gap-3 p-3 rounded-xl border ${a.level === 'critical' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : a.level === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800'}`}>
+                                {a.level === 'critical' ? <XCircle size={16} className="text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" /> : a.level === 'warning' ? <AlertTriangle size={16} className="text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" /> : <CheckCircle size={16} className="text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" />}
+                                <div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-900 dark:text-white">{a.message}</p><p className="text-xs text-gray-500 dark:text-slate-400">{a.time}</p></div>
                                 <Badge variant={a.level === 'critical' ? 'danger' : a.level === 'warning' ? 'warning' : 'info'}>{a.level}</Badge>
                             </div>
                         ))}
