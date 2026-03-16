@@ -6,14 +6,14 @@ import Modal from '../../components/ui/Modal'
 import { LifeBuoy, Clock, CheckCircle, AlertCircle, MessageSquare, Search, Eye } from 'lucide-react'
 
 const tickets = [
-    { id: 'TK-1042', school: 'Greenhill Academy', subject: 'Cannot reset teacher password', priority: 'high', status: 'open', date: '2026-02-22', agent: 'Peter Opolot' },
-    { id: 'TK-1041', school: 'St. Mary\'s College', subject: 'Fee payment not reflecting on parent portal', priority: 'high', status: 'in-progress', date: '2026-02-22', agent: 'Sarah Nakato' },
-    { id: 'TK-1040', school: 'Nile International', subject: 'Request to add new class stream', priority: 'medium', status: 'open', date: '2026-02-21', agent: 'Unassigned' },
-    { id: 'TK-1039', school: 'Kabale Primary', subject: 'Subdomain not loading', priority: 'critical', status: 'in-progress', date: '2026-02-21', agent: 'Peter Opolot' },
-    { id: 'TK-1038', school: 'Aga Khan School', subject: 'Timetable conflict for P5 Blue', priority: 'low', status: 'resolved', date: '2026-02-20', agent: 'Sarah Nakato' },
-    { id: 'TK-1037', school: 'Buganda Road PS', subject: 'Cannot upload student photos', priority: 'medium', status: 'resolved', date: '2026-02-19', agent: 'Peter Opolot' },
-    { id: 'TK-1036', school: 'Mbarara High', subject: 'Reports not generating for Term 3', priority: 'high', status: 'resolved', date: '2026-02-18', agent: 'Sarah Nakato' },
-    { id: 'TK-1035', school: 'Gulu Excellence', subject: 'Need help setting up attendance module', priority: 'low', status: 'open', date: '2026-02-17', agent: 'Unassigned' },
+    { id: 'TK-1042', school: 'Greenhill Academy', subject: 'Cannot reset teacher password', priority: 'high', status: 'open', date: '2026-02-22' },
+    { id: 'TK-1041', school: 'St. Mary\'s College', subject: 'Fee payment not reflecting on parent portal', priority: 'high', status: 'in-progress', date: '2026-02-22' },
+    { id: 'TK-1040', school: 'Nile International', subject: 'Request to add new class stream', priority: 'medium', status: 'open', date: '2026-02-21' },
+    { id: 'TK-1039', school: 'Kabale Primary', subject: 'Subdomain not loading', priority: 'critical', status: 'in-progress', date: '2026-02-21' },
+    { id: 'TK-1038', school: 'Aga Khan School', subject: 'Timetable conflict for P5 Blue', priority: 'low', status: 'resolved', date: '2026-02-20' },
+    { id: 'TK-1037', school: 'Buganda Road PS', subject: 'Cannot upload student photos', priority: 'medium', status: 'resolved', date: '2026-02-19' },
+    { id: 'TK-1036', school: 'Mbarara High', subject: 'Reports not generating for Term 3', priority: 'high', status: 'resolved', date: '2026-02-18' },
+    { id: 'TK-1035', school: 'Gulu Excellence', subject: 'Need help setting up attendance module', priority: 'low', status: 'open', date: '2026-02-17' },
 ]
 
 const priorityVariant = { critical: 'danger', high: 'warning', medium: 'info', low: 'gray' }
@@ -72,7 +72,7 @@ export default function SASupport() {
                         <table className="w-full">
                             <thead>
                                 <tr>
-                                    {['Ticket ID', 'School', 'Subject', 'Priority', 'Status', 'Date', 'Agent', 'Action'].map(h => (
+                                    {['Ticket ID', 'School', 'Subject', 'Priority', 'Status', 'Date', 'Action'].map(h => (
                                         <th key={h} className="table-header">{h}</th>
                                     ))}
                                 </tr>
@@ -86,7 +86,6 @@ export default function SASupport() {
                                         <td className="table-cell"><Badge variant={priorityVariant[t.priority]}>{t.priority}</Badge></td>
                                         <td className="table-cell"><Badge variant={statusVariant[t.status]}>{t.status.replace('-', ' ')}</Badge></td>
                                         <td className="table-cell text-xs text-gray-400 dark:text-slate-500">{t.date}</td>
-                                        <td className="table-cell text-xs text-gray-500 dark:text-slate-400">{t.agent}</td>
                                         <td className="table-cell">
                                             <button onClick={() => { setSelected(t); setModal('view') }} className="p-1.5 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400" title="View">
                                                 <Eye size={14} />
@@ -116,7 +115,7 @@ export default function SASupport() {
                             {[
                                 ['School', selected.school], ['Subject', selected.subject],
                                 ['Priority', selected.priority], ['Status', selected.status],
-                                ['Date', selected.date], ['Assigned Agent', selected.agent],
+                                ['Date', selected.date],
                             ].map(([k, v]) => (
                                 <div key={k} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
                                     <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{k}</p>
