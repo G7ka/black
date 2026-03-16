@@ -67,26 +67,27 @@ export default function SASubscriptions() {
                 </div>
 
                 {/* Summary cards */}
+                {/* Summary cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="stat-card flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-blue-600 mb-1"><Users size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Active Students</span></div>
-                        <p className="text-2xl font-extrabold text-gray-900">{fmt(totalStudents)}</p>
-                        <p className="text-xs text-gray-500">across {schools.filter(s => s.status === 'active').length} schools</p>
+                        <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1"><Users size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Active Students</span></div>
+                        <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{fmt(totalStudents)}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">across {schools.filter(s => s.status === 'active').length} schools</p>
                     </div>
                     <div className="stat-card flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-emerald-600 mb-1"><DollarSign size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Monthly Revenue</span></div>
-                        <p className="text-2xl font-extrabold text-gray-900">UGX {fmt(monthlyRevenue)}</p>
-                        <p className="text-xs text-gray-500">@ {fmt(pricePerStudent)}/student</p>
+                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1"><DollarSign size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Monthly Revenue</span></div>
+                        <p className="text-2xl font-extrabold text-gray-900 dark:text-white">UGX {fmt(monthlyRevenue)}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">@ {fmt(pricePerStudent)}/student</p>
                     </div>
                     <div className="stat-card flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-violet-600 mb-1"><School size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Total Schools</span></div>
-                        <p className="text-2xl font-extrabold text-gray-900">{schools.length}</p>
-                        <p className="text-xs text-gray-500">{schools.filter(s => s.status === 'pending').length} pending approval</p>
+                        <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400 mb-1"><School size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Total Schools</span></div>
+                        <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{schools.length}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{schools.filter(s => s.status === 'pending').length} pending approval</p>
                     </div>
                     <div className="stat-card flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-red-600 mb-1"><AlertCircle size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Overdue</span></div>
-                        <p className="text-2xl font-extrabold text-gray-900">{overdueCount}</p>
-                        <p className="text-xs text-gray-500">schools with unpaid bills</p>
+                        <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-1"><AlertCircle size={16} /><span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">Overdue</span></div>
+                        <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{overdueCount}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">schools with unpaid bills</p>
                     </div>
                 </div>
 
@@ -95,10 +96,10 @@ export default function SASubscriptions() {
 
                 {/* Schools table */}
                 <div className="card p-0">
-                    <div className="flex border-b border-gray-100 flex-wrap">
+                    <div className="flex border-b border-gray-100 dark:border-slate-700 flex-wrap">
                         {['schools', 'overdue'].map(t => (
-                            <button key={t} onClick={() => setTab(t)} className={`px-5 py-3 text-sm font-medium capitalize border-b-2 transition-colors ${tab === t ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                                {t}{t === 'overdue' && overdueCount > 0 && <span className="ml-1 badge bg-red-100 text-red-600 text-xs">{overdueCount}</span>}
+                            <button key={t} onClick={() => setTab(t)} className={`px-5 py-3 text-sm font-medium capitalize border-b-2 transition-colors ${tab === t ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}>
+                                {t}{t === 'overdue' && overdueCount > 0 && <span className="ml-1 badge bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs">{overdueCount}</span>}
                             </button>
                         ))}
                     </div>
@@ -113,14 +114,14 @@ export default function SASubscriptions() {
                                     {schools.map(s => {
                                         const bill = s.students * pricePerStudent
                                         return (
-                                            <tr key={s.id} className="hover:bg-blue-50/30">
-                                                <td className="table-cell font-semibold">{s.name}</td>
-                                                <td className="table-cell text-gray-500">{s.level}</td>
+                                            <tr key={s.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
+                                                <td className="table-cell font-semibold dark:text-white">{s.name}</td>
+                                                <td className="table-cell text-gray-500 dark:text-slate-400">{s.level}</td>
                                                 <td className="table-cell">
-                                                    <span className="flex items-center gap-1"><Users size={13} className="text-gray-400" />{fmt(s.students)}</span>
+                                                    <span className="flex items-center gap-1 dark:text-slate-300"><Users size={13} className="text-gray-400 dark:text-slate-500" />{fmt(s.students)}</span>
                                                 </td>
-                                                <td className="table-cell font-semibold text-blue-700">{fmt(bill)}</td>
-                                                <td className="table-cell text-gray-500 text-xs">{s.dueDate}</td>
+                                                <td className="table-cell font-semibold text-blue-700 dark:text-blue-400">{fmt(bill)}</td>
+                                                <td className="table-cell text-gray-500 dark:text-slate-400 text-xs">{s.dueDate}</td>
                                                 <td className="table-cell"><Badge variant={s.status === 'active' ? 'success' : s.status === 'overdue' ? 'danger' : 'warning'}>{s.status}</Badge></td>
                                                 <td className="table-cell">
                                                     <div className="flex gap-1 flex-wrap">
@@ -137,9 +138,9 @@ export default function SASubscriptions() {
                                     })}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-blue-50">
-                                        <td className="table-cell font-bold text-gray-800" colSpan={3}>Total (active schools)</td>
-                                        <td className="table-cell font-extrabold text-blue-700">{fmt(monthlyRevenue)}</td>
+                                    <tr className="bg-blue-50 dark:bg-blue-900/20">
+                                        <td className="table-cell font-bold text-gray-800 dark:text-slate-200" colSpan={3}>Total (active schools)</td>
+                                        <td className="table-cell font-extrabold text-blue-700 dark:text-blue-400">{fmt(monthlyRevenue)}</td>
                                         <td className="table-cell" colSpan={3}></td>
                                     </tr>
                                 </tfoot>
@@ -152,12 +153,12 @@ export default function SASubscriptions() {
                             {schools.filter(s => s.status === 'overdue').map(s => {
                                 const bill = s.students * pricePerStudent
                                 return (
-                                    <div key={s.id} className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-200 flex-wrap gap-3">
+                                    <div key={s.id} className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 flex-wrap gap-3">
                                         <div className="flex items-center gap-3">
-                                            <AlertCircle size={18} className="text-red-500 flex-shrink-0" />
+                                            <AlertCircle size={18} className="text-red-500 dark:text-red-400 flex-shrink-0" />
                                             <div>
-                                                <p className="text-sm font-semibold">{s.name}</p>
-                                                <p className="text-xs text-gray-500">Due: {s.dueDate} · {fmt(s.students)} students · UGX {fmt(bill)}/mo</p>
+                                                <p className="text-sm font-semibold dark:text-white">{s.name}</p>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400">Due: {s.dueDate} · {fmt(s.students)} students · UGX {fmt(bill)}/mo</p>
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
@@ -176,8 +177,8 @@ export default function SASubscriptions() {
             <Modal isOpen={modal === 'pricing'} onClose={() => setModal(null)} title="Set Price Per Student"
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={savePricing}><Save size={14} /> Save Pricing</button></>}>
                 <div className="space-y-5">
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl flex gap-3 text-sm text-blue-800">
-                        <Info size={18} className="flex-shrink-0 mt-0.5 text-blue-500" />
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl flex gap-3 text-sm text-blue-800 dark:text-blue-300">
+                        <Info size={18} className="flex-shrink-0 mt-0.5 text-blue-500 dark:text-blue-400" />
                         <div>
                             <p className="font-semibold mb-1">Per-Student Monthly Billing</p>
                             <p>Each school is billed based on their number of enrolled students × this rate. The rate applies to all schools platform-wide.</p>
@@ -185,7 +186,7 @@ export default function SASubscriptions() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                             Price Per Student Per Month (UGX)
                         </label>
                         <input
@@ -197,7 +198,7 @@ export default function SASubscriptions() {
                             onChange={e => setDraftPrice(Number(e.target.value))}
                             className="input-field text-lg font-bold"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Allowed range: UGX {fmt(MIN_PRICE)} – {fmt(MAX_PRICE)} per student/month</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Allowed range: UGX {fmt(MIN_PRICE)} – {fmt(MAX_PRICE)} per student/month</p>
                     </div>
 
                     {/* Range slider */}
@@ -209,17 +210,17 @@ export default function SASubscriptions() {
                             step={500}
                             value={draftPrice}
                             onChange={e => setDraftPrice(Number(e.target.value))}
-                            className="w-full accent-blue-600"
+                            className="w-full accent-blue-600 dark:accent-blue-500"
                         />
-                        <div className="flex justify-between text-xs text-gray-400 mt-1">
+                        <div className="flex justify-between text-xs text-gray-400 dark:text-slate-500 mt-1">
                             <span>UGX {fmt(MIN_PRICE)}</span>
                             <span>UGX {fmt(MAX_PRICE)}</span>
                         </div>
                     </div>
 
                     {/* Live preview */}
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-2">
-                        <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Revenue Preview at UGX {fmt(draftPrice)}/student</p>
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 space-y-2">
+                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Revenue Preview at UGX {fmt(draftPrice)}/student</p>
                         {[
                             { label: 'School with 300 students', students: 300 },
                             { label: 'School with 700 students', students: 700 },
@@ -227,8 +228,8 @@ export default function SASubscriptions() {
                             { label: `Platform total (${fmt(totalStudents)} students)`, students: totalStudents },
                         ].map(row => (
                             <div key={row.label} className="flex justify-between text-sm">
-                                <span className="text-gray-600">{row.label}</span>
-                                <span className="font-bold text-emerald-700">UGX {fmt(row.students * draftPrice)}/mo</span>
+                                <span className="text-gray-600 dark:text-slate-400">{row.label}</span>
+                                <span className="font-bold text-emerald-700 dark:text-emerald-400">UGX {fmt(row.students * draftPrice)}/mo</span>
                             </div>
                         ))}
                     </div>
@@ -240,13 +241,13 @@ export default function SASubscriptions() {
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}><Bell size={14} /> Send</button></>}>
                 <div className="space-y-4">
                     {reminderSchool && (
-                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm">
-                            <p className="font-semibold text-gray-800">{reminderSchool.name}</p>
-                            <p className="text-gray-500">{fmt(reminderSchool.students)} students · UGX {fmt(reminderSchool.students * pricePerStudent)} due</p>
+                        <div className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600 text-sm">
+                            <p className="font-semibold text-gray-800 dark:text-white">{reminderSchool.name}</p>
+                            <p className="text-gray-500 dark:text-slate-400">{fmt(reminderSchool.students)} students · UGX {fmt(reminderSchool.students * pricePerStudent)} due</p>
                         </div>
                     )}
-                    <div className="flex gap-4 flex-wrap">{['Email', 'SMS', 'In-app'].map(ch => <label key={ch} className="flex items-center gap-2 cursor-pointer"><input type="checkbox" defaultChecked /><span className="text-sm">{ch}</span></label>)}</div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <div className="flex gap-4 flex-wrap">{['Email', 'SMS', 'In-app'].map(ch => <label key={ch} className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-slate-300"><input type="checkbox" defaultChecked /><span className="text-sm">{ch}</span></label>)}</div>
+                    <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Message</label>
                         <textarea className="input-field resize-none" rows={3} defaultValue={`Dear Admin, your monthly invoice of UGX ${reminderSchool ? fmt(reminderSchool.students * pricePerStudent) : ''} is overdue. Please process payment to avoid service suspension.`} /></div>
                 </div>
             </Modal>
