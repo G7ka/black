@@ -205,7 +205,6 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                 {tab === 'billing' && (
                     <div className="card max-w-2xl space-y-5">
                         <h2 className="section-title flex items-center gap-2"><DollarSign size={16} /> Monthly Billing</h2>
-                        <p className="text-sm text-gray-500">Your bill is auto-calculated based on the number of enrolled students. As students are added or removed, the bill adjusts automatically.</p>
 
                         <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
                             <div className="flex items-center justify-between text-sm">

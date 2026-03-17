@@ -249,7 +249,6 @@ export default function SASchools() {
                                 <div className="flex justify-between"><span className="text-gray-600 dark:text-slate-400">Students</span><span className="font-semibold dark:text-white">{selected.students.toLocaleString()}</span></div>
                                 <div className="flex justify-between"><span className="text-gray-600 dark:text-slate-400">Rate per student</span><span className="font-semibold dark:text-white">UGX {PRICE_PER_STUDENT.toLocaleString()}/mo</span></div>
                                 <div className="flex justify-between border-t border-blue-200 dark:border-blue-700 pt-2 mt-1"><span className="font-bold text-gray-800 dark:text-slate-200">Total Monthly Bill</span><span className="font-extrabold text-blue-700 dark:text-blue-400 text-base">UGX {(selected.students * PRICE_PER_STUDENT).toLocaleString()}</span></div>
-                                <p className="text-[11px] text-blue-500 dark:text-blue-400">* Bill auto-adjusts when student count changes.</p>
                             </div>
                         </div>
 
@@ -375,7 +374,7 @@ export default function SASchools() {
                                             UGX {newSchoolStudents ? (Number(newSchoolStudents) * PRICE_PER_STUDENT).toLocaleString() : '0'}
                                         </span>
                                     </div>
-                                    <p className="text-[11px] text-gray-500 dark:text-slate-400">Based on UGX {PRICE_PER_STUDENT.toLocaleString()} per student. The billing amount adjusts automatically.</p>
+                                    <p className="text-[11px] text-gray-500 dark:text-slate-400">Based on UGX {PRICE_PER_STUDENT.toLocaleString()} per student.</p>
                                 </div>
                             </div>
                             <div className="col-span-2">
