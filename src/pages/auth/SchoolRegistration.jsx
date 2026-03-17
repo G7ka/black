@@ -151,19 +151,16 @@ export default function SchoolRegistration() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 py-10 px-4">
 
             {/* Logo / Back */}
-            <div className="max-w-lg mx-auto mb-6 flex items-center justify-between">
-                <button
+            <div className="max-w-lg mx-auto mb-6 flex items-center justify-center">
+                <button 
                     onClick={() => navigate('/')}
-                    className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                 >
-                    <ArrowLeft size={16} /> Back to Home
-                </button>
-                <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                         <GraduationCap size={16} className="text-white" />
                     </div>
                     <span className="font-extrabold text-slate-800">EduManage</span>
-                </div>
+                </button>
             </div>
 
             <div className="max-w-lg mx-auto">
