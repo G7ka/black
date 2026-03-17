@@ -2,17 +2,19 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, CheckCircle, XCircle, Pause, Trash2, LogIn, FileText, Upload } from 'lucide-react'
+import { Search, Plus, Eye, CheckCircle, XCircle, Pause, Trash2, LogIn, FileText, Upload, Edit3, DollarSign } from 'lucide-react'
+
+const PRICE_PER_STUDENT = 2000 // UGX per student per month
 
 const schools = [
-    { id: 1, name: 'Greenhill Academy', level: 'Primary', location: 'Kampala', physicalAddress: 'Plot 12, Makerere Hill Rd', district: 'Kampala', students: 1240, teachers: 58, subdomain: 'greenhill', plan: 'Pro', status: 'active', payment: 'paid', contactName: 'Dr. Monica Nsereko', contactPhone: '+256 701 234567', contactEmail: 'admin@greenhill.ac.ug', licenseFile: 'greenhill_moes_license.pdf' },
-    { id: 2, name: 'St. Mary\'s College', level: 'Secondary', location: 'Wakiso', physicalAddress: '45 Entebbe Rd, Nsangi', district: 'Wakiso', students: 890, teachers: 42, subdomain: 'stmarys', plan: 'Basic', status: 'active', payment: 'overdue', contactName: 'Fr. Joseph Kizza', contactPhone: '+256 772 345678', contactEmail: 'info@stmarys.ug', licenseFile: 'stmarys_license.pdf' },
-    { id: 3, name: 'Kabale Primary School', level: 'Primary', location: 'Kabale', physicalAddress: 'Kabale Town Centre', district: 'Kabale', students: 430, teachers: 18, subdomain: 'kabale-ps', plan: 'Basic', status: 'pending', payment: 'pending', contactName: 'Mary Tumushabe', contactPhone: '+256 780 456789', contactEmail: 'mary@kabaleps.ug', licenseFile: 'kabale_ps_license.pdf' },
-    { id: 4, name: 'Nile International School', level: 'Secondary', location: 'Jinja', physicalAddress: '8 Nile Ave, Jinja', district: 'Jinja', students: 720, teachers: 35, subdomain: 'nile-int', plan: 'Enterprise', status: 'active', payment: 'paid', contactName: 'Robert Waiswa', contactPhone: '+256 755 567890', contactEmail: 'admin@nileint.ug', licenseFile: 'nile_int_license.pdf' },
-    { id: 5, name: 'Buganda Road Primary', level: 'Primary', location: 'Kampala', physicalAddress: 'Buganda Rd, Kampala', district: 'Kampala', students: 560, teachers: 24, subdomain: 'buganda-ps', plan: 'Basic', status: 'suspended', payment: 'overdue', contactName: 'Alice Namugga', contactPhone: '+256 700 678901', contactEmail: 'alice@bugandaps.ug', licenseFile: 'buganda_license.pdf' },
-    { id: 6, name: 'Aga Khan School', level: 'Primary', location: 'Kampala', physicalAddress: '24 Buganda Rd', district: 'Kampala', students: 980, teachers: 47, subdomain: 'agakhan', plan: 'Pro', status: 'active', payment: 'paid', contactName: 'Fatma Hassan', contactPhone: '+256 713 789012', contactEmail: 'fatma@agakhan.ug', licenseFile: 'agakhan_license.pdf' },
-    { id: 7, name: 'Mbarara High School', level: 'Secondary', location: 'Mbarara', physicalAddress: 'High St, Mbarara', district: 'Mbarara', students: 630, teachers: 29, subdomain: 'mbarara-hs', plan: 'Basic', status: 'pending', payment: 'pending', contactName: 'David Asiimwe', contactPhone: '+256 782 890123', contactEmail: 'david@mbararahs.ug', licenseFile: 'mbarara_hs_license.pdf' },
-    { id: 8, name: 'Gulu Excellence School', level: 'Primary', location: 'Gulu', physicalAddress: 'Gulu Central', district: 'Gulu', students: 340, teachers: 15, subdomain: 'gulu-excl', plan: 'Basic', status: 'active', payment: 'paid', contactName: 'Grace Acen', contactPhone: '+256 770 901234', contactEmail: 'grace@guluexcl.ug', licenseFile: 'gulu_license.pdf' },
+    { id: 1, name: 'Greenhill Academy', level: 'Primary', location: 'Kampala', physicalAddress: 'Plot 12, Makerere Hill Rd', district: 'Kampala', students: 1240, teachers: 58, subdomain: 'greenhill', status: 'active', payment: 'paid', contactName: 'Dr. Monica Nsereko', contactPhone: '+256 701 234567', contactEmail: 'admin@greenhill.ac.ug', licenseFile: 'greenhill_moes_license.pdf' },
+    { id: 2, name: 'St. Mary\'s College', level: 'Secondary', location: 'Wakiso', physicalAddress: '45 Entebbe Rd, Nsangi', district: 'Wakiso', students: 890, teachers: 42, subdomain: 'stmarys', status: 'active', payment: 'overdue', contactName: 'Fr. Joseph Kizza', contactPhone: '+256 772 345678', contactEmail: 'info@stmarys.ug', licenseFile: 'stmarys_license.pdf' },
+    { id: 3, name: 'Kabale Primary School', level: 'Primary', location: 'Kabale', physicalAddress: 'Kabale Town Centre', district: 'Kabale', students: 430, teachers: 18, subdomain: 'kabale-ps', status: 'pending', payment: 'pending', contactName: 'Mary Tumushabe', contactPhone: '+256 780 456789', contactEmail: 'mary@kabaleps.ug', licenseFile: 'kabale_ps_license.pdf' },
+    { id: 4, name: 'Nile International School', level: 'Secondary', location: 'Jinja', physicalAddress: '8 Nile Ave, Jinja', district: 'Jinja', students: 720, teachers: 35, subdomain: 'nile-int', status: 'active', payment: 'paid', contactName: 'Robert Waiswa', contactPhone: '+256 755 567890', contactEmail: 'admin@nileint.ug', licenseFile: 'nile_int_license.pdf' },
+    { id: 5, name: 'Buganda Road Primary', level: 'Primary', location: 'Kampala', physicalAddress: 'Buganda Rd, Kampala', district: 'Kampala', students: 560, teachers: 24, subdomain: 'buganda-ps', status: 'suspended', payment: 'overdue', contactName: 'Alice Namugga', contactPhone: '+256 700 678901', contactEmail: 'alice@bugandaps.ug', licenseFile: 'buganda_license.pdf' },
+    { id: 6, name: 'Aga Khan School', level: 'Primary', location: 'Kampala', physicalAddress: '24 Buganda Rd', district: 'Kampala', students: 980, teachers: 47, subdomain: 'agakhan', status: 'active', payment: 'paid', contactName: 'Fatma Hassan', contactPhone: '+256 713 789012', contactEmail: 'fatma@agakhan.ug', licenseFile: 'agakhan_license.pdf' },
+    { id: 7, name: 'Mbarara High School', level: 'Secondary', location: 'Mbarara', physicalAddress: 'High St, Mbarara', district: 'Mbarara', students: 630, teachers: 29, subdomain: 'mbarara-hs', status: 'pending', payment: 'pending', contactName: 'David Asiimwe', contactPhone: '+256 782 890123', contactEmail: 'david@mbararahs.ug', licenseFile: 'mbarara_hs_license.pdf' },
+    { id: 8, name: 'Gulu Excellence School', level: 'Primary', location: 'Gulu', physicalAddress: 'Gulu Central', district: 'Gulu', students: 340, teachers: 15, subdomain: 'gulu-excl', status: 'active', payment: 'paid', contactName: 'Grace Acen', contactPhone: '+256 770 901234', contactEmail: 'grace@guluexcl.ug', licenseFile: 'gulu_license.pdf' },
 ]
 
 const statusVariant = { active: 'success', pending: 'warning', suspended: 'danger' }
@@ -82,7 +84,7 @@ export default function SASchools() {
                         <table className="w-full">
                             <thead>
                                 <tr>
-                                    {['School Name', 'Level', 'Location', 'Students', 'Contact', 'Subdomain', 'Plan', 'Status', 'Payment', 'Actions'].map(h => (
+                                    {['School Name', 'Level', 'Location', 'Students', 'Monthly Bill', 'Contact', 'Subdomain', 'Status', 'Payment', 'Actions'].map(h => (
                                         <th key={h} className="table-header">{h}</th>
                                     ))}
                                 </tr>
@@ -94,12 +96,10 @@ export default function SASchools() {
                                         <td className="table-cell"><Badge variant={levelVariant[s.level]}>{s.level}</Badge></td>
                                         <td className="table-cell text-gray-500 dark:text-slate-400">{s.location}</td>
                                         <td className="table-cell">{s.students.toLocaleString()}</td>
+                                        <td className="table-cell font-semibold text-blue-700 dark:text-blue-400">UGX {(s.students * PRICE_PER_STUDENT).toLocaleString()}</td>
                                         <td className="table-cell text-xs text-gray-500 dark:text-slate-400">{s.contactName}</td>
                                         <td className="table-cell">
                                             <code className="text-xs bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded text-blue-700 dark:text-blue-400">{s.subdomain}.edumanage.ug</code>
-                                        </td>
-                                        <td className="table-cell">
-                                            <Badge variant={s.plan === 'Enterprise' ? 'purple' : s.plan === 'Pro' ? 'info' : 'gray'}>{s.plan}</Badge>
                                         </td>
                                         <td className="table-cell">
                                             <Badge variant={statusVariant[s.status]}>{s.status}</Badge>
@@ -231,14 +231,25 @@ export default function SASchools() {
                                 ['District', selected.district], ['Number of Students', selected.students],
                                 ['Number of Teachers', selected.teachers],
                                 ['Subdomain', `${selected.subdomain}.edumanage.ug`],
-                                ['Subscription Plan', selected.plan], ['Status', selected.status],
-                                ['Payment', selected.payment],
+                                ['Monthly Bill', `UGX ${(selected.students * PRICE_PER_STUDENT).toLocaleString()}`],
+                                ['Status', selected.status], ['Payment', selected.payment],
                             ].map(([k, v]) => (
                                 <div key={k} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
                                     <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{k}</p>
                                     <p className="text-gray-900 dark:text-white font-semibold mt-0.5 capitalize">{v}</p>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Billing Breakdown */}
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-200 mb-2">Billing Breakdown</h3>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 space-y-2 text-sm">
+                                <div className="flex justify-between"><span className="text-gray-600 dark:text-slate-400">Students</span><span className="font-semibold dark:text-white">{selected.students.toLocaleString()}</span></div>
+                                <div className="flex justify-between"><span className="text-gray-600 dark:text-slate-400">Rate per student</span><span className="font-semibold dark:text-white">UGX {PRICE_PER_STUDENT.toLocaleString()}/mo</span></div>
+                                <div className="flex justify-between border-t border-blue-200 dark:border-blue-700 pt-2 mt-1"><span className="font-bold text-gray-800 dark:text-slate-200">Total Monthly Bill</span><span className="font-extrabold text-blue-700 dark:text-blue-400 text-base">UGX {(selected.students * PRICE_PER_STUDENT).toLocaleString()}</span></div>
+                                <p className="text-[11px] text-blue-500 dark:text-blue-400">* Bill auto-adjusts when student count changes.</p>
+                            </div>
                         </div>
 
                         <div>
@@ -267,6 +278,26 @@ export default function SASchools() {
                                 </div>
                                 <button onClick={() => openModal('viewDoc', selected)} className="btn-secondary text-xs py-1 px-3"><Eye size={11} /> View</button>
                                 <button onClick={() => { const a = document.createElement('a'); a.href = '#'; a.download = selected.licenseFile; a.click(); alert(`Downloading ${selected.licenseFile}...`) }} className="btn-primary text-xs py-1 px-3"><FileText size={11} /> Download</button>
+                            </div>
+                        </div>
+
+                        {/* Request School Name Change */}
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-800 dark:text-slate-200 mb-2 flex items-center gap-2"><Edit3 size={14} className="text-amber-500" /> Update School Name</h3>
+                            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-3">
+                                <p className="text-xs text-amber-700 dark:text-amber-400">A school can request a name change by providing legal documentation. Upload the new legal doc and enter the updated name below.</p>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">New School Name</label>
+                                    <input type="text" placeholder={selected.name} className="input-field" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Supporting Legal Document (PDF)</label>
+                                    <div className="border-2 border-dashed border-amber-300 dark:border-amber-700 rounded-xl p-4 text-center hover:border-amber-400 dark:hover:border-amber-500 transition-colors cursor-pointer">
+                                        <Upload size={20} className="mx-auto text-amber-400 dark:text-amber-500 mb-1" />
+                                        <p className="text-xs text-gray-500 dark:text-slate-400">Click to upload legal document (PDF only)</p>
+                                    </div>
+                                </div>
+                                <button className="btn-primary text-xs py-2 px-4"><Edit3 size={12} /> Update Name</button>
                             </div>
                         </div>
                     </div>
@@ -335,12 +366,11 @@ export default function SASchools() {
                                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Will be: subdomain.edumanage.ug</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Subscription Plan</label>
-                                <select className="select-field">
-                                    <option>Basic – UGX 200,000/mo</option>
-                                    <option>Pro – UGX 400,000/mo</option>
-                                    <option>Enterprise – UGX 800,000/mo</option>
-                                </select>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Billing (Auto-calculated)</label>
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-sm">
+                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Monthly bill = Number of Students × UGX {PRICE_PER_STUDENT.toLocaleString()}</p>
+                                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">The billing amount adjusts automatically as students are added or removed.</p>
+                                </div>
                             </div>
                             <div className="col-span-2">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">MoES License (Document Upload)</label>

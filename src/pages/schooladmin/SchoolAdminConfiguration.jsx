@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Modal from '../../components/ui/Modal'
-import { Settings, BookOpen, Plus, X, Save, School, Image, Clock, Bell, CheckCircle2, Trash2 } from 'lucide-react'
+import { Settings, BookOpen, Plus, X, Save, School, Image, Clock, Bell, CheckCircle2, Trash2, DollarSign, Users } from 'lucide-react'
+
+const PRICE_PER_STUDENT = 2000 // UGX per student per month
 
 const defaultSubjects = [
     'Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education',
@@ -64,7 +66,7 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
 
                 {/* Tabs */}
                 <div className="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-xl">
-                    {['subjects', 'school info', 'terms', 'notifications'].map(t => (
+                    {['subjects', 'school info', 'terms', 'notifications', 'billing'].map(t => (
                         <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-colors ${tab === t ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t}</button>
                     ))}
                 </div>
@@ -196,6 +198,47 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                             </div>
                         ))}
                         <button className="btn-primary mt-2" onClick={saveSettings}><Save size={14} /> Save Notification Settings</button>
+                    </div>
+                )}
+
+                {/* Billing Tab */}
+                {tab === 'billing' && (
+                    <div className="card max-w-2xl space-y-5">
+                        <h2 className="section-title flex items-center gap-2"><DollarSign size={16} /> Monthly Billing</h2>
+                        <p className="text-sm text-gray-500">Your bill is auto-calculated based on the number of enrolled students. As students are added or removed, the bill adjusts automatically.</p>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600 flex items-center gap-2"><Users size={14} className="text-blue-500" /> Total Enrolled Students</span>
+                                <span className="text-lg font-extrabold text-gray-900">450</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Rate Per Student / Month</span>
+                                <span className="font-semibold text-gray-700">UGX {PRICE_PER_STUDENT.toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm border-t border-blue-200 pt-3 mt-2">
+                                <span className="font-bold text-gray-800">Your Monthly Bill</span>
+                                <span className="text-xl font-extrabold text-blue-700">UGX {(450 * PRICE_PER_STUDENT).toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                                <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider mb-1">Payment Status</p>
+                                <p className="text-lg font-bold text-emerald-700">Paid</p>
+                                <p className="text-xs text-emerald-500 mt-1">Last payment: Mar 1, 2026</p>
+                            </div>
+                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Next Due Date</p>
+                                <p className="text-lg font-bold text-gray-800">Apr 1, 2026</p>
+                                <p className="text-xs text-gray-400 mt-1">Auto-debit enabled</p>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex gap-3 items-start">
+                            <Bell size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                            <p>Your monthly invoice is generated on the 1st of each month. If you notice discrepancies in your student count, contact the platform administrator.</p>
+                        </div>
                     </div>
                 )}
             </div>

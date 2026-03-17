@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { BarChart, LineChart } from '../../components/charts/Charts'
 import { Edit2, Bell, AlertCircle, Check, Users, DollarSign, TrendingUp, School, Save, Info } from 'lucide-react'
 
 // ── Pricing config (set by super admin) ──
@@ -20,14 +19,6 @@ const schools = [
     { id: 6, name: 'Kabale Primary', students: 310, level: 'Primary', status: 'pending', joined: '2025-12', dueDate: '2026-03-28' },
     { id: 7, name: 'Makerere College', students: 1540, level: 'Secondary', status: 'active', joined: '2025-09', dueDate: '2026-03-15' },
 ]
-
-const revenueByMonth = {
-    labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
-    datasets: [
-        { label: 'Revenue (UGX M)', data: [11.2, 13.8, 15.6, 17.1, 18.4, 19.6], backgroundColor: '#3b82f6', borderRadius: 6 },
-        { label: 'Expected (UGX M)', data: [13, 15, 17, 19, 20, 21], backgroundColor: '#bfdbfe', borderRadius: 6 },
-    ],
-}
 
 function fmt(n) {
     return n.toLocaleString('en-UG')
@@ -90,9 +81,6 @@ export default function SASubscriptions() {
                         <p className="text-xs text-gray-500 dark:text-slate-400">schools with unpaid bills</p>
                     </div>
                 </div>
-
-                {/* Revenue chart */}
-                <div className="card"><h2 className="section-title">Monthly Revenue Trend</h2><BarChart data={revenueByMonth} /></div>
 
                 {/* Schools table */}
                 <div className="card p-0">
