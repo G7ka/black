@@ -321,7 +321,6 @@ export default function SASchools() {
                                 <select className="select-field">
                                     <option value="Primary">Primary</option>
                                     <option value="Secondary">Secondary</option>
-                                    <option value="Both">Both (Primary & Secondary)</option>
                                 </select>
                             </div>
                             <div>
