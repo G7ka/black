@@ -28,6 +28,7 @@ export default function SASchools() {
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
     const [rejectReason, setRejectReason] = useState('')
+    const [newSchoolStudents, setNewSchoolStudents] = useState('')
 
     const filtered = schools.filter(s => {
         const matchStatus = filter === 'all' || s.status === filter
@@ -38,7 +39,7 @@ export default function SASchools() {
     })
 
     const openModal = (type, school) => { setModal(type); setSelected(school) }
-    const closeModal = () => { setModal(null); setSelected(null); setRejectReason('') }
+    const closeModal = () => { setModal(null); setSelected(null); setRejectReason(''); setNewSchoolStudents('') }
 
     return (
         <DashboardLayout role="superadmin">
@@ -334,7 +335,7 @@ export default function SASchools() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Number of Students</label>
-                                <input type="number" placeholder="e.g., 500" className="input-field" />
+                                <input type="number" placeholder="e.g., 500" className="input-field" value={newSchoolStudents} onChange={e => setNewSchoolStudents(e.target.value)} />
                             </div>
                         </div>
                     </div>
@@ -366,10 +367,15 @@ export default function SASchools() {
                                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Will be: subdomain.edumanage.ug</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Billing (Auto-calculated)</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Billing</label>
                                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-sm">
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Monthly bill = Number of Students × UGX {PRICE_PER_STUDENT.toLocaleString()}</p>
-                                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">The billing amount adjusts automatically as students are added or removed.</p>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-gray-600 dark:text-slate-400">Total Monthly Bill:</span>
+                                        <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
+                                            UGX {newSchoolStudents ? (Number(newSchoolStudents) * PRICE_PER_STUDENT).toLocaleString() : '0'}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 dark:text-slate-400">Based on UGX {PRICE_PER_STUDENT.toLocaleString()} per student. The billing amount adjusts automatically.</p>
                                 </div>
                             </div>
                             <div className="col-span-2">
