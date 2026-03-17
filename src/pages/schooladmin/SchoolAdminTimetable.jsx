@@ -67,7 +67,7 @@ export default function SchoolAdminTimetable() {
                     </div>
                     <div className="flex items-center gap-3">
                         <select
-                            className="input-field py-2 bg-white"
+                            className="input-field py-2 bg-white dark:bg-slate-800"
                             value={selectedClass}
                             onChange={(e) => setSelectedClass(e.target.value)}
                         >
@@ -84,40 +84,40 @@ export default function SchoolAdminTimetable() {
                     <div className="overflow-x-auto custom-scrollbar">
                         <div className="overflow-x-auto"><table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200">
-                                    <th className="p-4 font-semibold text-slate-700 w-32 border-r border-slate-200">Time</th>
+                                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                                    <th className="p-4 font-semibold text-slate-700 dark:text-slate-300 w-32 border-r border-slate-200 dark:border-slate-700">Time</th>
                                     {days.map(day => (
-                                        <th key={day} className="p-4 font-semibold text-slate-700 text-center border-r border-slate-200 last:border-0">{day}</th>
+                                        <th key={day} className="p-4 font-semibold text-slate-700 dark:text-slate-300 text-center border-r border-slate-200 dark:border-slate-700 last:border-0">{day}</th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                                 {timeSlots.map((time, idx) => (
-                                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                        <td className="p-4 border-r border-slate-100 text-sm font-bold text-slate-600 bg-slate-50">{time}</td>
+                                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                        <td className="p-4 border-r border-slate-100 dark:border-slate-700/50 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30">{time}</td>
 
                                         {/* Break Time Logic */}
                                         {time === '11:00 - 12:20' && idx === 2 ? (
                                             days.map(day => {
                                                 const lesson = (timetableData[day] || []).find(l => l.time === time)
                                                 return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 last:border-0 align-top h-24 relative group cursor-pointer">
+                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
                                                         {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 border border-blue-100 rounded-lg p-3 h-full hover:border-blue-300 transition-colors">
-                                                                <p className="font-bold text-blue-900 text-sm">{lesson.subject}</p>
-                                                                <p className="text-xs text-blue-700 mt-1 truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 mt-2 font-medium bg-blue-100 w-max px-2 py-0.5 rounded">
+                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 h-full hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                                                                <p className="font-bold text-blue-900 dark:text-blue-300 text-sm">{lesson.subject}</p>
+                                                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 truncate">{lesson.teacher}</p>
+                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 dark:text-blue-300 mt-2 font-medium bg-blue-100 dark:bg-blue-800/50 w-max px-2 py-0.5 rounded">
                                                                     <MapPin size={10} /> {lesson.room}
                                                                 </div>
 
                                                                 {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow-sm backdrop-blur-sm">
-                                                                    <button className="p-1 hover:text-blue-600 transition-colors"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 transition-colors"><Trash2 size={12} /></button>
+                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm backdrop-blur-sm">
+                                                                    <button className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
+                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 hover:bg-blue-50 text-blue-500">
+                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 dark:text-blue-400">
                                                                 <Plus size={20} />
                                                             </div>
                                                         )}
@@ -125,31 +125,31 @@ export default function SchoolAdminTimetable() {
                                                 )
                                             })
                                         ) : time === '1:20 PM - 2:40 PM' && idx === 3 ? (
-                                            <td colSpan={5} className="bg-slate-100 border-x-0 p-3 text-center text-sm font-bold text-slate-500 uppercase tracking-widest relative">
-                                                <div className="absolute inset-0 border-b border-t border-slate-200"></div>
-                                                <span className="relative bg-slate-100 px-4">Lunch Break (12:20 PM - 1:20 PM)</span>
+                                            <td colSpan={5} className="bg-slate-100 dark:bg-slate-800/50 border-x-0 p-3 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest relative">
+                                                <div className="absolute inset-0 border-b border-t border-slate-200 dark:border-slate-700/50"></div>
+                                                <span className="relative bg-slate-100 dark:bg-slate-900 px-4">Lunch Break (12:20 PM - 1:20 PM)</span>
                                             </td>
                                         ) : (
                                             days.map(day => {
                                                 const lesson = (timetableData[day] || []).find(l => l.time === time)
                                                 return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 last:border-0 align-top h-24 relative group cursor-pointer">
+                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
                                                         {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 border border-blue-100 rounded-lg p-3 h-full hover:border-blue-300 transition-colors shadow-sm">
-                                                                <p className="font-bold text-blue-900 text-sm leading-tight">{lesson.subject}</p>
-                                                                <p className="text-xs text-blue-700 mt-1 font-medium truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 mt-2 font-semibold bg-white border border-blue-100 w-max px-1.5 py-0.5 rounded shadow-sm">
+                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 h-full hover:border-blue-300 dark:hover:border-blue-700 transition-colors shadow-sm">
+                                                                <p className="font-bold text-blue-900 dark:text-blue-300 text-sm leading-tight">{lesson.subject}</p>
+                                                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 font-medium truncate">{lesson.teacher}</p>
+                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 dark:text-blue-300 mt-2 font-semibold bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 w-max px-1.5 py-0.5 rounded shadow-sm">
                                                                     <MapPin size={10} /> {lesson.room}
                                                                 </div>
 
                                                                 {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow-sm border border-slate-100">
-                                                                    <button className="p-1 hover:text-blue-600 transition-colors"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 transition-colors"><Trash2 size={12} /></button>
+                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm border border-slate-100 dark:border-slate-700">
+                                                                    <button className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
+                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 hover:bg-blue-50 text-blue-500">
+                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 dark:text-blue-400">
                                                                 <Plus size={20} />
                                                             </div>
                                                         )}
@@ -171,28 +171,28 @@ export default function SchoolAdminTimetable() {
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Day of Week</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Day of Week</label>
                             <select value={formData.day} onChange={e => setFormData({ ...formData, day: e.target.value })} className="select-field">
                                 {days.map(d => <option key={d}>{d}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Time Slot</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Time Slot</label>
                             <select value={formData.time} onChange={e => setFormData({ ...formData, time: e.target.value })} className="select-field">
                                 {timeSlots.map(t => <option key={t}>{t}</option>)}
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Subject</label>
                         <input className="input-field" placeholder="e.g. Mathematics" value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Teacher</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Assigned Teacher</label>
                         <input className="input-field" placeholder="e.g. Mr. Kenneth Okello" value={formData.teacher} onChange={e => setFormData({ ...formData, teacher: e.target.value })} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Classroom / Location</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Classroom / Location</label>
                         <input className="input-field" placeholder="e.g. Room 12" value={formData.room} onChange={e => setFormData({ ...formData, room: e.target.value })} />
                     </div>
                 </div>

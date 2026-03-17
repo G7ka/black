@@ -51,7 +51,7 @@ export default function SchoolAdminStudents() {
                         <thead><tr>{['Student', 'ID', 'Class', 'Parent Contact', 'Performance', 'Fees', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
                             {filtered.map(s => (
-                                <tr key={s.id} className="hover:bg-blue-50/30 cursor-pointer" onClick={(e) => {
+                                <tr key={s.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30 cursor-pointer" onClick={(e) => {
                                     // Prevent row click if clicking a button
                                     if (e.target.closest('button')) return;
                                     setSelected(s); setModal('view');
@@ -59,16 +59,16 @@ export default function SchoolAdminStudents() {
                                     <td className="table-cell">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold">{s.name[0]}</div>
-                                            <div><p className="text-sm font-semibold">{s.name}</p><p className="text-xs text-gray-400">{s.age} yrs</p></div>
+                                            <div><p className="text-sm font-semibold dark:text-white">{s.name}</p><p className="text-xs text-gray-400 dark:text-slate-500">{s.age} yrs</p></div>
                                         </div>
                                     </td>
-                                    <td className="table-cell font-mono text-xs text-gray-500">{s.id}</td>
+                                    <td className="table-cell font-mono text-xs text-gray-500 dark:text-slate-400">{s.id}</td>
                                     <td className="table-cell"><Badge variant="info">{s.class}</Badge></td>
-                                    <td className="table-cell text-xs text-gray-600"><p>{s.parent}</p><p className="text-gray-400">{s.phone}</p></td>
+                                    <td className="table-cell text-xs text-gray-600 dark:text-slate-300"><p>{s.parent}</p><p className="text-gray-400 dark:text-slate-500">{s.phone}</p></td>
                                     <td className="table-cell">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-16 bg-gray-100 rounded-full h-1.5"><div className={`h-1.5 rounded-full ${s.performance >= 80 ? 'bg-emerald-500' : s.performance >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${s.performance}%` }} /></div>
-                                            <span className="text-xs font-semibold text-gray-700">{s.performance}%</span>
+                                            <div className="w-16 bg-gray-100 dark:bg-slate-700/50 rounded-full h-1.5"><div className={`h-1.5 rounded-full ${s.performance >= 80 ? 'bg-emerald-500' : s.performance >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${s.performance}%` }} /></div>
+                                            <span className="text-xs font-semibold text-gray-700 dark:text-slate-300">{s.performance}%</span>
                                             {s.performance >= 80 ? <TrendingUp size={12} className="text-emerald-500" /> : <TrendingDown size={12} className="text-red-500" />}
                                         </div>
                                     </td>
@@ -83,8 +83,8 @@ export default function SchoolAdminStudents() {
                             ))}
                         </tbody>
                     </table></div>
-                    <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
-                        <p className="text-xs text-gray-500">{filtered.length} students</p>
+                    <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 rounded-b-2xl flex items-center justify-between">
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{filtered.length} students</p>
                         <div className="flex gap-2"><button className="btn-secondary text-xs py-1 px-3">Previous</button><button className="btn-primary text-xs py-1 px-3">Next</button></div>
                     </div>
                 </div>
@@ -94,16 +94,16 @@ export default function SchoolAdminStudents() {
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}>Confirm Relocation</button></>}>
                 {selected && (
                     <div className="space-y-4">
-                        <p className="text-sm text-gray-600">Move <strong>{selected.name}</strong> to a different class stream or entirely new level.</p>
-                        <div className="p-3 bg-blue-50 rounded-xl mb-4"><p className="text-sm font-semibold text-blue-900">Current Class: {selected.class}</p></div>
+                        <p className="text-sm text-gray-600 dark:text-slate-300">Move <strong>{selected.name}</strong> to a different class stream or entirely new level.</p>
+                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl mb-4"><p className="text-sm font-semibold text-blue-900 dark:text-blue-300">Current Class: {selected.class}</p></div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Target Class</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Target Class</label>
                             <select className="input-field w-full" value={relocateTarget} onChange={(e) => setRelocateTarget(e.target.value)}>
                                 {relocateClasses.filter(c => c !== selected.class).map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Reason for Relocation</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Reason for Relocation</label>
                             <input className="input-field w-full" placeholder="e.g. Stream balancing, requested by parent" />
                         </div>
                     </div>
@@ -114,8 +114,8 @@ export default function SchoolAdminStudents() {
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-success" onClick={() => setModal(null)}>Promote to Next Class</button><button className="btn-danger" onClick={() => setModal(null)}>Mark as Repeat</button></>}>
                 {selected && (
                     <div className="space-y-4">
-                        <div className="p-3 bg-blue-50 rounded-xl"><p className="text-sm font-semibold">Current Class: <span className="text-primary-600">{selected.class}</span> → Next: <span className="text-emerald-600">{selected.class === 'P7' ? 'Graduated' : selected.class.replace(/\d/, d => +d + 1)}</span></p></div>
-                        <div><label className="block text-sm font-medium text-gray-700 mb-1">Reason if repeating</label><textarea className="input-field resize-none w-full" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
+                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl"><p className="text-sm font-semibold dark:text-slate-300">Current Class: <span className="text-primary-600 dark:text-primary-400">{selected.class}</span> → Next: <span className="text-emerald-600 dark:text-emerald-400">{selected.class === 'P7' ? 'Graduated' : selected.class.replace(/\d/, d => +d + 1)}</span></p></div>
+                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Reason if repeating</label><textarea className="input-field resize-none w-full" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
                     </div>
                 )}
             </Modal>
@@ -123,22 +123,22 @@ export default function SchoolAdminStudents() {
             <Modal isOpen={modal === 'autopromote'} onClose={() => setModal(null)} title="Auto-Promote Students" size="lg"
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors" onClick={() => setModal(null)}><CheckSquare size={16} /> Confirm Auto-Promotion</button></>}>
                 <div className="space-y-5">
-                    <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-                        <h4 className="font-bold text-emerald-800 flex items-center gap-2"><Zap size={18} /> System Auto-Promotion</h4>
-                        <p className="text-sm text-emerald-700 mt-1">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 rounded-xl">
+                        <h4 className="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-2"><Zap size={18} /> System Auto-Promotion</h4>
+                        <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
                             The system will automatically promote all students with an average performance score of <strong>40% or higher</strong> to the next class level, according to the standard Ugandan curriculum passing threshold. Students below 40% will be marked to repeat.
                         </p>
                     </div>
 
                     <div>
-                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
-                            <h3 className="font-semibold text-gray-900">Promotion Preview</h3>
+                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">
+                            <h3 className="font-semibold text-gray-900 dark:text-white">Promotion Preview</h3>
                             <select className="input-field py-1 text-sm"><option>All Classes</option><option>P6 only</option></select>
                         </div>
 
-                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
                             <div className="overflow-x-auto"><table className="w-full text-sm">
-                                <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-slate-400 text-xs uppercase font-semibold">
                                     <tr><th className="px-4 py-3 text-left">Student</th><th className="px-4 py-3 text-center">Score</th><th className="px-4 py-3 text-left">Action</th></tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -146,10 +146,10 @@ export default function SchoolAdminStudents() {
                                         const isPassing = s.performance >= 40;
                                         const nextClass = s.class === 'P7' ? 'Graduated' : s.class.replace(/\d/, d => +d + 1);
                                         return (
-                                            <tr key={s.id} className={isPassing ? 'bg-emerald-50/10' : 'bg-red-50/30'}>
-                                                <td className="px-4 py-3 font-medium text-gray-900">{s.name} <span className="text-gray-400 font-normal text-xs ml-1">({s.class})</span></td>
-                                                <td className="px-4 py-3 text-center font-bold text-gray-700">{s.performance}%</td>
-                                                <td className={`px-4 py-3 font-semibold ${isPassing ? 'text-emerald-600' : 'text-danger-600'}`}>
+                                            <tr key={s.id} className={isPassing ? 'bg-emerald-50/10 dark:bg-emerald-900/10' : 'bg-red-50/30 dark:bg-red-900/10'}>
+                                                <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-200">{s.name} <span className="text-gray-400 dark:text-slate-500 font-normal text-xs ml-1">({s.class})</span></td>
+                                                <td className="px-4 py-3 text-center font-bold text-gray-700 dark:text-slate-300">{s.performance}%</td>
+                                                <td className={`px-4 py-3 font-semibold ${isPassing ? 'text-emerald-600 dark:text-emerald-400' : 'text-danger-600 dark:text-red-400'}`}>
                                                     {isPassing ? `Promote to ${nextClass}` : `Repeat ${s.class}`}
                                                 </td>
                                             </tr>
@@ -167,7 +167,7 @@ export default function SchoolAdminStudents() {
                 {selected && (
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         {[['Name', selected.name], ['Student ID', selected.id], ['Class', selected.class], ['Age', `${selected.age} years`], ['Parent', selected.parent], ['Parent Phone', selected.phone], ['Performance', `${selected.performance}%`], ['Attendance', `${selected.attendance}%`], ['Fee Status', selected.fees]].map(([k, v]) => (
-                            <div key={k} className="bg-gray-50 p-3 rounded-xl"><p className="text-xs text-gray-500">{k}</p><p className="font-semibold mt-0.5">{v}</p></div>
+                            <div key={k} className="bg-gray-50 dark:bg-slate-700/50 p-3 rounded-xl"><p className="text-xs text-gray-500 dark:text-slate-400">{k}</p><p className="font-semibold mt-0.5 dark:text-slate-200">{v}</p></div>
                         ))}
                     </div>
                 )}
@@ -176,9 +176,9 @@ export default function SchoolAdminStudents() {
             <Modal isOpen={modal === 'import'} onClose={() => setModal(null)} title="Import Students"
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}><Upload size={14} /> Import</button></>}>
                 <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-primary-400 transition-colors">
-                        <Upload size={28} className="mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm font-medium text-gray-600">Drop .xlsx or .csv here</p>
+                    <div className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
+                        <Upload size={28} className="mx-auto text-gray-400 dark:text-slate-500 mb-2" />
+                        <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Drop .xlsx or .csv here</p>
                     </div>
                 </div>
             </Modal>

@@ -62,10 +62,10 @@ export default function SchoolAdminHome() {
                             <thead><tr>{['Parent', 'Student', 'Amount', 'Status'].map(h => <th key={h} className="table-header text-xs">{h}</th>)}</tr></thead>
                             <tbody>
                                 {recentPayments.map((p, i) => (
-                                    <tr key={i} className="hover:bg-blue-50/30">
-                                        <td className="table-cell text-sm font-medium">{p.parent}</td>
-                                        <td className="table-cell text-sm text-gray-500">{p.student}</td>
-                                        <td className="table-cell text-sm">UGX {p.amount}</td>
+                                    <tr key={i} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
+                                        <td className="table-cell text-sm font-medium dark:text-white">{p.parent}</td>
+                                        <td className="table-cell text-sm text-gray-500 dark:text-slate-400">{p.student}</td>
+                                        <td className="table-cell text-sm dark:text-slate-300">UGX {p.amount}</td>
                                         <td className="table-cell"><Badge variant={p.status === 'paid' ? 'success' : p.status === 'partial' ? 'warning' : 'danger'}>{p.status}</Badge></td>
                                     </tr>
                                 ))}
@@ -76,12 +76,12 @@ export default function SchoolAdminHome() {
                         <h2 className="section-title">Quick Actions</h2>
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { label: 'Fee Reminders', icon: Bell, color: 'bg-amber-50 text-amber-700 border-amber-200', path: '/schooladmin/primary/fees' },
-                                { label: 'View Reports', icon: FileText, color: 'bg-blue-50 text-blue-700 border-blue-200', path: '/schooladmin/primary/reports' },
-                                { label: 'Attendance', icon: AlertCircle, color: 'bg-red-50 text-red-700 border-red-200', path: '/schooladmin/primary/attendance' },
-                                { label: 'Add Teacher', icon: Plus, color: 'bg-emerald-50 text-emerald-700 border-emerald-200', path: '/schooladmin/primary/teachers' },
+                                { label: 'Fee Reminders', icon: Bell, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800', path: '/schooladmin/primary/fees' },
+                                { label: 'View Reports', icon: FileText, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800', path: '/schooladmin/primary/reports' },
+                                { label: 'Attendance', icon: AlertCircle, color: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800', path: '/schooladmin/primary/attendance' },
+                                { label: 'Add Teacher', icon: Plus, color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800', path: '/schooladmin/primary/teachers' },
                             ].map(a => (
-                                <button key={a.label} onClick={() => navigate(a.path)} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 font-semibold text-sm transition-all hover:shadow-md ${a.color}`}>
+                                <button key={a.label} onClick={() => navigate(a.path)} className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 font-semibold text-sm transition-all hover:shadow-md ${a.color} dark:shadow-none`}>
                                     <a.icon size={22} />{a.label}
                                 </button>
                             ))}
@@ -95,7 +95,7 @@ export default function SchoolAdminHome() {
                 <div className="grid grid-cols-2 gap-4">
                     {[['First Name', 'text', 'John'], ['Last Name', 'text', 'Doe'], ['Date of Birth', 'date', ''], ['Gender', 'select', ''], ['Class', 'select', ''], ['Parent Name', 'text', ''], ['Parent Phone', 'tel', '+256 700 000000'], ['Parent Email', 'email', '']].map(([label, type, ph]) => (
                         <div key={label}>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">{label}</label>
                             {type === 'select' ? <select className="select-field"><option>{label === 'Class' ? 'Select class' : 'Select gender'}</option>{label === 'Class' ? ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(c => <option key={c}>{c}</option>) : ['Male', 'Female'].map(g => <option key={g}>{g}</option>)}</select> : <input type={type} className="input-field" placeholder={ph} />}
                         </div>
                     ))}
@@ -105,10 +105,10 @@ export default function SchoolAdminHome() {
             <Modal isOpen={modal === 'import'} onClose={() => setModal(null)} title="Import Students from Excel"
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}><Upload size={14} /> Import</button></>}>
                 <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-400 transition-colors cursor-pointer">
-                        <Upload size={32} className="mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm font-medium text-gray-600">Drop Excel file here or click to browse</p>
-                        <p className="text-xs text-gray-400 mt-1">Supports .xlsx and .csv</p>
+                    <div className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-colors cursor-pointer">
+                        <Upload size={32} className="mx-auto text-gray-400 dark:text-slate-500 mb-2" />
+                        <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Drop Excel file here or click to browse</p>
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Supports .xlsx and .csv</p>
                     </div>
                     <a href="#" className="text-sm text-primary-600 font-medium flex items-center gap-1"><FileText size={13} /> Download template</a>
                 </div>

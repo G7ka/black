@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Modal from '../../components/ui/Modal'
-import { CalendarDays, Plus, Search, Filter, Clock, MapPin, Users, Edit, Trash2, CheckSquare } from 'lucide-react'
+import { CalendarDays, Plus, Search, Filter, Clock, MapPin, Users, Edit, Trash2, CheckSquare, Printer } from 'lucide-react'
 
 // Dummy Data
-const classes = ['S1A', 'S1B', 'S2', 'S3', 'S4A', 'S4B', 'S5', 'S6']
+const classes = ['S1A', 'S1B', 'S1C', 'S2A', 'S2B', 'S3A', 'S3B', 'S4A', 'S4B', 'S5', 'S6']
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const timeSlots = ['8:00 AM - 9:20 AM', '9:20 AM - 10:40 AM', '11:00 AM - 12:20 PM', '1:20 PM - 2:40 PM', '2:40 PM - 4:00 PM']
 
@@ -21,7 +21,7 @@ const initialTimetable = {
 }
 
 export default function SecondaryAdminTimetable() {
-    const [selectedClass, setSelectedClass] = useState('S1B')
+    const [selectedClass, setSelectedClass] = useState(new URLSearchParams(window.location.search).get('stream') || 'S1A')
     const [timetableData, setTimetableData] = useState(initialTimetable)
     const [modal, setModal] = useState(false)
     const [formData, setFormData] = useState({ day: days[0], time: timeSlots[0], subject: '', teacher: '', room: '' })
@@ -66,7 +66,7 @@ export default function SecondaryAdminTimetable() {
                     </div>
                     <div className="flex items-center gap-3">
                         <select
-                            className="input-field py-2 bg-white"
+                            className="input-field py-2 bg-white dark:bg-slate-800"
                             value={selectedClass}
                             onChange={(e) => setSelectedClass(e.target.value)}
                         >
@@ -83,40 +83,40 @@ export default function SecondaryAdminTimetable() {
                     <div className="overflow-x-auto custom-scrollbar">
                         <div className="overflow-x-auto"><table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200">
-                                    <th className="p-4 font-semibold text-slate-700 w-32 border-r border-slate-200">Time</th>
+                                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                                    <th className="p-4 font-semibold text-slate-700 dark:text-slate-300 w-32 border-r border-slate-200 dark:border-slate-700">Time</th>
                                     {days.map(day => (
-                                        <th key={day} className="p-4 font-semibold text-slate-700 text-center border-r border-slate-200 last:border-0">{day}</th>
+                                        <th key={day} className="p-4 font-semibold text-slate-700 dark:text-slate-300 text-center border-r border-slate-200 dark:border-slate-700 last:border-0">{day}</th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                                 {timeSlots.map((time, idx) => (
-                                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                        <td className="p-4 border-r border-slate-100 text-sm font-bold text-slate-600 bg-slate-50">{time}</td>
+                                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                        <td className="p-4 border-r border-slate-100 dark:border-slate-700/50 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30">{time}</td>
 
                                         {/* Break Time Logic */}
                                         {time === '11:00 - 12:20' && idx === 2 ? (
                                             days.map(day => {
                                                 const lesson = (timetableData[day] || []).find(l => l.time === time)
                                                 return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 last:border-0 align-top h-24 relative group cursor-pointer">
+                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
                                                         {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 h-full hover:border-indigo-300 transition-colors">
-                                                                <p className="font-bold text-indigo-900 text-sm">{lesson.subject}</p>
-                                                                <p className="text-xs text-indigo-700 mt-1 truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-indigo-500 mt-2 font-medium bg-indigo-100 w-max px-2 py-0.5 rounded">
+                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg p-3 h-full hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
+                                                                <p className="font-bold text-indigo-900 dark:text-indigo-300 text-sm">{lesson.subject}</p>
+                                                                <p className="text-xs text-indigo-700 dark:text-indigo-400 mt-1 truncate">{lesson.teacher}</p>
+                                                                <div className="flex items-center gap-1 text-[10px] text-indigo-500 dark:text-indigo-300 mt-2 font-medium bg-indigo-100 dark:bg-indigo-800/50 w-max px-2 py-0.5 rounded">
                                                                     <MapPin size={10} /> {lesson.room}
                                                                 </div>
 
                                                                 {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow-sm backdrop-blur-sm">
-                                                                    <button className="p-1 hover:text-indigo-600 transition-colors"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 transition-colors"><Trash2 size={12} /></button>
+                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm backdrop-blur-sm">
+                                                                    <button className="p-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
+                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-indigo-300 hover:bg-indigo-50 text-indigo-500">
+                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-indigo-500 dark:text-indigo-400">
                                                                 <Plus size={20} />
                                                             </div>
                                                         )}
@@ -124,31 +124,31 @@ export default function SecondaryAdminTimetable() {
                                                 )
                                             })
                                         ) : time === '13:20 - 14:40' && idx === 3 ? (
-                                            <td colSpan={5} className="bg-slate-100 border-x-0 p-3 text-center text-sm font-bold text-slate-500 uppercase tracking-widest relative">
-                                                <div className="absolute inset-0 border-b border-t border-slate-200"></div>
-                                                <span className="relative bg-slate-100 px-4">Lunch Break (12:20 - 13:20)</span>
+                                            <td colSpan={5} className="bg-slate-100 dark:bg-slate-800/50 border-x-0 p-3 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest relative">
+                                                <div className="absolute inset-0 border-b border-t border-slate-200 dark:border-slate-700/50"></div>
+                                                <span className="relative bg-slate-100 dark:bg-slate-900 px-4">Lunch Break (12:20 - 13:20)</span>
                                             </td>
                                         ) : (
                                             days.map(day => {
                                                 const lesson = (timetableData[day] || []).find(l => l.time === time)
                                                 return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 last:border-0 align-top h-24 relative group cursor-pointer">
+                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
                                                         {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 h-full hover:border-indigo-300 transition-colors shadow-sm">
-                                                                <p className="font-bold text-indigo-900 text-sm leading-tight">{lesson.subject}</p>
-                                                                <p className="text-xs text-indigo-700 mt-1 font-medium truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-indigo-500 mt-2 font-semibold bg-white border border-indigo-100 w-max px-1.5 py-0.5 rounded shadow-sm">
+                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg p-3 h-full hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors shadow-sm">
+                                                                <p className="font-bold text-indigo-900 dark:text-indigo-300 text-sm leading-tight">{lesson.subject}</p>
+                                                                <p className="text-xs text-indigo-700 dark:text-indigo-400 mt-1 font-medium truncate">{lesson.teacher}</p>
+                                                                <div className="flex items-center gap-1 text-[10px] text-indigo-500 dark:text-indigo-300 mt-2 font-semibold bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 w-max px-1.5 py-0.5 rounded shadow-sm">
                                                                     <MapPin size={10} /> {lesson.room}
                                                                 </div>
 
                                                                 {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow-sm border border-slate-100">
-                                                                    <button className="p-1 hover:text-indigo-600 transition-colors"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 transition-colors"><Trash2 size={12} /></button>
+                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm border border-slate-100 dark:border-slate-700">
+                                                                    <button className="p-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
+                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-indigo-300 hover:bg-indigo-50 text-indigo-500">
+                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-indigo-500 dark:text-indigo-400">
                                                                 <Plus size={20} />
                                                             </div>
                                                         )}
@@ -164,19 +164,29 @@ export default function SecondaryAdminTimetable() {
                 </div>
             </div>
 
+                {/* Print Timetable Button */}
+                <div className="flex justify-end">
+                    <button
+                        onClick={() => window.print()}
+                        className="btn-secondary flex items-center gap-2 print:hidden"
+                    >
+                        <Printer size={16} /> Print Timetable
+                    </button>
+                </div>
+
             {/* Lesson Modal */}
             <Modal isOpen={modal} onClose={() => setModal(false)} title="Manage Schedule Slot"
                 footer={<><button className="btn-secondary" onClick={() => setModal(false)}>Cancel</button><button disabled={!formData.subject || !formData.teacher} className="btn-primary" onClick={saveLesson}><CheckSquare size={14} /> Save Slot</button></>}>
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Day of Week</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Day of Week</label>
                             <select value={formData.day} onChange={e => setFormData({ ...formData, day: e.target.value })} className="select-field">
                                 {days.map(d => <option key={d}>{d}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Time Slot</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Time Slot</label>
                             <select value={formData.time} onChange={e => setFormData({ ...formData, time: e.target.value })} className="select-field">
                                 {timeSlots.map(t => <option key={t}>{t}</option>)}
                             </select>
