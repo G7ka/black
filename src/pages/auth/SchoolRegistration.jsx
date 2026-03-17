@@ -151,7 +151,7 @@ export default function SchoolRegistration() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 py-10 px-4">
 
             {/* Logo / Back */}
-            <div className="max-w-lg mx-auto mb-6 flex items-center justify-center">
+            <div className="max-w-lg mx-auto mb-6 flex items-center justify-start">
                 <button 
                     onClick={() => navigate('/')}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity"
