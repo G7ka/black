@@ -6,10 +6,10 @@ import {
     GraduationCap, Users, KeyRound, ShieldCheck, PersonStanding, MailIcon
 } from 'lucide-react';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 function StepBar({ step }) {
-    const labels = ['School Info', 'Contact', 'Portal URL', 'Credentials', 'Done'];
+    const labels = ['School Info', 'Contact', 'Portal URL', 'Credentials', 'Review', 'Done'];
     return (
         <div className="flex items-center gap-1 mb-8">
             {labels.map((label, i) => {
@@ -460,15 +460,63 @@ export default function SchoolRegistration() {
 
                             <div className="flex gap-3">
                                 <button onClick={() => setStep(3)} className="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors">Back</button>
-                                <button onClick={nextStep} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors">
-                                    Submit Registration <ArrowRight size={16} />
+                                <button onClick={() => setStep(5)} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors">
+                                    Review Details <ArrowRight size={16} />
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* ── STEP 5: Success ── */}
+                    {/* ── STEP 5: Review & Submit ── */}
                     {step === 5 && (
+                        <div className="space-y-6">
+                            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                                <FileText size={18} className="text-blue-500" /> Review Application
+                            </h2>
+                            <p className="text-sm text-slate-500">Please confirm your details before submitting.</p>
+
+                            <div className="space-y-4">
+                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+                                    <h3 className="font-bold text-slate-700 mb-2 border-b border-slate-200 pb-2">School & Contact</h3>
+                                    <div className="grid grid-cols-2 gap-y-2">
+                                        <p className="text-slate-500">School Name:</p>
+                                        <p className="font-semibold text-slate-800 text-right">{schoolName || 'Not set'}</p>
+                                        <p className="text-slate-500">Address:</p>
+                                        <p className="font-semibold text-slate-800 text-right">{physicalAddress || 'Not set'}</p>
+                                        <p className="text-slate-500">Students:</p>
+                                        <p className="font-semibold text-slate-800 text-right">{numStudents || 'Not set'}</p>
+                                        <p className="text-slate-500">Registrar:</p>
+                                        <p className="font-semibold text-slate-800 text-right">{contactName || 'Not set'}</p>
+                                        <p className="text-slate-500">Email:</p>
+                                        <p className="font-semibold text-slate-800 text-right truncate pl-4">{contactEmail || 'Not set'}</p>
+                                        <p className="text-slate-500">Phone:</p>
+                                        <p className="font-semibold text-slate-800 text-right">{contactPhone || 'Not set'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+                                    <h3 className="font-bold text-slate-700 mb-2 border-b border-slate-200 pb-2">Portal & Pricing Estimate</h3>
+                                    <div className="grid grid-cols-2 gap-y-2">
+                                        <p className="text-slate-500">Portal URL:</p>
+                                        <p className="font-medium text-blue-600 text-right break-all">http://{subdomain}.lvh.me:5173</p>
+                                        <p className="text-slate-500">Est. Monthly Bill:</p>
+                                        <p className="font-bold text-emerald-600 text-right">UGX {(Number(numStudents || 0) * 2000).toLocaleString()}</p>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-2">* Pricing will be finalized upon approval.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button onClick={() => setStep(4)} className="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors">Back</button>
+                                <button onClick={() => setStep(6)} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-emerald-200 border border-emerald-500">
+                                    Submit Registration <CheckCircle2 size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── STEP 6: Success ── */}
+                    {step === 6 && (
                         <div className="text-center space-y-4 py-6">
                             <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
                                 <CheckCircle2 size={40} className="text-emerald-500" />
