@@ -24,12 +24,12 @@ export default function TenantLogin() {
             {/* Left side - Login Form */}
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-white relative">
 
-                <div className="absolute top-8 left-8 flex items-center gap-2">
+                <a href="http://lvh.me:5173" className="absolute top-8 left-8 flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center">
                         <GraduationCap size={18} className="text-white" />
                     </div>
                     <span className="font-bold text-slate-800 tracking-tight">EduManage</span>
-                </div>
+                </a>
 
                 <div className="mx-auto w-full max-w-sm lg:w-96">
                     <div>
