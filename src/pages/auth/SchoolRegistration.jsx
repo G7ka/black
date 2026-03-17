@@ -72,6 +72,7 @@ export default function SchoolRegistration() {
     const [contactName, setContactName] = useState('');
     const [contactPhone, setContactPhone] = useState('');
     const [contactEmail, setContactEmail] = useState('');
+    const [schoolWebsite, setSchoolWebsite] = useState('');
     const [licenseFile, setLicenseFile] = useState(null);
 
     // Step 3 — Subdomain
@@ -171,7 +172,7 @@ export default function SchoolRegistration() {
                     <p className="mt-1 text-sm text-slate-500">Join Uganda's fastest-growing school network</p>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8">
+                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 p-6 sm:p-8">
                     <StepBar step={step} />
 
                     {/* ── STEP 1: School Info ── */}
@@ -219,32 +220,6 @@ export default function SchoolRegistration() {
                             </div>
 
                             <InputField
-                                label="Registrar Name"
-                                icon={<User size={16} />}
-                                placeholder="e.g. John Doe"
-                                value={contactName}
-                                onChange={(e) => setContactName(e.target.value)}
-                            />
-
-                            <InputField
-                                label="Registrar Email"
-                                icon={<MailIcon size={16} />}
-                                type="email"
-                                placeholder="e.g. john.doe@example.com"
-                                value={contactEmail}
-                                onChange={(e) => setContactEmail(e.target.value)}
-                            />
-
-                            <InputField
-                                label="Registrar Contact"
-                                icon={<Phone size={16} />}
-                                type="tel"
-                                placeholder="e.g. +256 700 000000"
-                                value={contactPhone}
-                                onChange={(e) => setContactPhone(e.target.value)}
-                            />
-
-                            <InputField
                                 label="Physical Address"
                                 icon={<MapPin size={16} />}
                                 placeholder="e.g. Plot 5, Kampala Road"
@@ -279,48 +254,50 @@ export default function SchoolRegistration() {
 
                     )}
 
-                    {/* ── STEP 2: Contact ── */}
+                    {/* ── STEP 2: Contact & Documents ── */}
                     {step === 2 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700">School Name</label>
-                                <div className="mt-1 relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        < Building2 className="h-5 w-5 text-slate-400" />
-                                    </div>
-                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm"
-                                        placeholder={level === 'primary' ? 'e.g. John Doe Primary School' : 'e.g. John Doe Secondary School'} />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700">School Address</label>
-                                <div className="mt-1 relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        < MapPin className="h-5 w-5 text-slate-400" />
-                                    </div>
-                                    <input type="text" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. Kampala" />
-                                </div>
-                            </div>
+                            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-4">
+                                <User size={18} className="text-blue-500" /> Key Contact & Documents
+                            </h2>
 
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700">Students range</label>
-                                <div className="mt-1 relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        < PersonStanding className="h-5 w-5 text-slate-400" />
-                                    </div>
-                                    <input type="number" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. 100-200" />
-                                </div>
-                            </div>
+                            <InputField
+                                label="Registrar / Key Contact Name"
+                                icon={<User size={16} />}
+                                placeholder="e.g. James Kigozi"
+                                value={contactName}
+                                onChange={(e) => setContactName(e.target.value)}
+                                error={errors.contactName}
+                            />
 
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700">School website (optional)</label>
-                                <div className="mt-1 relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        < Globe className="h-5 w-5 text-slate-400" />
-                                    </div>
-                                    <input type="url" className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white text-sm" placeholder="e.g. https://www.john-doe.com" />
-                                </div>
-                            </div>
+                            <InputField
+                                label="Registrar Email"
+                                icon={<MailIcon size={16} />}
+                                type="email"
+                                placeholder="e.g. registrar@school.edu.ug"
+                                value={contactEmail}
+                                onChange={(e) => setContactEmail(e.target.value)}
+                                error={errors.contactEmail}
+                            />
+
+                            <InputField
+                                label="Registrar Contact Number"
+                                icon={<Phone size={16} />}
+                                type="tel"
+                                placeholder="e.g. +256 700 000000"
+                                value={contactPhone}
+                                onChange={(e) => setContactPhone(e.target.value)}
+                                error={errors.contactPhone}
+                            />
+
+                            <InputField
+                                label="School Website (Optional)"
+                                icon={<Globe size={16} />}
+                                type="url"
+                                placeholder="e.g. https://www.sunrisehigh.ug"
+                                value={schoolWebsite}
+                                onChange={(e) => setSchoolWebsite(e.target.value)}
+                            />
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Official License / MoES Document</label>
@@ -328,8 +305,8 @@ export default function SchoolRegistration() {
                                 <label className="flex flex-col items-center justify-center gap-2 px-4 py-8 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all group">
                                     <FileText size={32} className="text-slate-300 group-hover:text-blue-400 transition-colors" />
                                     <span className="text-sm font-medium text-slate-500 group-hover:text-blue-600">{licenseFile ? licenseFile.name : 'Click to upload or drag & drop'}</span>
-                                    <span className="text-xs text-slate-400">PDF, PNG, JPG — max 10MB</span>
-                                    <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => setLicenseFile(e.target.files[0])} />
+                                    <span className="text-xs text-slate-400">PDF documents only — max 10MB</span>
+                                    <input type="file" accept=".pdf" className="hidden" onChange={(e) => setLicenseFile(e.target.files[0])} />
                                 </label>
                             </div>
 
