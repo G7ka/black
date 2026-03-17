@@ -127,6 +127,10 @@ export default function SAUsers() {
                                 <p className="text-xs text-gray-500 dark:text-slate-400">{selected.role} · Last active: {selected.lastLogin}</p>
                             </div>
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Enter your admin password to confirm</label>
+                            <input type="password" placeholder="Password" className="input-field" />
+                        </div>
                     </div>
                 )}
             </Modal>
