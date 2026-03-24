@@ -213,8 +213,8 @@ export default function SASchools() {
                     </div>
                     <p className="text-sm text-gray-600 dark:text-slate-300">Deleting <strong>{selected?.name}</strong> will permanently remove all data including students, grades, attendance records, and payment history.</p>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Type school name to confirm</label>
-                        <input className="input-field" placeholder={selected?.name} />
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Enter your admin password to confirm</label>
+                        <input type="password" placeholder="Password" className="input-field" />
                     </div>
                 </div>
             </Modal>
@@ -321,7 +321,6 @@ export default function SASchools() {
                                 <select className="select-field">
                                     <option value="Primary">Primary</option>
                                     <option value="Secondary">Secondary</option>
-                                    <option value="Both">Both (Primary & Secondary)</option>
                                 </select>
                             </div>
                             <div>

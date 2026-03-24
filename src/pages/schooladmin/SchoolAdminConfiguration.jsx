@@ -51,8 +51,8 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
             <div className="space-y-6 relative">
 
                 {successMsg && (
-                    <div className="absolute top-0 right-0 z-50 animate-fade-in flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-lg">
-                        <CheckCircle2 size={18} className="text-emerald-600" />
+                    <div className="absolute top-0 right-0 z-50 animate-fade-in flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl shadow-lg">
+                        <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-500" />
                         <span className="font-semibold text-sm">{successMsg}</span>
                     </div>
                 )}
@@ -65,9 +65,9 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-xl">
+                <div className="flex gap-1 bg-gray-100 dark:bg-slate-800/50 rounded-xl p-1 max-w-xl">
                     {['subjects', 'school info', 'terms', 'notifications', 'billing'].map(t => (
-                        <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-colors ${tab === t ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t}</button>
+                        <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-colors ${tab === t ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}>{t}</button>
                     ))}
                 </div>
 
@@ -76,7 +76,7 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                     <div className="card max-w-2xl space-y-5">
                         <div className="flex items-center justify-between">
                             <h2 className="section-title flex items-center gap-2 mb-0"><BookOpen size={16} /> Manage Subjects</h2>
-                            <span className="text-xs text-gray-400">{subjects.length} subjects</span>
+                            <span className="text-xs text-gray-400 dark:text-slate-500">{subjects.length} subjects</span>
                         </div>
 
                         {/* Add subject */}
@@ -96,12 +96,12 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                         {/* Subject list */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {subjects.map(s => (
-                                <div key={s} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 group hover:border-blue-200 transition-colors">
+                                <div key={s} className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-700 group hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
                                     <div className="flex items-center gap-2">
                                         <BookOpen size={14} className="text-blue-500" />
-                                        <span className="text-sm font-medium text-gray-800">{s}</span>
+                                        <span className="text-sm font-medium text-gray-800 dark:text-slate-200">{s}</span>
                                     </div>
-                                    <button onClick={() => removeSubject(s)} className="p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                                    <button onClick={() => removeSubject(s)} className="p-1 text-gray-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -118,27 +118,27 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                         <h2 className="section-title flex items-center gap-2"><School size={16} /> School Details</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">School Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">School Name</label>
                                 <input className="input-field" value={schoolName} onChange={e => setSchoolName(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">School Motto</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">School Motto</label>
                                 <input className="input-field" value={schoolMotto} onChange={e => setSchoolMotto(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label>
                                 <input type="email" className="input-field" value={schoolEmail} onChange={e => setSchoolEmail(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone</label>
                                 <input className="input-field" value={schoolPhone} onChange={e => setSchoolPhone(e.target.value)} />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">School Logo</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">School Logo</label>
                             <div className="flex items-center gap-3">
-                                <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center border border-blue-200">
-                                    <Image size={22} className="text-blue-500" />
+                                <div className="w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center border border-blue-200 dark:border-blue-800/50">
+                                    <Image size={22} className="text-blue-500 dark:text-blue-400" />
                                 </div>
                                 <button className="btn-secondary text-xs">Upload Logo</button>
                             </div>
@@ -153,23 +153,23 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                         <h2 className="section-title flex items-center gap-2"><Clock size={16} /> Academic Terms</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Current Term</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Current Term</label>
                                 <select className="select-field" value={currentTerm} onChange={e => setCurrentTerm(e.target.value)}>
                                     <option>Term 1</option><option>Term 2</option><option>Term 3</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Term Start</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Term Start</label>
                                 <input type="date" className="input-field" value={termStart} onChange={e => setTermStart(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Term End</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Term End</label>
                                 <input type="date" className="input-field" value={termEnd} onChange={e => setTermEnd(e.target.value)} />
                             </div>
                         </div>
-                        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <p className="text-sm text-blue-700 font-medium">Current Academic Year: <strong>2026</strong></p>
-                            <p className="text-xs text-blue-600 mt-1">Changing the term affects report cards, fee cycles, and attendance records.</p>
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/50">
+                            <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">Current Academic Year: <strong className="dark:text-white">2026</strong></p>
+                            <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">Changing the term affects report cards, fee cycles, and attendance records.</p>
                         </div>
                         <button className="btn-primary" onClick={saveSettings}><Save size={14} /> Save Term Settings</button>
                     </div>
@@ -187,12 +187,12 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                             },
                             { label: 'Fee Reminders', desc: 'Automatically send reminders to parents with outstanding balances.', value: feeReminder, set: setFeeReminder },
                         ].map(n => (
-                            <div key={n.label} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+                            <div key={n.label} className="flex items-center justify-between py-3 border-b border-gray-50 dark:border-slate-700 last:border-0">
                                 <div>
-                                    <p className="text-sm font-semibold text-gray-900">{n.label}</p>
-                                    <p className="text-xs text-gray-500">{n.desc}</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{n.label}</p>
+                                    <p className="text-xs text-gray-500 dark:text-slate-400">{n.desc}</p>
                                 </div>
-                                <button onClick={() => n.set(!n.value)} className={`relative w-11 h-6 rounded-full transition-colors ${n.value ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                                <button onClick={() => n.set(!n.value)} className={`relative w-11 h-6 rounded-full transition-colors ${n.value ? 'bg-blue-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
                                     <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${n.value ? 'translate-x-5.5 left-0.5' : 'left-0.5'}`} style={{ transform: n.value ? 'translateX(22px)' : 'translateX(2px)' }} />
                                 </button>
                             </div>
@@ -206,35 +206,35 @@ export default function SchoolAdminConfiguration({ role = 'schooladmin-primary' 
                     <div className="card max-w-2xl space-y-5">
                         <h2 className="section-title flex items-center gap-2"><DollarSign size={16} /> Monthly Billing</h2>
 
-                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl p-5 space-y-3">
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600 flex items-center gap-2"><Users size={14} className="text-blue-500" /> Total Enrolled Students</span>
-                                <span className="text-lg font-extrabold text-gray-900">450</span>
+                                <span className="text-gray-600 dark:text-slate-300 flex items-center gap-2"><Users size={14} className="text-blue-500 dark:text-blue-400" /> Total Enrolled Students</span>
+                                <span className="text-lg font-extrabold text-gray-900 dark:text-white">450</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">Rate Per Student / Month</span>
-                                <span className="font-semibold text-gray-700">UGX {PRICE_PER_STUDENT.toLocaleString()}</span>
+                                <span className="text-gray-600 dark:text-slate-300">Rate Per Student / Month</span>
+                                <span className="font-semibold text-gray-700 dark:text-slate-200">UGX {PRICE_PER_STUDENT.toLocaleString()}</span>
                             </div>
-                            <div className="flex items-center justify-between text-sm border-t border-blue-200 pt-3 mt-2">
-                                <span className="font-bold text-gray-800">Your Monthly Bill</span>
-                                <span className="text-xl font-extrabold text-blue-700">UGX {(450 * PRICE_PER_STUDENT).toLocaleString()}</span>
+                            <div className="flex items-center justify-between text-sm border-t border-blue-200 dark:border-slate-700 pt-3 mt-2">
+                                <span className="font-bold text-gray-800 dark:text-slate-200">Your Monthly Bill</span>
+                                <span className="text-xl font-extrabold text-blue-700 dark:text-blue-400">UGX {(450 * PRICE_PER_STUDENT).toLocaleString()}</span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                                <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider mb-1">Payment Status</p>
-                                <p className="text-lg font-bold text-emerald-700">Paid</p>
-                                <p className="text-xs text-emerald-500 mt-1">Last payment: Mar 1, 2026</p>
+                            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-4">
+                                <p className="text-xs text-emerald-600 dark:text-emerald-500 font-semibold uppercase tracking-wider mb-1">Payment Status</p>
+                                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">Paid</p>
+                                <p className="text-xs text-emerald-500 dark:text-emerald-300 mt-1">Last payment: Mar 1, 2026</p>
                             </div>
-                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Next Due Date</p>
-                                <p className="text-lg font-bold text-gray-800">Apr 1, 2026</p>
-                                <p className="text-xs text-gray-400 mt-1">Auto-debit enabled</p>
+                            <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                                <p className="text-xs text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wider mb-1">Next Due Date</p>
+                                <p className="text-lg font-bold text-gray-800 dark:text-white">Apr 1, 2026</p>
+                                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Auto-debit enabled</p>
                             </div>
                         </div>
 
-                        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex gap-3 items-start">
+                        <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-xs text-amber-800 dark:text-amber-400 flex gap-3 items-start">
                             <Bell size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
                             <p>Your monthly invoice is generated on the 1st of each month. If you notice discrepancies in your student count, contact the platform administrator.</p>
                         </div>

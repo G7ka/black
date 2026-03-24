@@ -56,8 +56,8 @@ export default function SchoolAdminReports({ role = 'schooladmin-primary' }) {
                     ].map((s) => (
                         <div key={s.label} className="card text-center">
                             <s.icon size={20} className={`mx-auto text-${s.color}-500 mb-2`} />
-                            <p className="text-xs text-gray-500 font-medium">{s.label}</p>
-                            <p className="text-base font-bold text-gray-900 mt-1 truncate">{s.value}</p>
+                            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{s.label}</p>
+                            <p className="text-base font-bold text-gray-900 dark:text-white mt-1 truncate">{s.value}</p>
                         </div>
                     ))}
                 </div>
@@ -68,11 +68,11 @@ export default function SchoolAdminReports({ role = 'schooladmin-primary' }) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {reportTypes.map(r => (
                             <div key={r.id} className="card hover:shadow-lg transition-shadow">
-                                <div className={`w-11 h-11 rounded-xl bg-${r.color}-100 flex items-center justify-center mb-4`}>
-                                    <r.icon size={20} className={`text-${r.color}-600`} />
+                                <div className={`w-11 h-11 rounded-xl bg-${r.color}-100 dark:bg-${r.color}-900/20 flex items-center justify-center mb-4`}>
+                                    <r.icon size={20} className={`text-${r.color}-600 dark:text-${r.color}-400`} />
                                 </div>
-                                <h3 className="font-bold text-gray-900 mb-1">{r.label}</h3>
-                                <p className="text-xs text-gray-500 mb-4">{r.desc}</p>
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-1">{r.label}</h3>
+                                <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">{r.desc}</p>
                                 <button
                                     className="btn-secondary w-full text-sm"
                                     onClick={() => handleGenerate(r.id)}
@@ -97,12 +97,12 @@ export default function SchoolAdminReports({ role = 'schooladmin-primary' }) {
                             <thead><tr>{['Report Name', 'Type', 'Generated', 'Size', ''].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                             <tbody>
                                 {recentReports.map((r, i) => (
-                                    <tr key={i} className="hover:bg-blue-50/30">
-                                        <td className="table-cell font-medium text-sm text-gray-900">{r.name}</td>
-                                        <td className="table-cell text-xs text-gray-500">{r.type}</td>
-                                        <td className="table-cell text-xs text-gray-400">{r.date}</td>
-                                        <td className="table-cell text-xs text-gray-400">{r.size}</td>
-                                        <td className="table-cell"><button className="text-blue-600 hover:text-blue-800 text-xs font-semibold flex items-center gap-1"><Download size={12} /> Download</button></td>
+                                    <tr key={i} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
+                                        <td className="table-cell font-medium text-sm text-gray-900 dark:text-white">{r.name}</td>
+                                        <td className="table-cell text-xs text-gray-500 dark:text-slate-400">{r.type}</td>
+                                        <td className="table-cell text-xs text-gray-400 dark:text-slate-500">{r.date}</td>
+                                        <td className="table-cell text-xs text-gray-400 dark:text-slate-500">{r.size}</td>
+                                        <td className="table-cell"><button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-semibold flex items-center gap-1"><Download size={12} /> Download</button></td>
                                     </tr>
                                 ))}
                             </tbody>

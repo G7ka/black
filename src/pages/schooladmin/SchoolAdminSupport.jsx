@@ -47,8 +47,8 @@ export default function SchoolAdminSupport({ role = 'schooladmin-primary' }) {
             <div className="space-y-6 relative">
 
                 {successMsg && (
-                    <div className="absolute top-0 right-0 z-50 animate-fade-in flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-lg">
-                        <CheckCircle2 size={18} className="text-emerald-600" />
+                    <div className="absolute top-0 right-0 z-50 animate-fade-in flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl shadow-lg">
+                        <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-500" />
                         <span className="font-semibold text-sm">{successMsg}</span>
                     </div>
                 )}
@@ -66,16 +66,16 @@ export default function SchoolAdminSupport({ role = 'schooladmin-primary' }) {
                     <h2 className="section-title flex items-center gap-2"><Megaphone size={16} /> Platform Announcements</h2>
                     <div className="space-y-3">
                         {platformAnnouncements.map((a, i) => (
-                            <div key={i} className={`card border-l-4 ${a.type === 'warning' ? 'border-amber-400 bg-amber-50/50' : 'border-blue-400'}`}>
+                            <div key={i} className={`card border-l-4 ${a.type === 'warning' ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-900/10' : 'border-blue-400'}`}>
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            {a.pinned && <Pin size={13} className="text-gray-400" />}
-                                            <h3 className="font-semibold text-gray-900">{a.title}</h3>
+                                            {a.pinned && <Pin size={13} className="text-gray-400 dark:text-slate-500" />}
+                                            <h3 className="font-semibold text-gray-900 dark:text-white">{a.title}</h3>
                                             {a.pinned && <Badge variant="gray">Pinned</Badge>}
                                         </div>
-                                        <p className="text-sm text-gray-600">{a.body}</p>
-                                        <p className="text-xs text-gray-400 mt-2 flex items-center gap-1"><Clock size={11} /> {a.date}</p>
+                                        <p className="text-sm text-gray-600 dark:text-slate-300">{a.body}</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-2 flex items-center gap-1"><Clock size={11} /> {a.date}</p>
                                     </div>
                                 </div>
                             </div>
@@ -91,27 +91,27 @@ export default function SchoolAdminSupport({ role = 'schooladmin-primary' }) {
                             <thead><tr>{['Ticket #', 'Subject', 'Priority', 'Status', 'Date', 'Reply'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                             <tbody>
                                 {tickets.map(t => (
-                                    <tr key={t.id} className="hover:bg-blue-50/30">
-                                        <td className="table-cell font-mono text-xs text-blue-600 font-semibold">{t.id}</td>
-                                        <td className="table-cell font-medium text-sm">{t.subject}</td>
+                                    <tr key={t.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
+                                        <td className="table-cell font-mono text-xs text-blue-600 dark:text-blue-400 font-semibold">{t.id}</td>
+                                        <td className="table-cell font-medium text-sm dark:text-white">{t.subject}</td>
                                         <td className="table-cell"><Badge variant={t.priority === 'high' ? 'warning' : 'info'}>{t.priority}</Badge></td>
                                         <td className="table-cell"><Badge variant={t.status === 'resolved' ? 'success' : t.status === 'in-progress' ? 'info' : 'warning'}>{t.status}</Badge></td>
-                                        <td className="table-cell text-xs text-gray-400">{t.date}</td>
-                                        <td className="table-cell text-xs text-gray-500 max-w-[200px] truncate">{t.reply || <span className="text-gray-300 italic">Awaiting response</span>}</td>
+                                        <td className="table-cell text-xs text-gray-400 dark:text-slate-500">{t.date}</td>
+                                        <td className="table-cell text-xs text-gray-500 dark:text-slate-400 max-w-[200px] truncate">{t.reply || <span className="text-gray-300 dark:text-slate-600 italic">Awaiting response</span>}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table></div>
-                        {tickets.length === 0 && <div className="p-8 text-center text-gray-400">No tickets submitted yet.</div>}
+                        {tickets.length === 0 && <div className="p-8 text-center text-gray-400 dark:text-slate-500">No tickets submitted yet.</div>}
                     </div>
                 </div>
 
                 {/* Info notice */}
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-start gap-3">
-                    <AlertCircle size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-2xl flex items-start gap-3">
+                    <AlertCircle size={18} className="text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                     <div>
-                        <p className="text-sm font-semibold text-blue-800">School Admin–Only Channel</p>
-                        <p className="text-xs text-blue-600 mt-1">This support channel is exclusively for school administrators. Teachers and staff should raise concerns at the school office, and school admins can relay platform-related issues here.</p>
+                        <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">School Admin–Only Channel</p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">This support channel is exclusively for school administrators. Teachers and staff should raise concerns at the school office, and school admins can relay platform-related issues here.</p>
                     </div>
                 </div>
             </div>
