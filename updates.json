@@ -1,0 +1,631 @@
+when i  below into postman backend-phase2/postman/EduManage-Auth.postman_collection.json { "info": { "name": "EduManage Phase 2 Real Testing - Final Auth Validation", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" }, "variable": [ { "key": "baseUrl", "value": "http://localhost:4000/api/v1" }, { "key": "tenantSubdomain", "value": "kitante" }, { "key": "secondaryTenantSubdomain", "value": "kyaddondo" }, { "key": "accessToken", "value": "" }, { "key": "refreshToken", "value": "" } ], "item": [ { "name": "1 - Platform Login", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n \"email\": \"hatalabdallah@gmail.com\",\n \"password\": \"ChangeMe123!\"\n}" }, "url": "{{baseUrl}}/auth/platform/login" } }, { "name": "2 - Register Kitante Primary School", "request": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [ { "key": "schoolName", "value": "Kitante Primary School", "type": "text" }, { "key": "level", "value": "primary", "type": "text" }, { "key": "physicalAddress", "value": "8HMM+H4H, Nakayima Road, Kampala", "type": "text" }, { "key": "district", "value": "Kampala", "type": "text" }, { "key": "numStudents", "value": "500", "type": "text" }, { "key": "contactName", "value": "Rwatooro Patrick", "type": "text" }, { "key": "contactPhone", "value": "+256700000000", "type": "text" }, { "key": "contactEmail", "value": "rwatooropatrick9@gmail.com", "type": "text" }, { "key": "schoolWebsite", "value": "", "type": "text" }, { "key": "subdomain", "value": "kitante", "type": "text" }, { "key": "adminUsername", "value": "rwatooro.admin", "type": "text" }, { "key": "adminPassword", "value": "Password123!", "type": "text" }, { "key": "confirmPassword", "value": "Password123!", "type": "text" }, { "key": "recoveryEmail", "value": "rwatooropatrick9@gmail.com", "type": "text" } ] }, "url": "{{baseUrl}}/schools/register" } }, { "name": "3 - Register Kyaddondo Secondary School", "request": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [ { "key": "schoolName", "value": "Kyaddondo Secondary School", "type": "text" }, { "key": "level", "value": "secondary", "type": "text" }, { "key": "physicalAddress", "value": "Kiryagonja Village, Matugga Along Matugga - Wakiso Road", "type": "text" }, { "key": "district", "value": "Wakiso", "type": "text" }, { "key": "numStudents", "value": "800", "type": "text" }, { "key": "contactName", "value": "Ddumba Abdallah Kato", "type": "text" }, { "key": "contactPhone", "value": "+256782457405", "type": "text" }, { "key": "contactEmail", "value": "abdallahddumbakato@gmail.com", "type": "text" }, { "key": "schoolWebsite", "value": "", "type": "text" }, { "key": "subdomain", "value": "kyaddondo", "type": "text" }, { "key": "adminUsername", "value": "abdallah.admin", "type": "text" }, { "key": "adminPassword", "value": "Password123!", "type": "text" }, { "key": "confirmPassword", "value": "Password123!", "type": "text" }, { "key": "recoveryEmail", "value": "abdallahddumbakato@gmail.com", "type": "text" } ] }, "url": "{{baseUrl}}/schools/register" } }, { "name": "4 - Check Kitante Subdomain", "request": { "method": "GET", "url": "{{baseUrl}}/schools/check-subdomain?subdomain=kitante" } }, { "name": "5 - Check Kyaddondo Subdomain", "request": { "method": "GET", "url": "{{baseUrl}}/schools/check-subdomain?subdomain=kyaddondo" } }, { "name": "6 - Tenant Login Kitante (Expected FAIL - Pending)", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" } ], "body": { "mode": "raw", "raw": "{\n \"identifier\": \"rwatooro.admin\",\n \"password\": \"Password123!\"\n}" }, "url": "{{baseUrl}}/auth/tenant/login" } } ] } and responses are { "success": true, "message": "Login successful", "data": { "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNmZkMTZkNC05YTM2LTQ2ZTgtYTc5Mi1jNTY5NTFiM2Q0ZmQiLCJ0eXBlIjoicGxhdGZvcm0iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJpYXQiOjE3ODM3NDU4ODgsImV4cCI6MTc4Mzc0Njc4OH0.kSE_gtsCDFsxsmGuxigtpWj68ZO6Eg0XzlAS3PLjo0Q", "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNmZkMTZkNC05YTM2LTQ2ZTgtYTc5Mi1jNTY5NTFiM2Q0ZmQiLCJ0eXBlIjoicGxhdGZvcm0iLCJpYXQiOjE3ODM3NDU4ODgsImV4cCI6MTc4NDM1MDY4OH0.TAL2jdjalq81TjJk0tywXtrCfA8vNI2SvVLSAifVgJc", "type": "platform", "profile": { "id": "e6fd16d4-9a36-46e8-a792-c56951b3d4fd", "name": "Admin Platform", "email": "hatalabdallah@gmail.com", "role": "SUPER_ADMIN", "status": "ACTIVE", "lastLoginAt": null } } } { "success": true, "message": "Application received", "data": { "school": { "id": "364bda17-d4cc-4604-8a57-34b8071fc001", "name": "Kitante Primary School", "level": "PRIMARY", "subdomain": "kitante", "physicalAddress": "8HMM+H4H, Nakayima Road, Kampala", "district": "Kampala", "contactName": "Rwatooro Patrick", "contactPhone": "+256700000000", "contactEmail": "rwatooropatrick9@gmail.com", "website": null, "numStudentsDeclared": 500, "status": "PENDING", "pricePerStudent": 2000, "createdAt": "2026-07-11T04:59:39.422Z" } } } { "success": true, "message": "Application received", "data": { "school": { "id": "904cc0de-70a3-4b9c-8822-222007603e46", "name": "Kyaddondo Secondary School", "level": "SECONDARY", "subdomain": "kyaddondo", "physicalAddress": "Kiryagonja Village, Matugga Along Matugga - Wakiso Road", "district": "Wakiso", "contactName": "Ddumba Abdallah Kato", "contactPhone": "+256782457405", "contactEmail": "abdallahddumbakato@gmail.com", "website": null, "numStudentsDeclared": 800, "status": "PENDING", "pricePerStudent": 2000, "createdAt": "2026-07-11T04:59:58.584Z" } } } { "success": true, "message": "OK", "data": { "available": false, "reason": "taken" } } { "success": true, "message": "OK", "data": { "available": false, "reason": "taken" } } { "success": false, "message": "This school account is pending", "details": null } ╭─░▒▓ ~/Desktop/black/backend-phase3  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  07:57:31 AM ▓▒░ ╰─░▒▓  base ❯ clear ╭─░▒▓ ~/Desktop/black/backend-phase3  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  07:57:32 AM ▓▒░ ╰─░▒▓  base ❯ npm run dev > edumanage-backend@0.1.0 dev > nodemon src/server.js [nodemon] 3.1.14 [nodemon] to restart at any time, enter rs [nodemon] watching path(s): *.* [nodemon] watching extensions: js,mjs,cjs,json [nodemon] starting node src/server.js EduManage backend listening on port 4000 [development] POST /api/v1/auth/platform/login 200 179.420 ms - 731 POST /api/v1/schools/register 201 5850.447 ms - 489 POST /api/v1/schools/register 201 5592.330 ms - 525 GET /api/v1/schools/check-subdomain?subdomain=kitante 200 1.474 ms - 75 GET /api/v1/schools/check-subdomain?subdomain=kyaddondo 200 3.735 ms - 75 POST /api/v1/auth/tenant/login 403 2.208 ms - 75 so are you getting taht so tenant was not approcved its only pending
+
+id | name | level | subdomain | contactEmail | status | numStudentsDeclared | createdAt --------------------------------------+----------------------------+-----------+-----------+------------------------------+---------+---------------------+------------------------- 364bda17-d4cc-4604-8a57-34b8071fc001 | Kitante Primary School | PRIMARY | kitante | rwatooropatrick9@gmail.com | PENDING | 500 | 2026-07-11 04:59:39.422 904cc0de-70a3-4b9c-8822-222007603e46 | Kyaddondo Secondary School | SECONDARY | kyaddondo | abdallahddumbakato@gmail.com | PENDING | 800 | 2026-07-11 04:59:58.584 (2 rows) (END) ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  08:02:38 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","name","level","subdomain","contactEmail","status","numStudentsDeclared","createdAt" FROM schools;' ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  10s  08:02:52 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","schoolId","role","fullName","email","username","status","createdAt" FROM users;' ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  11s  08:03:13 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c ' SELECT s."name" AS school, s."subdomain", s."status" AS school_status, u."fullName", u."username", u."role", u."status" AS user_status FROM schools s LEFT JOIN users u ON u."schoolId" = s."id"; ' school | subdomain | school_status | fullName | username | role | user_status ----------------------------+-----------+---------------+----------------------+----------------+-----------------------+------------- Kitante Primary School | kitante | PENDING | Rwatooro Patrick | rwatooro.admin | SCHOOLADMIN_PRIMARY | PENDING Kyaddondo Secondary School | kyaddondo | PENDING | Ddumba Abdallah Kato | abdallah.admin | SCHOOLADMIN_SECONDARY | PENDING (2 rows) ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  08:03:26 AM ▓▒░ ╰─░▒▓  base ❯ id | schoolId | role | fullName | email | username | status | createdAt --------------------------------------+--------------------------------------+-----------------------+----------------------+-------+----------------+---------+------------------------- 1762809a-e1dc-422a-aa74-1a8a4189fe08 | 364bda17-d4cc-4604-8a57-34b8071fc001 | SCHOOLADMIN_PRIMARY | Rwatooro Patrick | | rwatooro.admin | PENDING | 2026-07-11 04:59:39.426 6d5a5886-8d71-4f4d-8d92-b7cc853e059d | 904cc0de-70a3-4b9c-8822-222007603e46 | SCHOOLADMIN_SECONDARY | Ddumba Abdallah Kato | | abdallah.admin | PENDING | 2026-07-11 04:59:58.585 (2 rows) (END) id | type | recipient | subject | status | error | createdAt --------------------------------------+------------------------------+------------------------------+---------------------------------------------+--------+-------+------------------------- a3f924e3-6d49-4984-b8c1-efae18cf8a9a | PLATFORM_ADMIN_NOTIFICATION | hatalabdallah@gmail.com | [EduManage Platform] New School Application | SENT | | 2026-07-11 05:00:04.088 8f29932f-4fd4-469d-952f-844095d747d2 | SCHOOL_REGISTRATION_RECEIVED | abdallahddumbakato@gmail.com | EduManage — Application Received | SENT | | 2026-07-11 05:00:01.339 153f5fd0-fb95-4efe-9fa7-4b1396c884fd | PLATFORM_ADMIN_NOTIFICATION | hatalabdallah@gmail.com | [EduManage Platform] New School Application | SENT | | 2026-07-11 04:59:45.181 3f089783-e128-42f9-aeb1-abae8ea1d0ca | SCHOOL_REGISTRATION_RECEIVED | rwatooropatrick9@gmail.com | EduManage — Application Received | SENT | | 2026-07-11 04:59:42.387 4e4dfbeb-aa1c-4448-a6e3-751b8cce1c9f | LOGIN_SECURITY_NOTIFICATION | hatalabdallah@gmail.com | New login to your EduManage account | SENT | | 2026-07-11 04:58:13.673 (5 rows) : id | type | recipient | subject | status | error | createdAt --------------------------------------+------------------------------+------------------------------+---------------------------------------------+--------+-------+------------------------- a3f924e3-6d49-4984-b8c1-efae18cf8a9a | PLATFORM_ADMIN_NOTIFICATION | hatalabdallah@gmail.com | [EduManage Platform] New School Application | SENT | | 2026-07-11 05:00:04.088 8f29932f-4fd4-469d-952f-844095d747d2 | SCHOOL_REGISTRATION_RECEIVED | abdallahddumbakato@gmail.com | EduManage — Application Received | SENT | | 2026-07-11 05:00:01.339 153f5fd0-fb95-4efe-9fa7-4b1396c884fd | PLATFORM_ADMIN_NOTIFICATION | hatalabdallah@gmail.com | [EduManage Platform] New School Application | SENT | | 2026-07-11 04:59:45.181 3f089783-e128-42f9-aeb1-abae8ea1d0ca | SCHOOL_REGISTRATION_RECEIVED | rwatooropatrick9@gmail.com | EduManage — Application Received | SENT | | 2026-07-11 04:59:42.387 4e4dfbeb-aa1c-4448-a6e3-751b8cce1c9f | LOGIN_SECURITY_NOTIFICATION | hatalabdallah@gmail.com | New login to your EduManage account | SENT | | 2026-07-11 04:58:13.673 (5 rows) (END) ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  08:02:38 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","name","level","subdomain","contactEmail","status","numStudentsDeclared","createdAt" FROM schools;' ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  10s  08:02:52 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","schoolId","role","fullName","email","username","status","createdAt" FROM users;' ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  11s  08:03:13 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c ' SELECT s."name" AS school, s."subdomain", s."status" AS school_status, u."fullName", u."username", u."role", u."status" AS user_status FROM schools s LEFT JOIN users u ON u."schoolId" = s."id"; ' school | subdomain | school_status | fullName | username | role | user_status ----------------------------+-----------+---------------+----------------------+----------------+-----------------------+------------- Kitante Primary School | kitante | PENDING | Rwatooro Patrick | rwatooro.admin | SCHOOLADMIN_PRIMARY | PENDING Kyaddondo Secondary School | kyaddondo | PENDING | Ddumba Abdallah Kato | abdallah.admin | SCHOOLADMIN_SECONDARY | PENDING (2 rows) ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  08:03:26 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT * FROM email_logs ORDER BY "createdAt" DESC;' ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  33s  08:04:13 AM ▓▒░ ╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "name","email","role","status" FROM platform_admins;' name | email | role | status ----------------+-------------------------+-------------+-------- Admin Platform | hatalabdallah@gmail.com | SUPER_ADMIN | ACTIVE (1 row) ╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?8 ▓▒░ ░▒▓ ✔  08:04:15 AM ▓▒░ ╰─░▒▓  base ❯
+
+now i run below
+
+fanatsatis so as i import backend-phase3/postman/EduManage-Auth.postman_collection.json
+
+
+{
+  "info": {
+    "name": "EduManage — Phase 2: Authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "tenantSubdomain", "value": "kitante" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Platform Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"hatalabdallah@gmail.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/platform/login"
+      }
+    },
+    {
+      "name": "Tenant Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identifier\": \"rwatooro.admin\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/tenant/login"
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+        "url": "{{baseUrl}}/auth/refresh"
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+        "url": "{{baseUrl}}/auth/logout"
+      }
+    },
+    {
+      "name": "Get Current Session (Me)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/auth/me"
+      }
+    },
+    {
+      "name": "Forgot Password - Request Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"rwatooropatrick9@gmail.com\",\n  \"audience\": \"tenant\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/request"
+      }
+    },
+    {
+      "name": "Forgot Password - Verify Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"rwatooropatrick9@gmail.com\",\n  \"audience\": \"tenant\",\n  \"code\": \"123456\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/verify"
+      }
+    },
+    {
+      "name": "Forgot Password - Reset",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"rwatooropatrick9@gmail.com\",\n  \"audience\": \"tenant\",\n  \"code\": \"123456\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/reset"
+      }
+    },
+    {
+      "name": "Check Subdomain Availability",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/schools/check-subdomain?subdomain=newschool"
+      }
+    },
+    {
+      "name": "Register School (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "schoolName", "value": "Kololo SS Primary School", "type": "text" },
+            { "key": "level", "value": "primary", "type": "text" },
+            { "key": "physicalAddress", "value": "Old Kira Road", "type": "text" },
+            { "key": "district", "value": "Kampala", "type": "text" },
+            { "key": "numStudents", "value": "500", "type": "text" },
+            { "key": "contactName", "value": "Nicolus Fortunate", "type": "text" },
+            { "key": "contactPhone", "value": "+256783171399", "type": "text" },
+            { "key": "contactEmail", "value": "nycluswassajja@gmail.com", "type": "text" },
+            { "key": "schoolWebsite", "value": "", "type": "text" },
+            { "key": "subdomain", "value": "kololossprimary", "type": "text" },
+            { "key": "adminUsername", "value": "nicolus.admin", "type": "text" },
+            { "key": "adminPassword", "value": "Password123!", "type": "text" },
+            { "key": "confirmPassword", "value": "Password123!", "type": "text" },
+            { "key": "recoveryEmail", "value": "nycluswassajja@gmail.com", "type": "text" },
+            { "key": "licenseFile", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/schools/register"
+      }
+    }
+  ]
+}
+
+output
+
+{
+
+    "success": true,
+
+    "message": "Login successful",
+
+    "data": {
+
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNmZkMTZkNC05YTM2LTQ2ZTgtYTc5Mi1jNTY5NTFiM2Q0ZmQiLCJ0eXBlIjoicGxhdGZvcm0iLCJyb2xlIjoiU1VQRVJfQURNSU4iLCJpYXQiOjE3ODM3NDcwNzYsImV4cCI6MTc4Mzc0Nzk3Nn0.rB_9TB65nuk1IRx-P2Fwlz5z8dvshGOhdMAx71RFc14",
+
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNmZkMTZkNC05YTM2LTQ2ZTgtYTc5Mi1jNTY5NTFiM2Q0ZmQiLCJ0eXBlIjoicGxhdGZvcm0iLCJpYXQiOjE3ODM3NDcwNzYsImV4cCI6MTc4NDM1MTg3Nn0.OAXIDGL06gfVfWu1YaRx8B_Ij6r_EcIMSt5Rjk91nCQ",
+
+        "type": "platform",
+
+        "profile": {
+
+            "id": "e6fd16d4-9a36-46e8-a792-c56951b3d4fd",
+
+            "name": "Admin Platform",
+
+            "email": "hatalabdallah@gmail.com",
+
+            "role": "SUPER_ADMIN",
+
+            "status": "ACTIVE",
+
+            "lastLoginAt": "2026-07-11T04:58:08.605Z"
+
+        }
+
+    }
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "This school account is pending",
+
+    "details": null
+
+}
+
+
+
+{
+
+    "success": false,
+
+    "message": "Validation failed",
+
+    "details": {
+
+        "formErrors": [],
+
+        "fieldErrors": {
+
+            "refreshToken": [
+
+                "String must contain at least 1 character(s)"
+
+            ]
+
+        }
+
+    }
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "Validation failed",
+
+    "details": {
+
+        "formErrors": [],
+
+        "fieldErrors": {
+
+            "refreshToken": [
+
+                "String must contain at least 1 character(s)"
+
+            ]
+
+        }
+
+    }
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "Missing or malformed Authorization header",
+
+    "details": null
+
+}
+
+
+
+
+
+{
+
+    "success": true,
+
+    "message": "If the account exists, a verification code has been sent",
+
+    "data": {
+
+        "sent": true
+
+    }
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "Invalid verification code",
+
+    "details": null
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "Invalid verification code",
+
+    "details": null
+
+}
+
+
+
+
+
+{
+
+    "success": false,
+
+    "message": "Invalid verification code",
+
+    "details": null
+
+}
+
+
+
+
+
+{
+
+    "success": true,
+
+    "message": "Application received",
+
+    "data": {
+
+        "school": {
+
+            "id": "f1b10dda-2ed0-4b3d-8d91-9633f6987d19",
+
+            "name": "Kololo SS Primary School",
+
+            "level": "PRIMARY",
+
+            "subdomain": "kololossprimary",
+
+            "physicalAddress": "Old Kira Road",
+
+            "district": "Kampala",
+
+            "contactName": "Nicolus Fortunate",
+
+            "contactPhone": "+256783171399",
+
+            "contactEmail": "nycluswassajja@gmail.com",
+
+            "website": null,
+
+            "numStudentsDeclared": 500,
+
+            "status": "PENDING",
+
+            "pricePerStudent": 2000,
+
+            "createdAt": "2026-07-11T05:18:45.504Z"
+
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+╭─░▒▓ ~/Desktop/black/backend-phase3  ddumba-platform-analysis ?8 ▓▒░                                                                ░▒▓ ✔  07:57:31 AM ▓▒░
+
+╰─░▒▓  base ❯ clear
+
+╭─░▒▓ ~/Desktop/black/backend-phase3  ddumba-platform-analysis ?8 ▓▒░                                                                ░▒▓ ✔  07:57:32 AM ▓▒░
+
+╰─░▒▓  base ❯ npm run dev
+
+
+
+> edumanage-backend@0.1.0 dev
+
+> nodemon src/server.js
+
+
+
+[nodemon] 3.1.14
+
+[nodemon] to restart at any time, enter `rs`
+
+[nodemon] watching path(s): *.*
+
+[nodemon] watching extensions: js,mjs,cjs,json
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+POST /api/v1/auth/platform/login 200 179.420 ms - 731
+
+POST /api/v1/schools/register 201 5850.447 ms - 489
+
+POST /api/v1/schools/register 201 5592.330 ms - 525
+
+GET /api/v1/schools/check-subdomain?subdomain=kitante 200 1.474 ms - 75
+
+GET /api/v1/schools/check-subdomain?subdomain=kyaddondo 200 3.735 ms - 75
+
+POST /api/v1/auth/tenant/login 403 2.208 ms - 75
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+[nodemon] restarting due to changes...
+
+[nodemon] starting `node src/server.js`
+
+EduManage backend listening on port 4000 [development]
+
+POST /api/v1/auth/platform/login 200 115.238 ms - 753
+
+POST /api/v1/auth/tenant/login 403 4.784 ms - 75
+
+POST /api/v1/auth/refresh 400 5.815 ms - 154
+
+POST /api/v1/auth/logout 400 0.453 ms - 154
+
+GET /api/v1/auth/me 401 0.897 ms - 86
+
+POST /api/v1/auth/forgot-password/request 200 7.417 ms - 106
+
+POST /api/v1/auth/forgot-password/verify 400 5.785 ms - 70
+
+POST /api/v1/auth/forgot-password/reset 400 5.222 ms - 70
+
+GET /api/v1/schools/check-subdomain?subdomain=newschool 200 4.325 ms - 71
+
+POST /api/v1/schools/register 201 5679.667 ms - 479
+
+
+
+psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","name","level","subdomain","contactEmail","status","numStudentsDeclared","createdAt" FROM schools;'
+
+                  id                  |            name            |   level   |    subdomain    |         contactEmail         | status  | numStudentsDeclared |        createdAt        
+--------------------------------------+----------------------------+-----------+-----------------+------------------------------+---------+---------------------+-------------------------
+ 364bda17-d4cc-4604-8a57-34b8071fc001 | Kitante Primary School     | PRIMARY   | kitante         | rwatooropatrick9@gmail.com   | PENDING |                 500 | 2026-07-11 04:59:39.422
+ 904cc0de-70a3-4b9c-8822-222007603e46 | Kyaddondo Secondary School | SECONDARY | kyaddondo       | abdallahddumbakato@gmail.com | PENDING |                 800 | 2026-07-11 04:59:58.584
+ f1b10dda-2ed0-4b3d-8d91-9633f6987d19 | Kololo SS Primary School   | PRIMARY   | kololossprimary | nycluswassajja@gmail.com     | PENDING |                 500 | 2026-07-11 05:18:45.504
+(3 rows)
+
+(END)
+
+
+
+psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","schoolId","role","fullName","email","username","status","createdAt" FROM users;'
+
+
+                  id                  |               schoolId               |         role          |       fullName       | email |    username    | status  |        createdAt        
+--------------------------------------+--------------------------------------+-----------------------+----------------------+-------+----------------+---------+-------------------------
+ 1762809a-e1dc-422a-aa74-1a8a4189fe08 | 364bda17-d4cc-4604-8a57-34b8071fc001 | SCHOOLADMIN_PRIMARY   | Rwatooro Patrick     |       | rwatooro.admin | PENDING | 2026-07-11 04:59:39.426
+ 6d5a5886-8d71-4f4d-8d92-b7cc853e059d | 904cc0de-70a3-4b9c-8822-222007603e46 | SCHOOLADMIN_SECONDARY | Ddumba Abdallah Kato |       | abdallah.admin | PENDING | 2026-07-11 04:59:58.585
+ 9d2ddf57-dbfc-4dc8-97c8-d87a973fe146 | f1b10dda-2ed0-4b3d-8d91-9633f6987d19 | SCHOOLADMIN_PRIMARY   | Nicolus Fortunate    |       | nicolus.admin  | PENDING | 2026-07-11 05:18:45.505
+(3 rows)
+
+(END)
+
+psql "postgresql://elprofessor@localhost:5432/edumanage" -c '
+SELECT 
+s."name" AS school,
+s."subdomain",
+s."status" AS school_status,
+u."fullName",
+u."username",
+u."role",
+u."status" AS user_status
+FROM schools s
+LEFT JOIN users u ON u."schoolId" = s."id";
+'
+
+tus","createdAt" FROM users;'
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                        ░▒▓ ✔  11s  08:28:08 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c '
+SELECT
+s."name" AS school,
+s."subdomain",
+s."status" AS school_status,
+u."fullName",
+u."username",
+u."role",
+u."status" AS user_status
+FROM schools s
+LEFT JOIN users u ON u."schoolId" = s."id";
+'
+           school           |    subdomain    | school_status |       fullName       |    username    |         role          | user_status 
+----------------------------+-----------------+---------------+----------------------+----------------+-----------------------+-------------
+ Kitante Primary School     | kitante         | PENDING       | Rwatooro Patrick     | rwatooro.admin | SCHOOLADMIN_PRIMARY   | PENDING
+ Kyaddondo Secondary School | kyaddondo       | PENDING       | Ddumba Abdallah Kato | abdallah.admin | SCHOOLADMIN_SECONDARY | PENDING
+ Kololo SS Primary School   | kololossprimary | PENDING       | Nicolus Fortunate    | nicolus.admin  | SCHOOLADMIN_PRIMARY   | PENDING
+(3 rows)
+
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                              ░▒▓ ✔  08:28:20 AM ▓▒░
+╰─░▒▓  base ❯ 
+
+
+
+psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT * FROM email_logs ORDER BY "createdAt" DESC;'
+
+
+                  id                  |             type             |          recipient           |                   subject                   | status | error |        createdAt        
+--------------------------------------+------------------------------+------------------------------+---------------------------------------------+--------+-------+-------------------------
+ 8b321a81-4419-4080-86c7-dad88b1ca02f | PLATFORM_ADMIN_NOTIFICATION  | hatalabdallah@gmail.com      | [EduManage Platform] New School Application | SENT   |       | 2026-07-11 05:18:51.086
+ 9baf1db7-aed8-4909-af41-49bfe52296cd | SCHOOL_REGISTRATION_RECEIVED | nycluswassajja@gmail.com     | EduManage — Application Received            | SENT   |       | 2026-07-11 05:18:48.29
+ 3266ad6b-0b26-4f18-b711-9b70979dc16e | LOGIN_SECURITY_NOTIFICATION  | hatalabdallah@gmail.com      | New login to your EduManage account         | SENT   |       | 2026-07-11 05:17:59.575
+ a3f924e3-6d49-4984-b8c1-efae18cf8a9a | PLATFORM_ADMIN_NOTIFICATION  | hatalabdallah@gmail.com      | [EduManage Platform] New School Application | SENT   |       | 2026-07-11 05:00:04.088
+ 8f29932f-4fd4-469d-952f-844095d747d2 | SCHOOL_REGISTRATION_RECEIVED | abdallahddumbakato@gmail.com | EduManage — Application Received            | SENT   |       | 2026-07-11 05:00:01.339
+ 153f5fd0-fb95-4efe-9fa7-4b1396c884fd | PLATFORM_ADMIN_NOTIFICATION  | hatalabdallah@gmail.com      | [EduManage Platform] New School Application | SENT   |       | 2026-07-11 04:59:45.181
+ 3f089783-e128-42f9-aeb1-abae8ea1d0ca | SCHOOL_REGISTRATION_RECEIVED | rwatooropatrick9@gmail.com   | EduManage — Application Received            | SENT   |       | 2026-07-11 04:59:42.387
+ 4e4dfbeb-aa1c-4448-a6e3-751b8cce1c9f | LOGIN_SECURITY_NOTIFICATION  | hatalabdallah@gmail.com      | New login to your EduManage account         | SENT   |       | 2026-07-11 04:58:13.673
+(8 rows)
+
+(END)
+
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                              ░▒▓ ✔  08:27:28 AM ▓▒░
+╰─░▒▓  base ❯ clear
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                              ░▒▓ ✔  08:27:28 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","name","level","subdomain","contactEmail","status","numStudentsDeclared","createdAt" FROM schools;'
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                        ░▒▓ ✔  12s  08:27:44 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "id","schoolId","role","fullName","email","username","status","createdAt" FROM users;'
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                        ░▒▓ ✔  11s  08:28:08 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c '
+SELECT
+s."name" AS school,
+s."subdomain",
+s."status" AS school_status,
+u."fullName",
+u."username",
+u."role",
+u."status" AS user_status
+FROM schools s
+LEFT JOIN users u ON u."schoolId" = s."id";
+'
+           school           |    subdomain    | school_status |       fullName       |    username    |         role          | user_status 
+----------------------------+-----------------+---------------+----------------------+----------------+-----------------------+-------------
+ Kitante Primary School     | kitante         | PENDING       | Rwatooro Patrick     | rwatooro.admin | SCHOOLADMIN_PRIMARY   | PENDING
+ Kyaddondo Secondary School | kyaddondo       | PENDING       | Ddumba Abdallah Kato | abdallah.admin | SCHOOLADMIN_SECONDARY | PENDING
+ Kololo SS Primary School   | kololossprimary | PENDING       | Nicolus Fortunate    | nicolus.admin  | SCHOOLADMIN_PRIMARY   | PENDING
+(3 rows)
+
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                              ░▒▓ ✔  08:28:20 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT * FROM email_logs ORDER BY "createdAt" DESC;'
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                        ░▒▓ ✔  15s  08:28:53 AM ▓▒░
+╰─░▒▓  base ❯ psql "postgresql://elprofessor@localhost:5432/edumanage" -c 'SELECT "name","email","role","status" FROM platform_admins;'
+      name      |          email          |    role     | status 
+----------------+-------------------------+-------------+--------
+ Admin Platform | hatalabdallah@gmail.com | SUPER_ADMIN | ACTIVE
+(1 row)
+
+╭─░▒▓ ~/Desktop/black  ddumba-platform-analysis ?9 ▓▒░                                                              ░▒▓ ✔  08:28:54 AM ▓▒░
+╰─░▒▓  base ❯ 
+
+

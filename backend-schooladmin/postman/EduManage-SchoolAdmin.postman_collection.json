@@ -1,0 +1,47 @@
+{
+  "info": {
+    "name": "EduManage — School Administration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "tenantSubdomain", "value": "greenhill" },
+    { "key": "accessToken", "value": "" },
+    { "key": "classId", "value": "" },
+    { "key": "teacherId", "value": "" },
+    { "key": "studentId", "value": "" },
+    { "key": "parentId", "value": "" }
+  ],
+  "item": [
+    { "name": "Classes: List", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/classes" } },
+    { "name": "Classes: Create", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Primary 1\",\n  \"tier\": \"Lower Primary\"\n}" }, "url": "{{baseUrl}}/school/classes" } },
+    { "name": "Classes: Add Stream", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"S1A\"\n}" }, "url": "{{baseUrl}}/school/classes/{{classId}}/streams" } },
+    { "name": "Subjects: List", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/classes/subjects" } },
+    { "name": "Subjects: Add", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Mathematics\"\n}" }, "url": "{{baseUrl}}/school/classes/subjects" } },
+    { "name": "Classes: Set Subjects", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"subjectIds\": []\n}" }, "url": "{{baseUrl}}/school/classes/{{classId}}/subjects" } },
+
+    { "name": "Teachers: List", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/teachers" } },
+    { "name": "Teachers: Create", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Mr. Okello\",\n  \"email\": \"okello@greenhill.edu.ug\",\n  \"subjectSpecialization\": \"Mathematics\"\n}" }, "url": "{{baseUrl}}/school/teachers" } },
+    { "name": "Teachers: Set On Leave", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"leaveReason\": \"Maternity leave\"\n}" }, "url": "{{baseUrl}}/school/teachers/{{teacherId}}/leave" } },
+
+    { "name": "Students: List", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/students" } },
+    { "name": "Students: Enroll", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Ivan\",\n  \"lastName\": \"Namukasa\",\n  \"classId\": \"{{classId}}\",\n  \"parentName\": \"Mary Namukasa\",\n  \"parentPhone\": \"+256700000000\",\n  \"parentEmail\": \"mary@example.com\"\n}" }, "url": "{{baseUrl}}/school/students" } },
+    { "name": "Students: Promote", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/students/{{studentId}}/promote" } },
+
+    { "name": "Parents: List", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/parents" } },
+
+    { "name": "Attendance: Overview", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/attendance?date=2026-07-13" } },
+
+    { "name": "Fees: Structures", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/fees/structures" } },
+    { "name": "Fees: Payment Status", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/fees/payments?term=Term 1 2026" } },
+
+    { "name": "Config: Get", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/config" } },
+    { "name": "Config: Billing Status", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/config/billing" } },
+
+    { "name": "Alerts: Send", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"channel\": \"EMAIL\",\n  \"audience\": \"All Parents\",\n  \"message\": \"PTA meeting this Friday at 3pm.\"\n}" }, "url": "{{baseUrl}}/school/alerts" } },
+
+    { "name": "Reports: Overview", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/reports/overview?term=Term 1 2026" } },
+
+    { "name": "Support: List My Tickets", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }], "url": "{{baseUrl}}/school/support" } }
+  ]
+}

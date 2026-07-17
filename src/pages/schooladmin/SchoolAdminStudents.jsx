@@ -1,185 +1,201 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, TrendingUp, TrendingDown, Upload, Filter, Zap, CheckSquare, MoveRight } from 'lucide-react'
+import { Search, Plus, Upload, Zap, MoveRight, AlertCircle } from 'lucide-react'
+import { studentsApi } from '../../api/students.api'
+import { classesApi } from '../../api/classes.api'
 
-const students = [
-    { id: 'STU-001', name: 'Ivan Namukasa', class: 'P7', age: 13, parent: 'Mary Namukasa', phone: '+256 772 111222', performance: 82, attendance: 94, fees: 'paid' },
-    { id: 'STU-002', name: 'Grace Mukasa', class: 'P6', age: 12, parent: 'John Mukasa', phone: '+256 701 222333', performance: 91, attendance: 98, fees: 'paid' },
-    { id: 'STU-003', name: 'David Ouma', class: 'P5', age: 11, parent: 'Patricia Ouma', phone: '+256 785 333444', performance: 65, attendance: 87, fees: 'partial' },
-    { id: 'STU-004', name: 'Faith Ssali', class: 'P4', age: 10, parent: 'Daniel Ssali', phone: '+256 754 444555', performance: 78, attendance: 92, fees: 'overdue' },
-    { id: 'STU-005', name: 'Moses Achola', class: 'P7', age: 13, parent: 'Helen Achola', phone: '+256 700 555666', performance: 55, attendance: 76, fees: 'paid' },
-    { id: 'STU-006', name: 'Ruth Nabirye', class: 'P3', age: 9, parent: 'James Nabirye', phone: '+256 779 666777', performance: 88, attendance: 100, fees: 'paid' },
-]
-
-export default function SchoolAdminStudents() {
+export default function SchoolAdminStudents({ role = "schooladmin-primary" }) {
     const [classFilter, setClassFilter] = useState('All')
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
-    const [relocateTarget, setRelocateTarget] = useState('P1')
 
-    const classes = ['All', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6A', 'P6B', 'P7']
-    const relocateClasses = classes.filter(c => c !== 'All')
+    const [students, setStudents] = useState([])
+    const [classes, setClasses] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState('')
+    const [actionError, setActionError] = useState('')
+    const [actionLoading, setActionLoading] = useState(false)
 
-    const filtered = students.filter(s => (classFilter === 'All' || s.class === classFilter) && (s.name.toLowerCase().includes(search.toLowerCase()) || s.id.includes(search)))
+    const [relocateTarget, setRelocateTarget] = useState('')
+    const [enrollForm, setEnrollForm] = useState({ firstName: '', lastName: '', dateOfBirth: '', gender: '', classId: '', parentName: '', parentPhone: '', parentEmail: '' })
 
-    const openAutoPromote = () => setModal('autopromote')
+    const load = useCallback(async () => {
+        setLoading(true)
+        setLoadError('')
+        try {
+            const [studentsResult, classesResult] = await Promise.all([
+                studentsApi.list({ search: search || undefined }),
+                classesApi.list(),
+            ])
+            setStudents(studentsResult)
+            setClasses(classesResult)
+        } catch (err) {
+            setLoadError(err.message || 'Failed to load students')
+        } finally {
+            setLoading(false)
+        }
+    }, [search])
+
+    useEffect(() => { load() }, [load])
+
+    const filtered = students.filter(s => classFilter === 'All' || s.className === classFilter)
+
+    const openRelocate = (s) => { setSelected(s); setRelocateTarget(''); setModal('relocate'); setActionError('') }
+
+    const confirmRelocate = async () => {
+        if (!relocateTarget) return
+        setActionLoading(true); setActionError('')
+        try {
+            await studentsApi.relocate(selected.id, { targetClassId: relocateTarget })
+            setModal(null); await load()
+        } catch (err) { setActionError(err.message || 'Failed to relocate student') } finally { setActionLoading(false) }
+    }
+
+    const confirmPromote = async () => {
+        setActionLoading(true); setActionError('')
+        try {
+            await studentsApi.promote(selected.id)
+            setModal(null); await load()
+        } catch (err) { setActionError(err.message || 'Failed to promote student') } finally { setActionLoading(false) }
+    }
+
+    const submitEnroll = async () => {
+        setActionLoading(true); setActionError('')
+        try {
+            await studentsApi.enroll(enrollForm)
+            setModal(null)
+            setEnrollForm({ firstName: '', lastName: '', dateOfBirth: '', gender: '', classId: '', parentName: '', parentPhone: '', parentEmail: '' })
+            await load()
+        } catch (err) { setActionError(err.message || 'Failed to enroll student') } finally { setActionLoading(false) }
+    }
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role={role}>
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">Students</h1><p className="page-subtitle">Manage all enrolled students</p></div>
                     <div className="flex gap-2">
                         <button className="btn-secondary" onClick={() => setModal('import')}><Upload size={15} /> Import</button>
-                        <button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-md shadow-emerald-500/20 px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2" onClick={openAutoPromote}><Zap size={15} /> Auto-Promote</button>
-                        <button className="btn-primary" onClick={() => setModal('enroll')}><Plus size={15} /> Enroll</button>
+                        <button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-md shadow-emerald-500/20 px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2" onClick={() => setModal('autopromote')}><Zap size={15} /> Bulk Promote</button>
+                        <button className="btn-primary" onClick={() => { setModal('enroll'); setActionError('') }}><Plus size={15} /> Enroll</button>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
+                    <button onClick={() => setClassFilter('All')} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${classFilter === 'All' ? 'bg-primary-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>All</button>
                     {classes.map(c => (
-                        <button key={c} onClick={() => setClassFilter(c)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${classFilter === c ? 'bg-primary-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>{c}</button>
+                        <button key={c.id} onClick={() => setClassFilter(c.name)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${classFilter === c.name ? 'bg-primary-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>{c.name}</button>
                     ))}
                     <div className="ml-auto relative"><Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" /><input value={search} onChange={e => setSearch(e.target.value)} className="input-field pl-9 w-60" placeholder="Search students..." /></div>
                 </div>
 
+                {loadError && <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2"><AlertCircle size={16} /> {loadError}</div>}
+
                 <div className="card p-0">
                     <div className="overflow-x-auto"><table className="w-full">
-                        <thead><tr>{['Student', 'ID', 'Class', 'Parent Contact', 'Performance', 'Fees', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
+                        <thead><tr>{['Student', 'ID', 'Class', 'Parent Contact', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
-                            {filtered.map(s => (
-                                <tr key={s.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30 cursor-pointer" onClick={(e) => {
-                                    // Prevent row click if clicking a button
-                                    if (e.target.closest('button')) return;
-                                    setSelected(s); setModal('view');
-                                }}>
+                            {loading && <tr><td colSpan={6} className="table-cell text-center text-gray-400 py-8">Loading…</td></tr>}
+                            {!loading && filtered.map(s => (
+                                <tr key={s.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
                                     <td className="table-cell">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold">{s.name[0]}</div>
-                                            <div><p className="text-sm font-semibold dark:text-white">{s.name}</p><p className="text-xs text-gray-400 dark:text-slate-500">{s.age} yrs</p></div>
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold">{s.firstName[0]}</div>
+                                            <div><p className="text-sm font-semibold dark:text-white">{s.fullName}</p></div>
                                         </div>
                                     </td>
-                                    <td className="table-cell font-mono text-xs text-gray-500 dark:text-slate-400">{s.id}</td>
-                                    <td className="table-cell"><Badge variant="info">{s.class}</Badge></td>
-                                    <td className="table-cell text-xs text-gray-600 dark:text-slate-300"><p>{s.parent}</p><p className="text-gray-400 dark:text-slate-500">{s.phone}</p></td>
-                                    <td className="table-cell">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-16 bg-gray-100 dark:bg-slate-700/50 rounded-full h-1.5"><div className={`h-1.5 rounded-full ${s.performance >= 80 ? 'bg-emerald-500' : s.performance >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${s.performance}%` }} /></div>
-                                            <span className="text-xs font-semibold text-gray-700 dark:text-slate-300">{s.performance}%</span>
-                                            {s.performance >= 80 ? <TrendingUp size={12} className="text-emerald-500" /> : <TrendingDown size={12} className="text-red-500" />}
-                                        </div>
+                                    <td className="table-cell font-mono text-xs text-gray-500 dark:text-slate-400">{s.studentCode}</td>
+                                    <td className="table-cell"><Badge variant="info">{s.className}{s.streamName ? ` ${s.streamName}` : ''}</Badge></td>
+                                    <td className="table-cell text-xs text-gray-600 dark:text-slate-300">
+                                        {s.parents[0] ? <><p>{s.parents[0].fullName}</p><p className="text-gray-400 dark:text-slate-500">{s.parents[0].phone}</p></> : <span className="italic text-gray-400">No parent linked</span>}
                                     </td>
-                                    <td className="table-cell"><Badge variant={s.fees === 'paid' ? 'success' : s.fees === 'partial' ? 'warning' : 'danger'}>{s.fees}</Badge></td>
+                                    <td className="table-cell"><Badge variant={s.status === 'ACTIVE' ? 'success' : s.status === 'REPEATING' ? 'warning' : 'gray'}>{s.status.toLowerCase()}</Badge></td>
                                     <td className="table-cell">
                                         <div className="flex gap-2">
-                                            <button onClick={() => { setSelected(s); setModal('relocate') }} className="btn-secondary py-1 px-2 text-xs flex items-center gap-1"><MoveRight size={12} /> Relocate</button>
-                                            <button onClick={() => { setSelected(s); setModal('promote') }} className="btn-primary text-xs py-1 px-2 text-white bg-blue-600 hover:bg-blue-700">Promote</button>
+                                            <button onClick={() => openRelocate(s)} className="btn-secondary py-1 px-2 text-xs flex items-center gap-1"><MoveRight size={12} /> Relocate</button>
+                                            <button onClick={() => { setSelected(s); setModal('promote'); setActionError('') }} className="btn-primary text-xs py-1 px-2 text-white bg-blue-600 hover:bg-blue-700">Promote</button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table></div>
-                    <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 rounded-b-2xl flex items-center justify-between">
+                    <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 rounded-b-2xl">
                         <p className="text-xs text-gray-500 dark:text-slate-400">{filtered.length} students</p>
-                        <div className="flex gap-2"><button className="btn-secondary text-xs py-1 px-3">Previous</button><button className="btn-primary text-xs py-1 px-3">Next</button></div>
                     </div>
                 </div>
             </div>
 
-            <Modal isOpen={modal === 'relocate'} onClose={() => setModal(null)} title={`Relocate Student: ${selected?.name}`}
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}>Confirm Relocation</button></>}>
+            <Modal isOpen={modal === 'relocate'} onClose={() => setModal(null)} title={`Relocate Student: ${selected?.fullName}`}
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button disabled={actionLoading || !relocateTarget} className="btn-primary" onClick={confirmRelocate}>{actionLoading ? 'Relocating…' : 'Confirm Relocation'}</button></>}>
                 {selected && (
                     <div className="space-y-4">
-                        <p className="text-sm text-gray-600 dark:text-slate-300">Move <strong>{selected.name}</strong> to a different class stream or entirely new level.</p>
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl mb-4"><p className="text-sm font-semibold text-blue-900 dark:text-blue-300">Current Class: {selected.class}</p></div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Target Class</label>
-                            <select className="input-field w-full" value={relocateTarget} onChange={(e) => setRelocateTarget(e.target.value)}>
-                                {relocateClasses.filter(c => c !== selected.class).map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Reason for Relocation</label>
-                            <input className="input-field w-full" placeholder="e.g. Stream balancing, requested by parent" />
-                        </div>
+                        {actionError && <p className="text-sm text-red-600">{actionError}</p>}
+                        <p className="text-sm text-gray-600 dark:text-slate-300">Move <strong>{selected.fullName}</strong> from <strong>{selected.className}</strong> to:</p>
+                        <select className="select-field" value={relocateTarget} onChange={e => setRelocateTarget(e.target.value)}>
+                            <option value="">Select class</option>
+                            {classes.filter(c => c.id !== selected.classId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
                     </div>
                 )}
             </Modal>
 
-            <Modal isOpen={modal === 'promote'} onClose={() => setModal(null)} title={`Promote / Repeat — ${selected?.name}`}
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-success" onClick={() => setModal(null)}>Promote to Next Class</button><button className="btn-danger" onClick={() => setModal(null)}>Mark as Repeat</button></>}>
+            <Modal isOpen={modal === 'promote'} onClose={() => setModal(null)} title={`Promote Student: ${selected?.fullName}`}
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button disabled={actionLoading} className="btn-primary" onClick={confirmPromote}>{actionLoading ? 'Promoting…' : 'Confirm Promotion'}</button></>}>
                 {selected && (
-                    <div className="space-y-4">
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl"><p className="text-sm font-semibold dark:text-slate-300">Current Class: <span className="text-primary-600 dark:text-primary-400">{selected.class}</span> → Next: <span className="text-emerald-600 dark:text-emerald-400">{selected.class === 'P7' ? 'Graduated' : selected.class.replace(/\d/, d => +d + 1)}</span></p></div>
-                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Reason if repeating</label><textarea className="input-field resize-none w-full" rows={3} placeholder="e.g., Did not meet the minimum score threshold..." /></div>
+                    <div className="space-y-3">
+                        {actionError && <p className="text-sm text-red-600">{actionError}</p>}
+                        <p className="text-sm text-gray-600 dark:text-slate-300">Promote <strong>{selected.fullName}</strong> from <strong>{selected.className}</strong> to the next class in sequence. If this is the school's final class, the student will be marked Graduated instead.</p>
                     </div>
                 )}
             </Modal>
 
-            <Modal isOpen={modal === 'autopromote'} onClose={() => setModal(null)} title="Auto-Promote Students" size="lg"
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors" onClick={() => setModal(null)}><CheckSquare size={16} /> Confirm Auto-Promotion</button></>}>
-                <div className="space-y-5">
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 rounded-xl">
-                        <h4 className="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-2"><Zap size={18} /> System Auto-Promotion</h4>
-                        <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
-                            The system will automatically promote all students with an average performance score of <strong>40% or higher</strong> to the next class level, according to the standard Ugandan curriculum passing threshold. Students below 40% will be marked to repeat.
-                        </p>
-                    </div>
-
-                    <div>
-                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">Promotion Preview</h3>
-                            <select className="input-field py-1 text-sm"><option>All Classes</option><option>P6 only</option></select>
-                        </div>
-
-                        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
-                            <div className="overflow-x-auto"><table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-slate-400 text-xs uppercase font-semibold">
-                                    <tr><th className="px-4 py-3 text-left">Student</th><th className="px-4 py-3 text-center">Score</th><th className="px-4 py-3 text-left">Action</th></tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {students.map(s => {
-                                        const isPassing = s.performance >= 40;
-                                        const nextClass = s.class === 'P7' ? 'Graduated' : s.class.replace(/\d/, d => +d + 1);
-                                        return (
-                                            <tr key={s.id} className={isPassing ? 'bg-emerald-50/10 dark:bg-emerald-900/10' : 'bg-red-50/30 dark:bg-red-900/10'}>
-                                                <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-200">{s.name} <span className="text-gray-400 dark:text-slate-500 font-normal text-xs ml-1">({s.class})</span></td>
-                                                <td className="px-4 py-3 text-center font-bold text-gray-700 dark:text-slate-300">{s.performance}%</td>
-                                                <td className={`px-4 py-3 font-semibold ${isPassing ? 'text-emerald-600 dark:text-emerald-400' : 'text-danger-600 dark:text-red-400'}`}>
-                                                    {isPassing ? `Promote to ${nextClass}` : `Repeat ${s.class}`}
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table></div>
-                        </div>
-                    </div>
+            <Modal isOpen={modal === 'autopromote'} onClose={() => setModal(null)} title="Bulk Promotion"
+                footer={<button className="btn-secondary" onClick={() => setModal(null)}>Close</button>}>
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+                    Score-based auto-promotion needs a Grades module to know real student scores, which doesn't exist yet — this won't fabricate a pass/fail decision without real data. Use "Promote" per-student for now, or ask to have Grades + real auto-promotion built as its own task.
                 </div>
             </Modal>
 
-            <Modal isOpen={modal === 'view'} onClose={() => setModal(null)} title="Student Profile"
-                footer={<button className="btn-secondary" onClick={() => setModal(null)}>Close</button>}>
-                {selected && (
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                        {[['Name', selected.name], ['Student ID', selected.id], ['Class', selected.class], ['Age', `${selected.age} years`], ['Parent', selected.parent], ['Parent Phone', selected.phone], ['Performance', `${selected.performance}%`], ['Attendance', `${selected.attendance}%`], ['Fee Status', selected.fees]].map(([k, v]) => (
-                            <div key={k} className="bg-gray-50 dark:bg-slate-700/50 p-3 rounded-xl"><p className="text-xs text-gray-500 dark:text-slate-400">{k}</p><p className="font-semibold mt-0.5 dark:text-slate-200">{v}</p></div>
-                        ))}
+            <Modal isOpen={modal === 'enroll'} onClose={() => setModal(null)} title="Enroll New Student" size="lg"
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button disabled={actionLoading} className="btn-primary" onClick={submitEnroll}>{actionLoading ? 'Enrolling…' : 'Enroll Student'}</button></>}>
+                <div className="grid grid-cols-2 gap-4">
+                    {actionError && <p className="col-span-2 text-sm text-red-600">{actionError}</p>}
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">First Name</label><input className="input-field" value={enrollForm.firstName} onChange={e => setEnrollForm(f => ({ ...f, firstName: e.target.value }))} /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label><input className="input-field" value={enrollForm.lastName} onChange={e => setEnrollForm(f => ({ ...f, lastName: e.target.value }))} /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label><input type="date" className="input-field" value={enrollForm.dateOfBirth} onChange={e => setEnrollForm(f => ({ ...f, dateOfBirth: e.target.value }))} /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                        <select className="select-field" value={enrollForm.gender} onChange={e => setEnrollForm(f => ({ ...f, gender: e.target.value }))}>
+                            <option value="">Select gender</option><option value="MALE">Male</option><option value="FEMALE">Female</option>
+                        </select>
                     </div>
-                )}
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                        <select className="select-field" value={enrollForm.classId} onChange={e => setEnrollForm(f => ({ ...f, classId: e.target.value, streamId: '' }))}>
+                            <option value="">Select class</option>
+                            {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                    </div>
+                    {classes.find(c => c.id === enrollForm.classId)?.streams.length > 0 && (
+                        <div><label className="block text-sm font-medium text-gray-700 mb-1">Stream</label>
+                            <select className="select-field" value={enrollForm.streamId || ''} onChange={e => setEnrollForm(f => ({ ...f, streamId: e.target.value }))}>
+                                <option value="">Select stream</option>
+                                {classes.find(c => c.id === enrollForm.classId).streams.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            </select>
+                        </div>
+                    )}
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Parent Name</label><input className="input-field" value={enrollForm.parentName} onChange={e => setEnrollForm(f => ({ ...f, parentName: e.target.value }))} /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label><input type="tel" className="input-field" placeholder="+256 700 000000" value={enrollForm.parentPhone} onChange={e => setEnrollForm(f => ({ ...f, parentPhone: e.target.value }))} /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Parent Email</label><input type="email" className="input-field" value={enrollForm.parentEmail} onChange={e => setEnrollForm(f => ({ ...f, parentEmail: e.target.value }))} /></div>
+                </div>
             </Modal>
 
-            <Modal isOpen={modal === 'import'} onClose={() => setModal(null)} title="Import Students"
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}><Upload size={14} /> Import</button></>}>
-                <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
-                        <Upload size={28} className="mx-auto text-gray-400 dark:text-slate-500 mb-2" />
-                        <p className="text-sm font-medium text-gray-600 dark:text-slate-300">Drop .xlsx or .csv here</p>
-                    </div>
+            <Modal isOpen={modal === 'import'} onClose={() => setModal(null)} title="Import Students from Excel"
+                footer={<button className="btn-secondary" onClick={() => setModal(null)}>Close</button>}>
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+                    Bulk Excel/CSV import isn't wired up yet. Use "Enroll" for now, or ask to have this built as its own task.
                 </div>
             </Modal>
         </DashboardLayout>

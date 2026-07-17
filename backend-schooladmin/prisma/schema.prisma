@@ -1,0 +1,713 @@
+// ─────────────────────────────────────────────────────────
+// EduManage — Prisma Schema
+// PHASE 2 SCOPE: Auth-related models only (School, PlatformAdmin,
+// User, PasswordResetToken, RefreshToken). Academic/billing models
+// are added in later phases.
+// ─────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ───────────────────────────────────────────────
+
+enum SchoolLevel {
+  PRIMARY
+  SECONDARY
+}
+
+enum SchoolStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+enum PlatformAdminRole {
+  SUPER_ADMIN
+  FINANCE_ADMIN
+  SUPPORT_AGENT
+  CONTENT_MANAGER
+}
+
+enum PlatformAdminStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum UserRole {
+  SCHOOLADMIN_PRIMARY
+  SCHOOLADMIN_SECONDARY
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum ResetOwnerType {
+  PLATFORM_ADMIN
+  USER
+}
+
+// ── Models ──────────────────────────────────────────────
+
+model School {
+  id                   String       @id @default(uuid())
+  name                 String
+  level                SchoolLevel
+  subdomain            String       @unique
+  physicalAddress      String
+  district             String
+  contactName          String
+  contactPhone         String
+  contactEmail         String
+  website              String?
+  numStudentsDeclared  Int
+  licenseFileUrl       String?
+  status               SchoolStatus @default(PENDING)
+  rejectionReason      String?
+  pricePerStudent      Int          @default(2000)
+  motto                String?
+  currentTerm          String?
+  termStart            DateTime?
+  termEnd              DateTime?
+  notificationSettings Json? // { smsNotif, emailNotif, attendanceAlert, feeReminder }
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  users                User[]
+  documents            SchoolDocument[]
+  supportTickets       SupportTicket[]
+  invoices             Invoice[]
+  classes              SchoolClass[]
+  subjects             Subject[]
+  teachers             TeacherProfile[]
+  students             Student[]
+  parents              Parent[]
+  attendanceRecords    AttendanceRecord[]
+  timetableEntries     TimetableEntry[]
+  feeStructures        ClassFeeStructure[]
+  feePayments          StudentFeePayment[]
+  alerts               SchoolAlert[]
+
+  @@index([level])
+  @@index([district])
+  @@index([status, level])
+  @@map("schools")
+}
+
+model SchoolDocument {
+  id        String   @id @default(uuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  type      String
+  fileUrl   String
+  createdAt DateTime @default(now())
+
+  @@index([schoolId])
+  @@map("school_documents")
+}
+
+model PlatformAdmin {
+  id           String              @id @default(uuid())
+  name         String
+  email        String              @unique
+  passwordHash String
+  role         PlatformAdminRole   @default(SUPPORT_AGENT)
+  status       PlatformAdminStatus @default(ACTIVE)
+  recoveryEmail String?
+  lastLoginAt  DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("platform_admins")
+}
+
+model User {
+  id            String     @id @default(uuid())
+  schoolId      String
+  school        School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  role          UserRole
+  fullName      String
+  email         String?
+  username      String?
+  studentCode   String?
+  passwordHash  String
+  recoveryEmail String?
+  status        UserStatus @default(ACTIVE)
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Identifiers must be unique per-school, not globally.
+  teacherProfile TeacherProfile?
+  parentProfile  Parent?
+  studentProfile Student?
+
+  @@unique([schoolId, email])
+  @@unique([schoolId, username])
+  @@unique([schoolId, studentCode])
+  @@index([schoolId, role])
+  @@index([schoolId, status])
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id          String         @id @default(uuid())
+  ownerType   ResetOwnerType
+  ownerId     String
+  codeHash    String
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([ownerType, ownerId])
+  @@map("password_reset_tokens")
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+}
+
+model EmailLog {
+  id         String      @id @default(uuid())
+  type       String
+  recipient  String
+  subject    String
+  status     EmailStatus
+  error      String?
+  createdAt  DateTime    @default(now())
+
+  @@index([type])
+  @@index([recipient])
+  @@index([status, createdAt])
+  @@map("email_logs")
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum TicketAuthorType {
+  PLATFORM_ADMIN
+  SCHOOL
+}
+
+model PlatformConfig {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("platform_config")
+}
+
+model SupportTicket {
+  id         String          @id @default(uuid())
+  schoolId   String
+  school     School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subject    String
+  priority   TicketPriority  @default(MEDIUM)
+  status     TicketStatus    @default(OPEN)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  replies    TicketReply[]
+
+  @@index([schoolId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("support_tickets")
+}
+
+model TicketReply {
+  id         String           @id @default(uuid())
+  ticketId   String
+  ticket     SupportTicket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorType TicketAuthorType
+  authorId   String
+  body       String
+  createdAt  DateTime         @default(now())
+
+  @@index([ticketId])
+  @@map("ticket_replies")
+}
+
+model Invoice {
+  id        String        @id @default(uuid())
+  schoolId  String
+  school    School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  period    String // e.g. "2026-03"
+  amount    Int
+  dueDate   DateTime
+  status    InvoiceStatus @default(PENDING)
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  transactions PaymentTransaction[]
+
+  @@unique([schoolId, period])
+  @@index([status])
+  @@index([status, dueDate])
+  @@map("invoices")
+}
+
+model ApiKey {
+  id          String       @id @default(uuid())
+  name        String
+  keyPrefix   String // first chars shown in UI, e.g. "em_live_8f2a"
+  keyHash     String       @unique
+  status      ApiKeyStatus @default(ACTIVE)
+  createdById String
+  lastUsedAt  DateTime?
+  createdAt   DateTime     @default(now())
+  revokedAt   DateTime?
+
+  @@map("api_keys")
+}
+
+model EmergencyAuditLog {
+  id              String   @id @default(uuid())
+  action          String
+  performedById   String
+  performedByName String
+  reason          String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@map("emergency_audit_logs")
+}
+
+enum PaymentTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+  INVALID
+  CANCELLED
+}
+
+enum IpnProcessingStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+}
+
+model PaymentTransaction {
+  id                 String                   @id @default(uuid())
+  invoiceId          String
+  invoice            Invoice                  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  schoolId           String
+  merchantReference  String                   @unique // the `id` sent to Pesapal SubmitOrderRequest
+  orderTrackingId    String?                  @unique // Pesapal's order_tracking_id, set once known
+  currency            String                  @default("UGX")
+  amount              Int
+  status              PaymentTransactionStatus @default(PENDING)
+  statusCode          Int? // Pesapal status_code: 0 INVALID, 1 COMPLETED, 2 FAILED, 3 REVERSED
+  paymentMethod       String? // e.g. Visa, MPESA, MTN
+  confirmationCode    String? // required to request a refund later
+  paymentAccount      String? // masked card/phone
+  description         String
+  redirectUrl         String? // Pesapal-hosted payment page returned at initiation
+  rawSubmitResponse   Json?
+  rawStatusResponse   Json?
+  refundRequestedAt   DateTime?
+  refundStatus        String? // mirrors Pesapal's refund response status/message
+  cancelledAt         DateTime?
+  initiatedAt         DateTime                 @default(now())
+  completedAt         DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  ipnEvents           PesapalIpnEvent[]
+
+  @@index([schoolId])
+  @@index([status])
+  @@map("payment_transactions")
+}
+
+// Every IPN call Pesapal makes is logged here BEFORE processing — this is
+// what makes duplicate-callback protection and idempotency auditable
+// rather than just "trust the code did the right thing."
+model PesapalIpnEvent {
+  id                  String              @id @default(uuid())
+  paymentTransactionId String?
+  paymentTransaction   PaymentTransaction? @relation(fields: [paymentTransactionId], references: [id], onDelete: SetNull)
+  orderTrackingId      String
+  orderMerchantReference String
+  orderNotificationType String // IPNCHANGE | RECURRING | CALLBACKURL
+  rawPayload           Json
+  processingStatus     IpnProcessingStatus @default(RECEIVED)
+  responseStatusSent   Int? // 200 or 500 — what we told Pesapal
+  errorMessage         String?
+  createdAt            DateTime            @default(now())
+  processedAt          DateTime?
+
+  @@index([orderTrackingId])
+  @@index([paymentTransactionId])
+  @@map("pesapal_ipn_events")
+}
+
+model RefreshToken {
+  id         String         @id @default(uuid())
+  tokenHash  String         @unique
+  ownerType  ResetOwnerType
+  ownerId    String
+  schoolId   String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime       @default(now())
+
+  @@index([ownerType, ownerId])
+  @@index([revokedAt, expiresAt])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────────────────
+// School Administration module (Classes, Teachers, Students,
+// Parents, Attendance, Timetable, Fees, Alerts). Shared by both
+// Primary and Secondary schools — level-specific behavior (streams,
+// class naming) is data, not schema duplication.
+// ─────────────────────────────────────────────────────────
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StaffStatus {
+  ACTIVE
+  ON_LEAVE
+  INACTIVE
+}
+
+enum StudentStatus {
+  ACTIVE
+  PROMOTED
+  REPEATING
+  GRADUATED
+  TRANSFERRED
+  INACTIVE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum FeeCategory {
+  TUITION
+  LUNCH
+  ACTIVITIES
+  OTHER
+}
+
+enum FeePaymentStatus {
+  PAID
+  PARTIAL
+  OVERDUE
+}
+
+enum AlertChannel {
+  SMS
+  EMAIL
+  APP
+  EMERGENCY
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  classSubjects ClassSubject[]
+  timetableEntries TimetableEntry[]
+
+  @@unique([schoolId, name])
+  @@map("subjects")
+}
+
+model SchoolClass {
+  id        String   @id @default(uuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String // e.g. "Primary 1", "Senior 1"
+  tier      String? // e.g. "Lower Primary" / "Upper Primary" / "O-Level" / "A-Level"
+  order     Int // sequential order within the school, used to resolve "next class" on promotion
+  createdAt DateTime @default(now())
+
+  streams        SchoolClassStream[]
+  classSubjects  ClassSubject[]
+  students       Student[]
+  timetableEntries TimetableEntry[]
+  feeStructure   ClassFeeStructure?
+
+  @@unique([schoolId, name])
+  @@index([schoolId, order])
+  @@map("school_classes")
+}
+
+// Empty for most Primary classes (single implicit stream); Secondary
+// classes have one row per named stream (S1A, S1B, ...).
+model SchoolClassStream {
+  id        String      @id @default(uuid())
+  classId   String
+  class     SchoolClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  name      String // e.g. "S1A"
+  createdAt DateTime    @default(now())
+
+  students         Student[]
+  timetableEntries TimetableEntry[]
+
+  @@unique([classId, name])
+  @@map("school_class_streams")
+}
+
+model ClassSubject {
+  id        String      @id @default(uuid())
+  classId   String
+  class     SchoolClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, subjectId])
+  @@map("class_subjects")
+}
+
+model TeacherProfile {
+  id                     String      @id @default(uuid())
+  userId                 String      @unique
+  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schoolId               String
+  school                 School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subjectSpecialization  String?
+  status                 StaffStatus @default(ACTIVE)
+  leaveReason            String?
+  leaveStart             DateTime?
+  leaveEnd               DateTime?
+  leaveNotes             String?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  classAssignments TeacherClassSubject[]
+  timetableEntries TimetableEntry[]
+  absenceReports   TeacherAbsenceReport[]
+
+  @@index([schoolId, status])
+  @@map("teacher_profiles")
+}
+
+model TeacherClassSubject {
+  id               String         @id @default(uuid())
+  teacherProfileId String
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  classId          String
+  subjectId        String?
+
+  @@unique([teacherProfileId, classId, subjectId])
+  @@map("teacher_class_subjects")
+}
+
+model TeacherAbsenceReport {
+  id               String         @id @default(uuid())
+  schoolId         String
+  teacherProfileId String
+  teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  reportedByUserId String
+  reason           String
+  date             DateTime
+  status           String         @default("PENDING") // PENDING | REVIEWED
+  createdAt        DateTime       @default(now())
+
+  @@index([schoolId, status])
+  @@map("teacher_absence_reports")
+}
+
+model Student {
+  id            String        @id @default(uuid())
+  schoolId      String
+  school        School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userId        String?       @unique // set only if/when a student portal login is provisioned
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  studentCode   String
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime?
+  gender        Gender?
+  classId       String
+  class         SchoolClass   @relation(fields: [classId], references: [id])
+  streamId      String?
+  stream        SchoolClassStream? @relation(fields: [streamId], references: [id])
+  status        StudentStatus @default(ACTIVE)
+  admittedAt    DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  parents           StudentParent[]
+  attendanceRecords AttendanceRecord[]
+  feePayments       StudentFeePayment[]
+
+  @@unique([schoolId, studentCode])
+  @@index([schoolId, classId])
+  @@index([schoolId, status])
+  @@map("students")
+}
+
+model Parent {
+  id             String   @id @default(uuid())
+  schoolId       String
+  school         School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userId         String?  @unique // set once the parent's own login is provisioned
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  fullName       String
+  phone          String
+  email          String?
+  status         String   @default("ACTIVE") // ACTIVE | INACTIVE
+  inactiveReason String?
+  inactiveReturn DateTime?
+  inactiveNotes  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  students StudentParent[]
+
+  @@index([schoolId, status])
+  @@map("parents")
+}
+
+model StudentParent {
+  id           String  @id @default(uuid())
+  studentId    String
+  student      Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parentId     String
+  parent       Parent  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  relationship String  @default("Parent/Guardian")
+
+  @@unique([studentId, parentId])
+  @@map("student_parents")
+}
+
+model AttendanceRecord {
+  id           String            @id @default(uuid())
+  schoolId     String
+  school       School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classId      String
+  date         DateTime
+  status       AttendanceStatus
+  markedByUserId String
+  createdAt    DateTime          @default(now())
+
+  @@unique([studentId, date])
+  @@index([schoolId, classId, date])
+  @@map("attendance_records")
+}
+
+model TimetableEntry {
+  id               String          @id @default(uuid())
+  schoolId         String
+  school           School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classId          String
+  class            SchoolClass     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  streamId         String?
+  stream           SchoolClassStream? @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  dayOfWeek        String // Monday..Friday
+  timeSlot         String // matches a predefined slot label, e.g. "8:00 AM - 9:20 AM"
+  subjectId        String?
+  subject          Subject?        @relation(fields: [subjectId], references: [id])
+  teacherProfileId String?
+  teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
+  room             String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([classId, streamId, dayOfWeek, timeSlot])
+  @@map("timetable_entries")
+}
+
+model ClassFeeStructure {
+  id         String      @id @default(uuid())
+  schoolId   String
+  school     School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classId    String      @unique
+  class      SchoolClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  term       String // e.g. "Term 1 2026"
+  tuition    Int         @default(0)
+  lunch      Int         @default(0)
+  activities Int         @default(0)
+  updatedAt  DateTime    @updatedAt
+
+  @@map("class_fee_structures")
+}
+
+// A ledger of actual payments recorded by the school admin (manual entry —
+// cash/mobile money recorded after the fact). Distinct from the platform's
+// own Invoice/PaymentTransaction (Pesapal) models, which bill the SCHOOL,
+// not the school's own parents.
+model StudentFeePayment {
+  id              String   @id @default(uuid())
+  schoolId        String
+  school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  term            String
+  amount          Int
+  method          String?
+  recordedByUserId String
+  receiptNumber   String   @unique
+  paidAt          DateTime @default(now())
+
+  @@index([schoolId, studentId, term])
+  @@map("student_fee_payments")
+}
+
+model SchoolAlert {
+  id           String       @id @default(uuid())
+  schoolId     String
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  sentByUserId String
+  channel      AlertChannel
+  audience     String // e.g. "All Parents", "All Teachers", "Class:P1"
+  message      String
+  recipientCount Int        @default(0)
+  createdAt    DateTime     @default(now())
+
+  @@index([schoolId])
+  @@map("school_alerts")
+}

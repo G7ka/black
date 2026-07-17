@@ -6,6 +6,7 @@ import {
     Smartphone, HeartHandshake, Zap, Lock, Search
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { schoolRegistrationApi } from '../api/schoolRegistration.api';
 
 const NAV_LINKS = [
     { label: 'About Us', href: '#about' },
@@ -19,6 +20,7 @@ export default function Landing() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [schoolSearch, setSchoolSearch] = useState('');
     const [openFaq, setOpenFaq] = useState(null);
+    const [searchMessage, setSearchMessage] = useState(null);
 
     const handleNavClick = (link) => {
         setMenuOpen(false);
@@ -30,11 +32,43 @@ export default function Landing() {
         }
     };
 
-    const handleSchoolSearch = (e) => {
+    const handleSchoolSearch = async (e) => {
         e.preventDefault();
-        const slug = schoolSearch.trim().toLowerCase().replace(/\s+/g, '');
-        if (!slug) return;
-        window.location.href = `http://${slug}.lvh.me:5173`;
+
+        const query = schoolSearch.trim();
+
+        if (!query) return;
+
+        try {
+            const schools = await schoolRegistrationApi.searchSchools(query);
+
+            if (schools.length === 1) {
+                window.location.href = `http://${schools[0].subdomain}.lvh.me:5173`;
+                return;
+            }
+
+            if (schools.length > 1) {
+                setSearchMessage({
+                        title: 'Multiple Schools Found',
+                        message: 'Please enter a more specific school name.',
+                        type: 'warning'
+                    });
+                return;
+            }
+
+            setSearchMessage({
+                    title: 'School Not Found',
+                    message: 'We could not find this school on EduManage. Please check the spelling or contact your school administrator.',
+                    type: 'error'
+                });
+        } catch (error) {
+            console.error('School search failed:', error);
+            setSearchMessage({
+                    title: 'Search Error',
+                    message: 'Something went wrong while searching. Please try again.',
+                    type: 'error'
+                });
+        }
     };
 
     const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i);
@@ -226,8 +260,7 @@ export default function Landing() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-14"
-                    >
+                        className="text-center mb-14">
                         <span className="text-violet-400 font-semibold text-sm uppercase tracking-widest">How We Work</span>
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">From Registration to Running</h2>
                         <p className="text-slate-400 max-w-xl mx-auto leading-relaxed">
@@ -273,8 +306,7 @@ export default function Landing() {
                                     viewport={{ once: true, margin: "-50px" }}
                                     transition={{ duration: 0.5, delay: i * 0.15 }}
                                     key={item.step}
-                                    className="flex gap-5 items-start group"
-                                >
+                                    className="flex gap-5 items-start group">
                                     <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-${item.color}-500/20 border border-${item.color}-500/30 text-${item.color}-400 flex items-center justify-center`}>
                                         {item.icon}
                                     </div>
@@ -300,8 +332,7 @@ export default function Landing() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-14"
-                    >
+                        className="text-center mb-14">
                         <span className="text-emerald-400 font-semibold text-sm uppercase tracking-widest">Why EduManage</span>
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-4">The Smart Choice for Ugandan Schools</h2>
                         <p className="text-slate-400 max-w-xl mx-auto leading-relaxed">
@@ -324,8 +355,7 @@ export default function Landing() {
                                 viewport={{ once: true, margin: "-50px" }}
                                 transition={{ duration: 0.5, delay: i * 0.1 }}
                                 key={item.title}
-                                className="bg-slate-800/50 border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-all group"
-                            >
+                                className="bg-slate-800/50 border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-all group">
                                 <div className={`w-11 h-11 bg-${item.color}-500/15 text-${item.color}-400 rounded-xl flex items-center justify-center mb-5 border border-${item.color}-500/25 group-hover:scale-110 transition-transform`}>
                                     {item.icon}
                                 </div>
@@ -344,16 +374,14 @@ export default function Landing() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="max-w-3xl mx-auto px-5 text-center"
-                >
+                    className="max-w-3xl mx-auto px-5 text-center">
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready to join Uganda's fastest-growing school network?</h2>
                     <p className="text-slate-400 mb-8 leading-relaxed">
                         Register your school today and get your own secure portal within 24 hours.
                     </p>
                     <button
                         onClick={() => navigate('/register')}
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-base transition-all shadow-lg shadow-blue-900/40"
-                    >
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-base transition-all shadow-lg shadow-blue-900/40">
                         <Building2 size={18} /> Register Your School <ArrowRight size={16} />
                     </button>
                 </motion.div>
@@ -375,6 +403,41 @@ export default function Landing() {
                     </div>
                 </div>
             </footer>
+
+            {searchMessage && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center px-5 bg-black/60 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="max-w-md w-full bg-slate-800 border border-white/10 rounded-2xl p-6 shadow-2xl">
+                        <div className="flex items-start gap-4">
+
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                <Search className="text-blue-400" size={24} />
+                            </div>
+
+                            <div className="flex-1">
+                                <h3 className="text-white font-bold text-lg">
+                                    {searchMessage.title}
+                                </h3>
+
+                                <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+                                    {searchMessage.message}
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <button
+                            onClick={() => setSearchMessage(null)}
+                            className="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition">
+                            Close
+                        </button>
+
+                    </motion.div>
+                </div>
+            )}
+
         </div >
     );
 }

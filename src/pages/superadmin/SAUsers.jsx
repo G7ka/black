@@ -1,51 +1,76 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Plus, Shield, Mail, Trash2, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Plus, Mail, Trash2, AlertTriangle, CheckCircle } from 'lucide-react'
+import { platformAdminsApi } from '../../api/platformAdmins.api'
 
-const initialAdmins = [
-    { id: 1, name: 'James Mugisha', email: 'james@edumanage.ug', role: 'Super Admin', lastLogin: '2026-02-22 09:12', status: 'online' },
-    { id: 2, name: 'Sarah Nakato', email: 'sarah@edumanage.ug', role: 'Finance Admin', lastLogin: '2026-02-22 08:45', status: 'online' },
-    { id: 3, name: 'Peter Opolot', email: 'peter@edumanage.ug', role: 'Support Agent', lastLogin: '2026-02-21 14:30', status: 'online' },
-    { id: 4, name: 'Grace Auma', email: 'grace@edumanage.ug', role: 'Content Manager', lastLogin: '2026-02-20 11:00', status: 'offline' },
-]
-
-const permissionLabels = {
-    schools: 'Schools Management',
-    subscriptions: 'Subscriptions & Billing',
-    analytics: 'Analytics & Reports',
-    support: 'Support & Helpdesk',
-    configuration: 'Platform Configuration',
-    monitoring: 'System Monitoring',
-    devtools: 'Developer Tools',
-    emergency: 'Emergency Controls',
-    users: 'User Management',
-}
+const roleBadge = { SUPER_ADMIN: 'purple', FINANCE_ADMIN: 'info', SUPPORT_AGENT: 'gray', CONTENT_MANAGER: 'gray' }
+const roleLabel = { SUPER_ADMIN: 'Super Admin', FINANCE_ADMIN: 'Finance Admin', SUPPORT_AGENT: 'Support Agent', CONTENT_MANAGER: 'Content Manager' }
 
 export default function SAUsers() {
-    const [admins, setAdmins] = useState(initialAdmins)
+    const [admins, setAdmins] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState('')
     const [modal, setModal] = useState(null)
     const [selected, setSelected] = useState(null)
-    const [editPerms, setEditPerms] = useState({})
     const [toast, setToast] = useState(null)
+    const [actionError, setActionError] = useState('')
+    const [actionLoading, setActionLoading] = useState(false)
+
+    const [form, setForm] = useState({ name: '', email: '', role: 'SUPPORT_AGENT' })
+
+    const load = useCallback(async () => {
+        setLoading(true)
+        setLoadError('')
+        try {
+            setAdmins(await platformAdminsApi.list())
+        } catch (err) {
+            setLoadError(err.message || 'Failed to load admins')
+        } finally {
+            setLoading(false)
+        }
+    }, [])
+
+    useEffect(() => { load() }, [load])
 
     const showToast = (msg, type = 'success') => {
         setToast({ msg, type })
         setTimeout(() => setToast(null), 3000)
     }
 
-    const openRemove = (admin) => {
-        setSelected(admin)
-        setModal('remove')
+    const openRemove = (admin) => { setSelected(admin); setModal('remove'); setActionError('') }
+
+    const confirmRemove = async () => {
+        setActionLoading(true)
+        setActionError('')
+        try {
+            await platformAdminsApi.remove(selected.id)
+            showToast(`${selected.name} has been removed from the platform`, 'danger')
+            setModal(null)
+            setSelected(null)
+            await load()
+        } catch (err) {
+            setActionError(err.message || 'Failed to remove admin')
+        } finally {
+            setActionLoading(false)
+        }
     }
 
-    const confirmRemove = () => {
-        const name = selected.name
-        setAdmins(prev => prev.filter(a => a.id !== selected.id))
-        showToast(`${name} has been removed from the platform`, 'danger')
-        setModal(null)
-        setSelected(null)
+    const addAdmin = async () => {
+        setActionLoading(true)
+        setActionError('')
+        try {
+            await platformAdminsApi.create(form)
+            showToast('New admin added successfully — a set-password code was emailed to them')
+            setModal(null)
+            setForm({ name: '', email: '', role: 'SUPPORT_AGENT' })
+            await load()
+        } catch (err) {
+            setActionError(err.message || 'Failed to add admin')
+        } finally {
+            setActionLoading(false)
+        }
     }
 
     return (
@@ -53,15 +78,18 @@ export default function SAUsers() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div><h1 className="page-title">Platform Admin</h1><p className="page-subtitle">Manage the Super Admin team members</p></div>
-                    <button className="btn-primary" onClick={() => setModal('add')}><Plus size={16} /> Add Admin</button>
+                    <button className="btn-primary" onClick={() => { setModal('add'); setActionError('') }}><Plus size={16} /> Add Admin</button>
                 </div>
+
+                {loadError && <p className="text-sm text-red-600">{loadError}</p>}
 
                 <div className="card">
                     <h2 className="section-title">Admin Team</h2>
                     <div className="overflow-x-auto"><table className="w-full">
                         <thead><tr>{['Name', 'Email', 'Role', 'Last Login', 'Status', 'Actions'].map(h => <th key={h} className="table-header">{h}</th>)}</tr></thead>
                         <tbody>
-                            {admins.map(a => (
+                            {loading && <tr><td colSpan={6} className="table-cell text-center text-gray-400 py-8">Loading…</td></tr>}
+                            {!loading && admins.map(a => (
                                 <tr key={a.id} className="hover:bg-blue-50/30 dark:hover:bg-slate-700/30">
                                     <td className="table-cell">
                                         <div className="flex items-center gap-3">
@@ -70,9 +98,9 @@ export default function SAUsers() {
                                         </div>
                                     </td>
                                     <td className="table-cell text-gray-500 dark:text-slate-400 text-xs">{a.email}</td>
-                                    <td className="table-cell"><Badge variant={a.role === 'Super Admin' ? 'purple' : a.role === 'Finance Admin' ? 'info' : 'gray'}>{a.role}</Badge></td>
-                                    <td className="table-cell text-gray-500 dark:text-slate-400 text-xs">{a.lastLogin}</td>
-                                    <td className="table-cell"><Badge variant={a.status === 'online' ? 'success' : 'gray'}>{a.status}</Badge></td>
+                                    <td className="table-cell"><Badge variant={roleBadge[a.role]}>{roleLabel[a.role]}</Badge></td>
+                                    <td className="table-cell text-gray-500 dark:text-slate-400 text-xs">{a.lastLoginAt ? new Date(a.lastLoginAt).toLocaleString() : 'Never'}</td>
+                                    <td className="table-cell"><Badge variant={a.status === 'ACTIVE' ? 'success' : 'gray'}>{a.status.toLowerCase()}</Badge></td>
                                     <td className="table-cell">
                                         <div className="flex gap-1">
                                             <button onClick={() => openRemove(a)} className="btn-danger text-xs py-1 px-2"><Trash2 size={11} /> Remove</button>
@@ -80,7 +108,7 @@ export default function SAUsers() {
                                     </td>
                                 </tr>
                             ))}
-                            {admins.length === 0 && (
+                            {!loading && admins.length === 0 && (
                                 <tr><td colSpan={6} className="table-cell text-center text-gray-400 dark:text-slate-500 py-8">No admins found.</td></tr>
                             )}
                         </tbody>
@@ -90,28 +118,31 @@ export default function SAUsers() {
 
             {/* Add Admin Modal */}
             <Modal isOpen={modal === 'add'} onClose={() => setModal(null)} title="Add Platform Admin"
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => { showToast('New admin added successfully'); setModal(null) }}><Plus size={14} /> Add Admin</button></>}>
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button disabled={actionLoading} className="btn-primary" onClick={addAdmin}><Plus size={14} /> {actionLoading ? 'Adding…' : 'Add Admin'}</button></>}>
                 <div className="space-y-4">
+                    {actionError && <p className="text-sm text-red-600">{actionError}</p>}
                     <div className="grid grid-cols-2 gap-4">
-                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Full Name</label><input className="input-field" placeholder="John Doe" /></div>
-                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label><input className="input-field" type="email" placeholder="john@edumanage.ug" /></div>
+                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Full Name</label><input className="input-field" placeholder="John Doe" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
+                        <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label><input className="input-field" type="email" placeholder="john@edumanage.ug" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} /></div>
                     </div>
                     <div><label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Role</label>
-                        <select className="select-field">
-                            <option>Super Admin</option><option>Finance Admin</option><option>Support Agent</option><option>Content Manager</option>
+                        <select className="select-field" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                            <option value="SUPER_ADMIN">Super Admin</option>
+                            <option value="FINANCE_ADMIN">Finance Admin</option>
+                            <option value="SUPPORT_AGENT">Support Agent</option>
+                            <option value="CONTENT_MANAGER">Content Manager</option>
                         </select>
                     </div>
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs text-blue-700 dark:text-blue-300"><Mail size={12} className="inline mr-1" />A welcome email with login credentials will be sent automatically.</div>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs text-blue-700 dark:text-blue-300"><Mail size={12} className="inline mr-1" />A set-password code will be emailed automatically — no password is created here.</div>
                 </div>
             </Modal>
 
-
-
             {/* Remove Admin Modal */}
             <Modal isOpen={modal === 'remove'} onClose={() => { setModal(null); setSelected(null) }} title="Remove Admin"
-                footer={<><button className="btn-secondary" onClick={() => { setModal(null); setSelected(null) }}>Cancel</button><button className="btn-danger" onClick={confirmRemove}><Trash2 size={14} /> Remove Admin</button></>}>
+                footer={<><button className="btn-secondary" onClick={() => { setModal(null); setSelected(null) }}>Cancel</button><button disabled={actionLoading} className="btn-danger" onClick={confirmRemove}><Trash2 size={14} /> {actionLoading ? 'Removing…' : 'Remove Admin'}</button></>}>
                 {selected && (
                     <div className="space-y-4">
+                        {actionError && <p className="text-sm text-red-600">{actionError}</p>}
                         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                             <AlertTriangle size={18} className="text-red-600 dark:text-red-400 flex-shrink-0" />
                             <p className="text-sm font-semibold text-red-800 dark:text-red-300">This action cannot be undone</p>
@@ -124,18 +155,13 @@ export default function SAUsers() {
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">{selected.name[0]}</div>
                             <div>
                                 <p className="text-sm font-semibold text-gray-900 dark:text-white">{selected.name}</p>
-                                <p className="text-xs text-gray-500 dark:text-slate-400">{selected.role} · Last active: {selected.lastLogin}</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400">{roleLabel[selected.role]}</p>
                             </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Enter your admin password to confirm</label>
-                            <input type="password" placeholder="Password" className="input-field" />
                         </div>
                     </div>
                 )}
             </Modal>
 
-            {/* Toast Notification */}
             {toast && (
                 <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-white text-sm font-medium transition-all animate-slide-up ${toast.type === 'danger' ? 'bg-red-600' : 'bg-emerald-600'}`}>
                     {toast.type === 'danger' ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}

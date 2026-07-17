@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "EduManage — Phase 3: Super Admin",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "schoolId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Schools",
+      "item": [
+        { "name": "List Schools", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools?status=all&level=all&page=1&pageSize=20" } },
+        { "name": "Get School", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools/{{schoolId}}" } },
+        { "name": "Approve School", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools/{{schoolId}}/approve" } },
+        { "name": "Reject School", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Incomplete MoES license\"\n}" }, "url": "{{baseUrl}}/admin/schools/{{schoolId}}/reject" } },
+        { "name": "Suspend School", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Overdue payment\"\n}" }, "url": "{{baseUrl}}/admin/schools/{{schoolId}}/suspend" } },
+        { "name": "Reactivate School", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools/{{schoolId}}/reactivate" } },
+        { "name": "Rename School", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"newName\": \"Kitante Primary School (Updated)\"\n}" }, "url": "{{baseUrl}}/admin/schools/{{schoolId}}/name" } },
+        { "name": "Impersonate School Admin", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools/{{schoolId}}/impersonate" } },
+        { "name": "Delete School", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/schools/{{schoolId}}" } },
+        {
+          "name": "Add School (Admin-created)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"schoolName\": \"Test Admin School\",\n  \"level\": \"Primary\",\n  \"district\": \"Kampala\",\n  \"physicalAddress\": \"Plot 1\",\n  \"numStudents\": 300,\n  \"contactName\": \"Jane Doe\",\n  \"contactPhone\": \"+256700000000\",\n  \"contactEmail\": \"jane@testadmin.ug\",\n  \"subdomain\": \"testadmin\"\n}" },
+            "url": "{{baseUrl}}/admin/schools"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        { "name": "List Billing", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/billing" } },
+        { "name": "Set Price Per Student", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"pricePerStudent\": 2500\n}" }, "url": "{{baseUrl}}/admin/billing/price" } },
+        { "name": "Send Payment Reminder", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/billing/{{schoolId}}/remind" } }
+      ]
+    },
+    {
+      "name": "Platform Admins",
+      "item": [
+        { "name": "List Admins", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/platform-admins" } },
+        { "name": "Add Admin", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@edumanage.ug\",\n  \"role\": \"SUPPORT_AGENT\"\n}" }, "url": "{{baseUrl}}/admin/platform-admins" } },
+        { "name": "Remove Admin", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/platform-admins/REPLACE_ID" } }
+      ]
+    },
+    {
+      "name": "Support Tickets",
+      "item": [
+        { "name": "List Tickets", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/support-tickets?status=all" } },
+        { "name": "Ticket Stats", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/support-tickets/stats" } },
+        { "name": "Reply to Ticket", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"body\": \"We are looking into this now.\"\n}" }, "url": "{{baseUrl}}/admin/support-tickets/REPLACE_ID/reply" } },
+        { "name": "Resolve Ticket", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/support-tickets/REPLACE_ID/resolve" } }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "item": [
+        { "name": "Get Configuration", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/configuration" } },
+        { "name": "Update Branding", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"platformName\": \"EduManage Uganda\",\n  \"supportEmail\": \"support@edumanage.ug\",\n  \"primaryColor\": \"#2563eb\",\n  \"emailFooter\": \"© 2026 EduManage Uganda\"\n}" }, "url": "{{baseUrl}}/admin/configuration/branding" } },
+        { "name": "Update Features", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sms\": true,\n  \"email\": true,\n  \"biometric\": false,\n  \"momo\": true,\n  \"airtel\": true,\n  \"s3\": true,\n  \"twoFactor\": false,\n  \"api\": false\n}" }, "url": "{{baseUrl}}/admin/configuration/features" } },
+        { "name": "Update Integrations", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sendgridApiKey\": \"SG.xxxx\"\n}" }, "url": "{{baseUrl}}/admin/configuration/integrations" } }
+      ]
+    },
+    {
+      "name": "Developer Tools",
+      "item": [
+        { "name": "List API Keys", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/developer-tools/api-keys" } },
+        { "name": "Create API Key", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Integration Key\"\n}" }, "url": "{{baseUrl}}/admin/developer-tools/api-keys" } },
+        { "name": "Revoke API Key", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/developer-tools/api-keys/REPLACE_ID/revoke" } },
+        { "name": "Search Logs", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/developer-tools/logs?q=FAILED" } }
+      ]
+    },
+    {
+      "name": "Emergency",
+      "item": [
+        { "name": "Force Logout All", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Suspected breach\"\n}" }, "url": "{{baseUrl}}/admin/emergency/force-logout" } },
+        { "name": "Shutdown (Maintenance Mode)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Emergency maintenance\"\n}" }, "url": "{{baseUrl}}/admin/emergency/shutdown" } },
+        { "name": "Resume", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Maintenance complete\"\n}" }, "url": "{{baseUrl}}/admin/emergency/resume" } },
+        { "name": "Broadcast", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Scheduled Maintenance\",\n  \"message\": \"The platform will be briefly unavailable tonight at 11PM.\"\n}" }, "url": "{{baseUrl}}/admin/emergency/broadcast" } },
+        { "name": "Audit Log", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/emergency/audit-log" } }
+      ]
+    },
+    {
+      "name": "Analytics & Monitoring",
+      "item": [
+        { "name": "Analytics Overview", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/analytics/overview" } },
+        { "name": "Analytics Growth", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/analytics/growth" } },
+        { "name": "Monitoring Stats", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/monitoring/stats" } },
+        { "name": "Monitoring Alerts", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/admin/monitoring/alerts" } }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "Send Message to School", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"schoolId\": \"{{schoolId}}\",\n  \"messageType\": \"info\",\n  \"message\": \"Welcome to EduManage!\"\n}" }, "url": "{{baseUrl}}/admin/notifications/school-message" } }
+      ]
+    }
+  ]
+}

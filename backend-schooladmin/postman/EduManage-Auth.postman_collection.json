@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "EduManage — Phase 2: Authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "tenantSubdomain", "value": "greenhill" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Platform Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"hatalabdallah@gmail.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/platform/login"
+      }
+    },
+    {
+      "name": "Tenant Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identifier\": \"admin@greenhill.edu.ug\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/tenant/login"
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+        "url": "{{baseUrl}}/auth/refresh"
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+        "url": "{{baseUrl}}/auth/logout"
+      }
+    },
+    {
+      "name": "Get Current Session (Me)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/auth/me"
+      }
+    },
+    {
+      "name": "Forgot Password - Request Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@greenhill.edu.ug\",\n  \"audience\": \"tenant\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/request"
+      }
+    },
+    {
+      "name": "Forgot Password - Verify Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@greenhill.edu.ug\",\n  \"audience\": \"tenant\",\n  \"code\": \"123456\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/verify"
+      }
+    },
+    {
+      "name": "Forgot Password - Reset",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Tenant-Subdomain", "value": "{{tenantSubdomain}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@greenhill.edu.ug\",\n  \"audience\": \"tenant\",\n  \"code\": \"123456\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/forgot-password/reset"
+      }
+    },
+    {
+      "name": "Check Subdomain Availability",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/schools/check-subdomain?subdomain=newschool"
+      }
+    },
+    {
+      "name": "Register School (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "schoolName", "value": "Test School", "type": "text" },
+            { "key": "level", "value": "primary", "type": "text" },
+            { "key": "physicalAddress", "value": "Plot 1, Test Rd", "type": "text" },
+            { "key": "district", "value": "Kampala", "type": "text" },
+            { "key": "numStudents", "value": "500", "type": "text" },
+            { "key": "contactName", "value": "Jane Doe", "type": "text" },
+            { "key": "contactPhone", "value": "+256700000000", "type": "text" },
+            { "key": "contactEmail", "value": "jane@testschool.ug", "type": "text" },
+            { "key": "schoolWebsite", "value": "", "type": "text" },
+            { "key": "subdomain", "value": "testschool", "type": "text" },
+            { "key": "adminUsername", "value": "jane.admin", "type": "text" },
+            { "key": "adminPassword", "value": "Password123!", "type": "text" },
+            { "key": "confirmPassword", "value": "Password123!", "type": "text" },
+            { "key": "recoveryEmail", "value": "jane@testschool.ug", "type": "text" },
+            { "key": "licenseFile", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/schools/register"
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "EduManage — Pesapal Payments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "schoolId", "value": "" },
+    { "key": "orderTrackingId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Initiate Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/admin/billing/{{schoolId}}/initiate-payment"
+      }
+    },
+    {
+      "name": "Get Latest Transaction",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/admin/billing/{{schoolId}}/transaction"
+      }
+    },
+    {
+      "name": "Refund Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 100000,\n  \"remarks\": \"Duplicate payment\"\n}" },
+        "url": "{{baseUrl}}/admin/billing/{{schoolId}}/refund"
+      }
+    },
+    {
+      "name": "Cancel Pending Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+        "url": "{{baseUrl}}/admin/billing/{{schoolId}}/cancel-payment"
+      }
+    },
+    {
+      "name": "Public — Get Transaction Status (used by PaymentCallback.jsx)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/payments/pesapal/status/{{orderTrackingId}}"
+      }
+    },
+    {
+      "name": "Simulate IPN (GET, as Pesapal registered)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/payments/pesapal/ipn?OrderTrackingId={{orderTrackingId}}&OrderMerchantReference=PAY-xxxx&OrderNotificationType=IPNCHANGE"
+      }
+    }
+  ]
+}

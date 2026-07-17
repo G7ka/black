@@ -1,200 +1,165 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Modal from '../../components/ui/Modal'
-import { CalendarDays, Plus, Search, Filter, Clock, MapPin, Users, Edit, Trash2, CheckSquare } from 'lucide-react'
+import { Plus, MapPin, Edit, Trash2, AlertCircle } from 'lucide-react'
+import { classesApi } from '../../api/classes.api'
+import { teachersApi } from '../../api/teachers.api'
+import { timetableApi } from '../../api/schoolOps.api'
 
-// Dummy Data
-const classes = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6A', 'P6B', 'P7']
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const timeSlots = ['8:00 AM - 9:20 AM', '9:20 AM - 10:40 AM', '11:00 AM - 12:20 PM', '1:20 PM - 2:40 PM', '2:40 PM - 4:00 PM']
 
-// Seed dummy timetable for P6A
-const initialTimetable = {
-    'Monday': [
-        { time: '8:00 AM - 9:20 AM', subject: 'Mathematics', teacher: 'Mr. Kenneth Okello', room: 'Room 12' },
-        { time: '9:20 AM - 10:40 AM', subject: 'English', teacher: 'Ms. Agnes Nassali', room: 'Room 12' },
-        { time: '11:00 AM - 12:20 PM', subject: 'Science', teacher: 'Mr. David Byaruhanga', room: 'Sci Lab 1' },
-    ],
-    'Tuesday': [
-        { time: '8:00 AM - 9:20 AM', subject: 'Social Studies', teacher: 'Ms. Sarah Acen', room: 'Room 12' },
-        { time: '9:20 AM - 10:40 AM', subject: 'Mathematics', teacher: 'Mr. Kenneth Okello', room: 'Room 12' },
-    ]
-}
+export default function SchoolAdminTimetable({ role = "schooladmin-primary" }) {
+    const [classes, setClasses] = useState([])
+    const [subjects, setSubjects] = useState([])
+    const [teachers, setTeachers] = useState([])
+    const [selectedClassId, setSelectedClassId] = useState('')
+    const [selectedStreamId, setSelectedStreamId] = useState('')
+    const [entries, setEntries] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState('')
+    const [actionError, setActionError] = useState('')
+    const [actionLoading, setActionLoading] = useState(false)
 
-export default function SchoolAdminTimetable() {
-    const [selectedClass, setSelectedClass] = useState('P6A')
-    const [timetableData, setTimetableData] = useState(initialTimetable)
     const [modal, setModal] = useState(false)
-    const [formData, setFormData] = useState({ day: days[0], time: timeSlots[0], subject: '', teacher: '', room: '' })
+    const [formData, setFormData] = useState({ dayOfWeek: days[0], timeSlot: timeSlots[0], subjectId: '', teacherProfileId: '', room: '' })
 
-    const openModal = (day = days[0], time = timeSlots[0], lesson = null) => {
-        if (lesson) {
-            setFormData({ day, time, subject: lesson.subject, teacher: lesson.teacher, room: lesson.room })
-        } else {
-            setFormData({ day, time, subject: '', teacher: '', room: '' })
+    const loadBase = useCallback(async () => {
+        setLoading(true); setLoadError('')
+        try {
+            const [classesResult, subjectsResult, teachersResult] = await Promise.all([classesApi.list(), classesApi.listSubjects(), teachersApi.list()])
+            setClasses(classesResult)
+            setSubjects(subjectsResult)
+            setTeachers(teachersResult)
+            if (classesResult.length > 0) setSelectedClassId(prev => prev || classesResult[0].id)
+        } catch (err) {
+            setLoadError(err.message || 'Failed to load timetable data')
+        } finally {
+            setLoading(false)
         }
+    }, [])
+
+    useEffect(() => { loadBase() }, [loadBase])
+
+    const loadEntries = useCallback(async () => {
+        if (!selectedClassId) return
+        try {
+            setEntries(await timetableApi.getForClass(selectedClassId, selectedStreamId || undefined))
+        } catch (err) {
+            setLoadError(err.message || 'Failed to load class timetable')
+        }
+    }, [selectedClassId, selectedStreamId])
+
+    useEffect(() => { loadEntries() }, [loadEntries])
+
+    const openModal = (dayOfWeek = days[0], timeSlot = timeSlots[0], lesson = null) => {
+        setFormData(lesson
+            ? { dayOfWeek, timeSlot, subjectId: lesson.subjectId || '', teacherProfileId: lesson.teacherProfileId || '', room: lesson.room || '' }
+            : { dayOfWeek, timeSlot, subjectId: '', teacherProfileId: '', room: '' })
         setModal(true)
+        setActionError('')
     }
 
-    const saveLesson = () => {
-        setTimetableData(prev => {
-            const currentDayArr = (prev[formData.day] || []).filter(l => l.time !== formData.time)
-            currentDayArr.push({ time: formData.time, subject: formData.subject, teacher: formData.teacher, room: formData.room })
-            return { ...prev, [formData.day]: currentDayArr }
-        })
-        setModal(false)
+    const saveLesson = async () => {
+        setActionLoading(true); setActionError('')
+        try {
+            await timetableApi.saveSlot({ classId: selectedClassId, streamId: selectedStreamId || undefined, ...formData })
+            setModal(false); await loadEntries()
+        } catch (err) { setActionError(err.message || 'Failed to save lesson') } finally { setActionLoading(false) }
     }
 
-    const deleteLesson = (day, time, e) => {
+    const deleteLesson = async (dayOfWeek, timeSlot, e) => {
         e.stopPropagation()
-        if (window.confirm('Delete this lesson?')) {
-            setTimetableData(prev => ({
-                ...prev,
-                [day]: (prev[day] || []).filter(l => l.time !== time)
-            }))
-        }
+        if (!window.confirm('Delete this lesson?')) return
+        try {
+            await timetableApi.deleteSlot(selectedClassId, { dayOfWeek, timeSlot, streamId: selectedStreamId || undefined })
+            await loadEntries()
+        } catch (err) { setActionError(err.message || 'Failed to delete lesson') }
     }
+
+    const findEntry = (day, time) => entries.find(l => l.dayOfWeek === day && l.timeSlot === time)
 
     return (
-        <DashboardLayout role="schooladmin-primary">
+        <DashboardLayout role={role}>
             <div className="space-y-6">
-
-                {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="page-title">Class Timetables</h1>
-                        <p className="page-subtitle">Manage weekly schedules for all Primary classes.</p>
-                    </div>
+                    <div><h1 className="page-title">Class Timetables</h1><p className="page-subtitle">Manage weekly schedules for all classes.</p></div>
                     <div className="flex items-center gap-3">
-                        <select
-                            className="input-field py-2 bg-white dark:bg-slate-800"
-                            value={selectedClass}
-                            onChange={(e) => setSelectedClass(e.target.value)}
-                        >
-                            {classes.map(c => <option key={c} value={c}>{c} Timetable</option>)}
+                        <select className="input-field py-2 bg-white dark:bg-slate-800" value={selectedClassId} onChange={(e) => { setSelectedClassId(e.target.value); setSelectedStreamId('') }}>
+                            {classes.map(c => <option key={c.id} value={c.id}>{c.name} Timetable</option>)}
                         </select>
-                        <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
-                            <Plus size={16} /> Add Lesson
-                        </button>
+                        {classes.find(c => c.id === selectedClassId)?.streams.length > 0 && (
+                            <select className="input-field py-2 bg-white dark:bg-slate-800" value={selectedStreamId} onChange={(e) => setSelectedStreamId(e.target.value)}>
+                                <option value="">All Streams</option>
+                                {classes.find(c => c.id === selectedClassId).streams.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            </select>
+                        )}
+                        <button onClick={() => openModal()} className="btn-primary flex items-center gap-2"><Plus size={16} /> Add Lesson</button>
                     </div>
                 </div>
 
-                {/* Timetable Grid */}
-                <div className="card p-0 overflow-hidden">
-                    <div className="overflow-x-auto custom-scrollbar">
-                        <div className="overflow-x-auto"><table className="w-full text-left border-collapse min-w-[800px]">
+                {(loadError || actionError) && <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2"><AlertCircle size={16} /> {loadError || actionError}</div>}
+
+                {loading ? <p className="text-sm text-gray-400">Loading…</p> : (
+                    <div className="card p-0 overflow-hidden">
+                        <div className="overflow-x-auto custom-scrollbar"><table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
                                     <th className="p-4 font-semibold text-slate-700 dark:text-slate-300 w-32 border-r border-slate-200 dark:border-slate-700">Time</th>
-                                    {days.map(day => (
-                                        <th key={day} className="p-4 font-semibold text-slate-700 dark:text-slate-300 text-center border-r border-slate-200 dark:border-slate-700 last:border-0">{day}</th>
-                                    ))}
+                                    {days.map(day => <th key={day} className="p-4 font-semibold text-slate-700 dark:text-slate-300 text-center border-r border-slate-200 dark:border-slate-700 last:border-0">{day}</th>)}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {timeSlots.map((time, idx) => (
-                                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                {timeSlots.map((time) => (
+                                    <tr key={time} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                         <td className="p-4 border-r border-slate-100 dark:border-slate-700/50 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30">{time}</td>
-
-                                        {/* Break Time Logic */}
-                                        {time === '11:00 - 12:20' && idx === 2 ? (
-                                            days.map(day => {
-                                                const lesson = (timetableData[day] || []).find(l => l.time === time)
-                                                return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
-                                                        {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 h-full hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
-                                                                <p className="font-bold text-blue-900 dark:text-blue-300 text-sm">{lesson.subject}</p>
-                                                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 dark:text-blue-300 mt-2 font-medium bg-blue-100 dark:bg-blue-800/50 w-max px-2 py-0.5 rounded">
-                                                                    <MapPin size={10} /> {lesson.room}
-                                                                </div>
-
-                                                                {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm backdrop-blur-sm">
-                                                                    <button className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
-                                                                </div>
+                                        {days.map(day => {
+                                            const lesson = findEntry(day, time)
+                                            return (
+                                                <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
+                                                    {lesson ? (
+                                                        <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 h-full hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                                                            <p className="font-bold text-blue-900 dark:text-blue-300 text-sm">{lesson.subject?.name || '—'}</p>
+                                                            <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 truncate">{lesson.teacherProfile?.user?.fullName || '—'}</p>
+                                                            {lesson.room && <div className="flex items-center gap-1 text-[10px] text-blue-500 dark:text-blue-300 mt-2 font-medium bg-blue-100 dark:bg-blue-800/50 w-max px-2 py-0.5 rounded"><MapPin size={10} /> {lesson.room}</div>}
+                                                            <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm backdrop-blur-sm">
+                                                                <button className="p-1 hover:text-blue-600 dark:text-slate-300"><Edit size={12} /></button>
+                                                                <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:text-slate-300"><Trash2 size={12} /></button>
                                                             </div>
-                                                        ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 dark:text-blue-400">
-                                                                <Plus size={20} />
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                )
-                                            })
-                                        ) : time === '1:20 PM - 2:40 PM' && idx === 3 ? (
-                                            <td colSpan={5} className="bg-slate-100 dark:bg-slate-800/50 border-x-0 p-3 text-center text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest relative">
-                                                <div className="absolute inset-0 border-b border-t border-slate-200 dark:border-slate-700/50"></div>
-                                                <span className="relative bg-slate-100 dark:bg-slate-900 px-4">Lunch Break (12:20 PM - 1:20 PM)</span>
-                                            </td>
-                                        ) : (
-                                            days.map(day => {
-                                                const lesson = (timetableData[day] || []).find(l => l.time === time)
-                                                return (
-                                                    <td key={day} onClick={() => !lesson && openModal(day, time)} className="p-2 border-r border-slate-100 dark:border-slate-700/50 last:border-0 align-top h-24 relative group cursor-pointer">
-                                                        {lesson ? (
-                                                            <div onClick={() => openModal(day, time, lesson)} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 h-full hover:border-blue-300 dark:hover:border-blue-700 transition-colors shadow-sm">
-                                                                <p className="font-bold text-blue-900 dark:text-blue-300 text-sm leading-tight">{lesson.subject}</p>
-                                                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 font-medium truncate">{lesson.teacher}</p>
-                                                                <div className="flex items-center gap-1 text-[10px] text-blue-500 dark:text-blue-300 mt-2 font-semibold bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 w-max px-1.5 py-0.5 rounded shadow-sm">
-                                                                    <MapPin size={10} /> {lesson.room}
-                                                                </div>
-
-                                                                {/* Quick Actions overlay */}
-                                                                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 rounded p-1 shadow-sm border border-slate-100 dark:border-slate-700">
-                                                                    <button className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-slate-300"><Edit size={12} /></button>
-                                                                    <button onClick={(e) => deleteLesson(day, time, e)} className="p-1 hover:text-red-600 dark:hover:text-red-400 transition-colors dark:text-slate-300"><Trash2 size={12} /></button>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 dark:text-blue-400">
-                                                                <Plus size={20} />
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                )
-                                            })
-                                        )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="w-full h-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 dark:text-blue-400">
+                                                            <Plus size={20} />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            )
+                                        })}
                                     </tr>
                                 ))}
                             </tbody>
                         </table></div>
                     </div>
-                </div>
+                )}
             </div>
 
-            {/* Lesson Modal */}
-            <Modal isOpen={modal} onClose={() => setModal(false)} title="Manage Schedule Slot"
-                footer={<><button className="btn-secondary" onClick={() => setModal(false)}>Cancel</button><button disabled={!formData.subject || !formData.teacher} className="btn-primary" onClick={saveLesson}><CheckSquare size={14} /> Save Slot</button></>}>
+            <Modal isOpen={modal} onClose={() => setModal(false)} title={`${formData.dayOfWeek} — ${formData.timeSlot}`}
+                footer={<><button className="btn-secondary" onClick={() => setModal(false)}>Cancel</button><button disabled={actionLoading} className="btn-primary" onClick={saveLesson}>{actionLoading ? 'Saving…' : 'Save Lesson'}</button></>}>
                 <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Day of Week</label>
-                            <select value={formData.day} onChange={e => setFormData({ ...formData, day: e.target.value })} className="select-field">
-                                {days.map(d => <option key={d}>{d}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Time Slot</label>
-                            <select value={formData.time} onChange={e => setFormData({ ...formData, time: e.target.value })} className="select-field">
-                                {timeSlots.map(t => <option key={t}>{t}</option>)}
-                            </select>
-                        </div>
+                    {actionError && <p className="text-sm text-red-600">{actionError}</p>}
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                        <select className="select-field" value={formData.subjectId} onChange={e => setFormData(f => ({ ...f, subjectId: e.target.value }))}>
+                            <option value="">Select subject</option>
+                            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Subject</label>
-                        <input className="input-field" placeholder="e.g. Mathematics" value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} />
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Teacher</label>
+                        <select className="select-field" value={formData.teacherProfileId} onChange={e => setFormData(f => ({ ...f, teacherProfileId: e.target.value }))}>
+                            <option value="">Select teacher</option>
+                            {teachers.map(t => <option key={t.id} value={t.id}>{t.fullName}</option>)}
+                        </select>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Assigned Teacher</label>
-                        <input className="input-field" placeholder="e.g. Mr. Kenneth Okello" value={formData.teacher} onChange={e => setFormData({ ...formData, teacher: e.target.value })} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Classroom / Location</label>
-                        <input className="input-field" placeholder="e.g. Room 12" value={formData.room} onChange={e => setFormData({ ...formData, room: e.target.value })} />
-                    </div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Room</label><input className="input-field" placeholder="Room 12" value={formData.room} onChange={e => setFormData(f => ({ ...f, room: e.target.value }))} /></div>
                 </div>
             </Modal>
         </DashboardLayout>
