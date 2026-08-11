@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
-import { Activity, Server, HardDrive, Users, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
+import { Activity, Server, HardDrive, Users, AlertTriangle, CheckCircle, XCircle, RefreshCw,DownloadIcon } from 'lucide-react'
 import { monitoringApi } from '../../api/platformOps.api'
 
 function formatUptime(seconds) {
@@ -114,6 +114,8 @@ export default function SAMonitoring() {
                                 <button key={l} onClick={() => setLogFilter(l)} className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${logFilter === l ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{l}</button>
                             ))}
                             <button onClick={load} className="btn-secondary text-xs py-1 px-2"><RefreshCw size={12} /></button>
+                            <button  className="btn-secondary text-xs py-1 px-2"><DownloadIcon size={12} /></button>
+                            
                         </div>
                     </div>
                     <div className="bg-gray-950 rounded-xl p-4 font-mono text-xs space-y-1.5 max-h-64 overflow-y-auto">

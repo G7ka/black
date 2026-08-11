@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
-import { Key, Search, Copy, RefreshCw, Terminal, CheckCircle, AlertCircle } from 'lucide-react'
+import { Key, Search, Copy, RefreshCw, Terminal, CheckCircle, AlertCircle, DownloadIcon } from 'lucide-react'
 import { developerToolsApi } from '../../api/developerTools.api'
 
 export default function SADeveloperTools() {
@@ -122,6 +122,7 @@ export default function SADeveloperTools() {
                 {/* Log Searcher — real EmailLog + AuditLog activity, not fabricated */}
                 <div className="card">
                     <h2 className="section-title flex items-center gap-2"><Terminal size={16} /> System Activity Log</h2>
+                    <button  className=" justify-between mb-4 ml-auto flex items-center gap-2 btn-secondary text-xs py-1 px-2"><DownloadIcon size={12} /></button>
                     <div className="relative mb-4">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input value={logQuery} onChange={e => setLogQuery(e.target.value)} className="input-field pl-9" placeholder="Search logs (e.g., FAILED, SCHOOL_APPROVED)..." />

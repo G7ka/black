@@ -25,16 +25,131 @@ This is a frontend UI prototype for a comprehensive School Management System des
 
 ## How to Run the App Locally
 
-If you turn off the PC or close the terminal, you can restart the application by following these steps:
+### Prerequisites
 
-1. Open a terminal and navigate strictly to the project root folder (`e:\wamp64\www\school_management`).
-2. Start the development server using this command:
-   ```bash
-   npm run dev -- --host
-   ```
-3. Once the server says it is ready, you can access the different parts of the application using these specific links:
+Before you start, make sure you have the following installed:
 
-### Quick Access Links
+| Tool | Minimum version | Purpose |
+|------|-----------------|---------|
+| [Node.js](https://nodejs.org/) | 18+ | Runs the frontend and backend |
+| npm | 9+ (bundled with Node.js) | Installs dependencies |
+| [PostgreSQL](https://www.postgresql.org/download/) | 14+ | Database for the backend API |
+
+You need **two terminal windows** to run the full app (frontend + backend). The frontend UI can run on its own for demo purposes, but login, registration, and live data require the backend.
+
+---
+
+### Step 1 — Open the project folder
+
+Open a terminal and navigate to the project root (the folder that contains this README and `package.json`):
+
+```bash
+cd path/to/black
+```
+
+---
+
+### Step 2 — Install frontend dependencies
+
+From the project root:
+
+```bash
+npm install
+```
+
+---
+
+### Step 3 — Configure the frontend environment
+
+Create a `.env` file in the project root (if it does not already exist) with:
+
+```env
+VITE_API_BASE_URL=http://localhost:4000/api/v1
+```
+
+This tells the React app where to find the backend API.
+
+---
+
+### Step 4 — Set up the backend
+
+Open a **second terminal** and navigate to the backend folder:
+
+```bash
+cd path/to/black/backend-schooladmin
+```
+
+Install backend dependencies:
+
+```bash
+npm install
+```
+
+Copy the example environment file and edit it with your local settings:
+
+```bash
+cp .env.example .env
+```
+
+At minimum, update these values in `.env`:
+
+- `DATABASE_URL` — your PostgreSQL connection string (default expects user `postgres`, password `postgres`, database `edumanage` on port `5432`)
+- `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` — use long random strings in production
+- `ENCRYPTION_KEY` — a 64-character hex string (generate with `openssl rand -hex 32`)
+
+Create the database in PostgreSQL (if it does not exist yet):
+
+```sql
+CREATE DATABASE edumanage;
+```
+
+Run database migrations and seed the default super admin account:
+
+```bash
+npx prisma migrate dev --name init
+npm run prisma:seed
+```
+
+The seed creates a platform admin you can use to log in:
+
+- **Email:** `hatalabdallah@gmail.com`
+- **Password:** `ChangeMe123!`
+
+---
+
+### Step 5 — Start the backend server
+
+Still in the `backend-schooladmin` folder:
+
+```bash
+npm run dev
+```
+
+The API should be available at **http://localhost:4000**.
+
+Leave this terminal running.
+
+---
+
+### Step 6 — Start the frontend dev server
+
+Go back to your **first terminal** (project root) and run:
+
+```bash
+npm run dev -- --host
+```
+
+When Vite reports `ready`, open your browser. The frontend runs at **http://localhost:5173**.
+
+Leave this terminal running as well.
+
+---
+
+### Step 7 — Open the app in your browser
+
+Use the links below to access different parts of the application.
+
+#### Quick Access Links
 
 *   **Main Landing Page (Register your school)** 
     👉 `http://lvh.me:5173`
@@ -43,7 +158,7 @@ If you turn off the PC or close the terminal, you can restart the application by
 *   **School Portal (Specific Tenant Login)** 
     👉 `http://kampala.lvh.me:5173` *(Replace "kampala" with any school name)*
 
-## Dashboard Access Links (Local Dev)
+#### Dashboard Access Links (Local Dev)
 
 This prototype also supports **tenant subdomains** in local development. Use a URL like `http://kampala.localhost:5173` (any subdomain name works) to access the tenant dashboards.
 
@@ -58,3 +173,34 @@ This prototype also supports **tenant subdomains** in local development. Use a U
 **Main-domain demo hub:**
 
 *   **Role Switcher / Demo Hub:** `http://localhost:5173/demo-hub`
+
+---
+
+### Restarting the app (after closing the terminal)
+
+If you already completed the first-time setup above, you only need to start both servers again:
+
+**Terminal 1 — Backend:**
+```bash
+cd path/to/black/backend-schooladmin
+npm run dev
+```
+
+**Terminal 2 — Frontend:**
+```bash
+cd path/to/black
+npm run dev -- --host
+```
+
+Make sure PostgreSQL is running before starting the backend.
+
+---
+
+### Troubleshooting
+
+| Problem | Likely cause | Fix |
+|---------|--------------|-----|
+| `Can't reach database server at localhost:5432` | PostgreSQL is not running | Start the PostgreSQL service, then re-run `npx prisma migrate dev` |
+| Frontend loads but login/API calls fail | Backend is not running | Start the backend with `npm run dev` in `backend-schooladmin` |
+| Port 5173 or 4000 already in use | Another process is using the port | Stop the other process, or change `PORT` in backend `.env` / Vite config |
+| `npm install` fails | Node.js version too old | Upgrade to Node.js 18 or later |
