@@ -1,19 +1,110 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Edit2, Trash2, Library, Users } from 'lucide-react'
+import { Search, Plus, Edit2, Trash2, Library, Users, Layers, CalendarDays, TrendingUp, TrendingDown, Award, BookOpen, AlertCircle, Medal, Crown, Eye } from 'lucide-react'
 
-// Dummy data for classes and subjects
-const classesData = [
-    { id: 'C-P1', name: 'Primary 1', level: 'Lower Primary', students: 120, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P2', name: 'Primary 2', level: 'Lower Primary', students: 115, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P3', name: 'Primary 3', level: 'Lower Primary', students: 108, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'] },
-    { id: 'C-P4', name: 'Primary 4', level: 'Upper Primary', students: 130, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education', 'Physical Education'] },
-    { id: 'C-P5', name: 'Primary 5', level: 'Upper Primary', students: 125, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
-    { id: 'C-P6', name: 'Primary 6', level: 'Upper Primary', students: 140, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
-    { id: 'C-P7', name: 'Primary 7', level: 'Upper Primary', students: 110, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'] },
+// Fixed primary classes with streams
+const initialClassesData = [
+    { id: 'C-P1', name: 'Primary 1', level: 'Lower Primary', students: 120, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'], streams: ['P1A', 'P1B'], performance: { bestStream: 'P1A', avgScore: '82%', passRate: '94%', bestSubjects: ['Mathematics', 'Literacy I'], worstSubjects: ['English'], topStudents: [
+        { rank: 1, name: 'Kizito Samuel', stream: 'P1A', avg: 96 },
+        { rank: 2, name: 'Nanteza Mercy', stream: 'P1B', avg: 94 },
+        { rank: 3, name: 'Okoth Brian', stream: 'P1A', avg: 91 },
+        { rank: 4, name: 'Namutebi Joy', stream: 'P1B', avg: 89 },
+        { rank: 5, name: 'Wasswa Timothy', stream: 'P1A', avg: 88 },
+        { rank: 6, name: 'Nakato Peace', stream: 'P1B', avg: 86 },
+        { rank: 7, name: 'Mugisha Ivan', stream: 'P1A', avg: 85 },
+        { rank: 8, name: 'Auma Helen', stream: 'P1B', avg: 84 },
+        { rank: 9, name: 'Byaruhanga Seth', stream: 'P1A', avg: 82 },
+        { rank: 10, name: 'Nalwanga Rose', stream: 'P1B', avg: 80 },
+    ], allStudents: [] } },
+    { id: 'C-P2', name: 'Primary 2', level: 'Lower Primary', students: 115, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'], streams: ['P2A', 'P2B'], performance: { bestStream: 'P2B', avgScore: '79%', passRate: '91%', bestSubjects: ['Literacy I', 'Religious Education'], worstSubjects: ['Mathematics'], topStudents: [
+        { rank: 1, name: 'Namukasa Mary', stream: 'P2B', avg: 95 },
+        { rank: 2, name: 'Kibuuka Denis', stream: 'P2A', avg: 92 },
+        { rank: 3, name: 'Arafat Musa', stream: 'P2B', avg: 90 },
+        { rank: 4, name: 'Nansubuga Grace', stream: 'P2A', avg: 87 },
+        { rank: 5, name: 'Sserwanga Mark', stream: 'P2B', avg: 85 },
+        { rank: 6, name: 'Babirye Esther', stream: 'P2A', avg: 83 },
+        { rank: 7, name: 'Oluk Kevin', stream: 'P2B', avg: 81 },
+        { rank: 8, name: 'Tendo Patricia', stream: 'P2A', avg: 79 },
+        { rank: 9, name: 'Wamala Simon', stream: 'P2B', avg: 78 },
+        { rank: 10, name: 'Acen Racheal', stream: 'P2A', avg: 76 },
+    ], allStudents: [] } },
+    { id: 'C-P3', name: 'Primary 3', level: 'Lower Primary', students: 108, teachers: 4, subjects: ['Mathematics', 'English', 'Literacy I', 'Literacy II', 'Religious Education'], streams: ['P3A', 'P3B'], performance: { bestStream: 'P3A', avgScore: '85%', passRate: '96%', bestSubjects: ['English', 'Literacy II'], worstSubjects: ['Religious Education'], topStudents: [
+        { rank: 1, name: 'Opio David', stream: 'P3A', avg: 97 },
+        { rank: 2, name: 'Kisakye Diana', stream: 'P3B', avg: 94 },
+        { rank: 3, name: 'Mugalu Peter', stream: 'P3A', avg: 92 },
+        { rank: 4, name: 'Nansamba Rita', stream: 'P3B', avg: 90 },
+        { rank: 5, name: 'Ocen Samuel', stream: 'P3A', avg: 88 },
+        { rank: 6, name: 'Kyomuhendo Sarah', stream: 'P3B', avg: 87 },
+        { rank: 7, name: 'Luswata Isaac', stream: 'P3A', avg: 85 },
+        { rank: 8, name: 'Atim Florence', stream: 'P3B', avg: 83 },
+        { rank: 9, name: 'Kiwanuka Martin', stream: 'P3A', avg: 81 },
+        { rank: 10, name: 'Nakiganda Ruth', stream: 'P3B', avg: 79 },
+    ], allStudents: [] } },
+    { id: 'C-P4', name: 'Primary 4', level: 'Upper Primary', students: 130, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education', 'Physical Education'], streams: ['P4A', 'P4B'], performance: { bestStream: 'P4B', avgScore: '76%', passRate: '88%', bestSubjects: ['Science', 'Mathematics'], worstSubjects: ['Social Studies'], topStudents: [
+        { rank: 1, name: 'Nansubuga Grace', stream: 'P4B', avg: 93 },
+        { rank: 2, name: 'Okello John', stream: 'P4A', avg: 91 },
+        { rank: 3, name: 'Ssemanda Robert', stream: 'P4B', avg: 89 },
+        { rank: 4, name: 'Namatovu Sylvia', stream: 'P4A', avg: 87 },
+        { rank: 5, name: 'Buyinza Moses', stream: 'P4B', avg: 84 },
+        { rank: 6, name: 'Nambi Harriet', stream: 'P4A', avg: 82 },
+        { rank: 7, name: 'Kamya Julius', stream: 'P4B', avg: 80 },
+        { rank: 8, name: 'Nalumansi Dorothy', stream: 'P4A', avg: 78 },
+        { rank: 9, name: 'Mugisa Frank', stream: 'P4B', avg: 75 },
+        { rank: 10, name: 'Ssali Rebecca', stream: 'P4A', avg: 73 },
+    ], allStudents: [] } },
+    { id: 'C-P5', name: 'Primary 5', level: 'Upper Primary', students: 125, teachers: 5, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'], streams: ['P5A', 'P5B'], performance: { bestStream: 'P5A', avgScore: '81%', passRate: '93%', bestSubjects: ['Social Studies', 'English'], worstSubjects: ['Mathematics'], topStudents: [
+        { rank: 1, name: 'Kagimu Peter', stream: 'P5A', avg: 95 },
+        { rank: 2, name: 'Nassali Barbara', stream: 'P5B', avg: 93 },
+        { rank: 3, name: 'Ssenabulya Dennis', stream: 'P5A', avg: 90 },
+        { rank: 4, name: 'Nandawula Hope', stream: 'P5B', avg: 88 },
+        { rank: 5, name: 'Katende Isaac', stream: 'P5A', avg: 86 },
+        { rank: 6, name: 'Mirembe Dorothy', stream: 'P5B', avg: 84 },
+        { rank: 7, name: 'Lule Joshua', stream: 'P5A', avg: 83 },
+        { rank: 8, name: 'Nabukwasi Carol', stream: 'P5B', avg: 81 },
+        { rank: 9, name: 'Tusiime Alex', stream: 'P5A', avg: 79 },
+        { rank: 10, name: 'Nampijja Susan', stream: 'P5B', avg: 77 },
+    ], allStudents: [] } },
+    { id: 'C-P6', name: 'Primary 6', level: 'Upper Primary', students: 140, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'], streams: ['P6A', 'P6B', 'P6C'], performance: { bestStream: 'P6C', avgScore: '88%', passRate: '98%', bestSubjects: ['Mathematics', 'Science'], worstSubjects: ['English'], topStudents: [
+        { rank: 1, name: 'Akot Sarah', stream: 'P6C', avg: 98 },
+        { rank: 2, name: 'Mubiru James', stream: 'P6A', avg: 96 },
+        { rank: 3, name: 'Nassanga Gloria', stream: 'P6B', avg: 94 },
+        { rank: 4, name: 'Ssekandi Ronald', stream: 'P6C', avg: 93 },
+        { rank: 5, name: 'Kirabo Patricia', stream: 'P6A', avg: 91 },
+        { rank: 6, name: 'Kayemba Patrick', stream: 'P6B', avg: 90 },
+        { rank: 7, name: 'Nalubega Mercy', stream: 'P6C', avg: 88 },
+        { rank: 8, name: 'Mugisha Emmanuel', stream: 'P6A', avg: 87 },
+        { rank: 9, name: 'Birungi Prossy', stream: 'P6B', avg: 85 },
+        { rank: 10, name: 'Odong Michael', stream: 'P6C', avg: 84 },
+    ], allStudents: [] } },
+    { id: 'C-P7', name: 'Primary 7', level: 'Upper Primary', students: 110, teachers: 6, subjects: ['Mathematics', 'English', 'Science', 'Social Studies', 'Religious Education'], streams: ['P7A', 'P7B'], performance: { bestStream: 'P7A', avgScore: '84%', passRate: '95%', bestSubjects: ['Science', 'Social Studies'], worstSubjects: ['Mathematics'], topStudents: [
+        { rank: 1, name: 'Okello John', stream: 'P7A', avg: 97 },
+        { rank: 2, name: 'Nabirye Karen', stream: 'P7B', avg: 95 },
+        { rank: 3, name: 'Mwesigwa Collins', stream: 'P7A', avg: 93 },
+        { rank: 4, name: 'Nakamya Olivia', stream: 'P7B', avg: 91 },
+        { rank: 5, name: 'Ochieng Tony', stream: 'P7A', avg: 89 },
+        { rank: 6, name: 'Namutebi Winnie', stream: 'P7B', avg: 87 },
+        { rank: 7, name: 'Kasozi Lawrence', stream: 'P7A', avg: 85 },
+        { rank: 8, name: 'Nansereko Anita', stream: 'P7B', avg: 83 },
+        { rank: 9, name: 'Mugalu Kenneth', stream: 'P7A', avg: 81 },
+        { rank: 10, name: 'Apio Christine', stream: 'P7B', avg: 79 },
+    ], allStudents: [] } },
 ]
+
+// Generate allStudents for each class
+initialClassesData.forEach(cls => {
+    const perf = cls.performance
+    const extra = []
+    const totalStudents = cls.students
+    for (let i = perf.topStudents.length + 1; i <= Math.min(totalStudents, 40); i++) {
+        const names = ['Mugisha', 'Nalwanga', 'Ssekandi', 'Kyomuhendo', 'Basalirwa', 'Acayo', 'Nankya', 'Luswata', 'Tusiime', 'Odong', 'Kamya', 'Nabukwasi', 'Katende', 'Nampijja', 'Bucyana', 'Birungi', 'Kasozi', 'Nansereko', 'Atim', 'Ochieng']
+        const fnames = ['Isaac', 'Grace', 'Paul', 'Hope', 'Frank', 'Carol', 'Alex', 'Susan', 'Moses', 'Harriet', 'Joshua', 'Dorothy', 'Martin', 'Ruth', 'Simon', 'Patricia', 'Denis', 'Esther', 'Racheal', 'Kevin']
+        extra.push({ rank: i, name: `${names[(i * 3) % names.length]} ${fnames[(i * 7) % fnames.length]}`, stream: cls.streams[i % cls.streams.length], avg: Math.max(20, 78 - (i - 10) * 2 + Math.floor(Math.random() * 8)) })
+    }
+    perf.allStudents = [...perf.topStudents, ...extra].sort((a, b) => b.avg - a.avg).map((s, idx) => ({ ...s, rank: idx + 1 }))
+})
 
 // System-wide subjects that can be assigned to classes
 const primarySubjects = [
@@ -22,12 +113,36 @@ const primarySubjects = [
     'Physical Education', 'Art and Craft', 'Luganda', 'Kiswahili'
 ]
 
+const getRankIcon = (rank) => {
+    if (rank === 1) return <Crown size={14} className="text-amber-500" />
+    if (rank === 2) return <Medal size={14} className="text-slate-400" />
+    if (rank === 3) return <Medal size={14} className="text-amber-700" />
+    return null
+}
+
+const getRankBg = (rank) => {
+    if (rank === 1) return 'bg-amber-50 dark:bg-amber-900/15 border-amber-200 dark:border-amber-800/40'
+    if (rank === 2) return 'bg-slate-50 dark:bg-slate-700/30 border-slate-200 dark:border-slate-600'
+    if (rank === 3) return 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30'
+    return 'bg-white dark:bg-slate-800/50 border-gray-100 dark:border-slate-700/50'
+}
+
+const getScoreColor = (score) => {
+    if (score >= 90) return 'text-emerald-600 dark:text-emerald-400'
+    if (score >= 75) return 'text-blue-600 dark:text-blue-400'
+    if (score >= 60) return 'text-amber-600 dark:text-amber-400'
+    return 'text-red-600 dark:text-red-400'
+}
+
 export default function SchoolAdminClasses() {
+    const navigate = useNavigate()
     const [search, setSearch] = useState('')
     const [modal, setModal] = useState(null)
     const [selectedClass, setSelectedClass] = useState(null)
-
     const [selectedSubjects, setSelectedSubjects] = useState([])
+    const [classesData, setClassesData] = useState(initialClassesData)
+    const [newStreamName, setNewStreamName] = useState('')
+    const [showAllStudents, setShowAllStudents] = useState(false)
 
     const filteredClasses = classesData.filter(c =>
         c.name.toLowerCase().includes(search.toLowerCase()) || c.level.toLowerCase().includes(search.toLowerCase())
@@ -39,6 +154,18 @@ export default function SchoolAdminClasses() {
         setModal('subjects')
     }
 
+    const openStreamsModal = (cls) => {
+        setSelectedClass(cls)
+        setNewStreamName('')
+        setModal('streams')
+    }
+
+    const openPerformanceModal = (cls) => {
+        setSelectedClass(cls)
+        setShowAllStudents(false)
+        setModal('performance')
+    }
+
     const toggleSubject = (subject) => {
         if (selectedSubjects.includes(subject)) {
             setSelectedSubjects(selectedSubjects.filter(s => s !== subject))
@@ -47,15 +174,39 @@ export default function SchoolAdminClasses() {
         }
     }
 
+    const addStream = () => {
+        if (!newStreamName.trim() || !selectedClass) return
+        const streamName = newStreamName.trim().toUpperCase()
+        if (selectedClass.streams.includes(streamName)) return
+        setClassesData(prev => prev.map(cls =>
+            cls.id === selectedClass.id
+                ? { ...cls, streams: [...cls.streams, streamName] }
+                : cls
+        ))
+        setSelectedClass(prev => ({ ...prev, streams: [...prev.streams, streamName] }))
+        setNewStreamName('')
+    }
+
+    const removeStream = (streamName) => {
+        if (!selectedClass) return
+        if (window.confirm(`Remove stream "${streamName}" from ${selectedClass.name}?`)) {
+            setClassesData(prev => prev.map(cls =>
+                cls.id === selectedClass.id
+                    ? { ...cls, streams: cls.streams.filter(s => s !== streamName) }
+                    : cls
+            ))
+            setSelectedClass(prev => ({ ...prev, streams: prev.streams.filter(s => s !== streamName) }))
+        }
+    }
+
     return (
         <DashboardLayout role="schooladmin-primary">
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="page-title">Primary Classes</h1>
-                        <p className="page-subtitle">Manage class streams and assign subjects</p>
+                        <h1 className="page-title">Primary Classes & Streams</h1>
+                        <p className="page-subtitle">View classes, manage streams, and assign subjects</p>
                     </div>
-                    <button className="btn-primary" onClick={() => setModal('addClass')}><Plus size={15} /> Add New Class</button>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
@@ -78,12 +229,16 @@ export default function SchoolAdminClasses() {
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">{cls.name}</h3>
                                     <Badge variant={cls.level.includes('Lower') ? 'info' : 'success'} className="mt-1">{cls.level}</Badge>
                                 </div>
-                                <div className="flex gap-1">
-                                    <button className="p-1.5 text-gray-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="Edit Class"><Edit2 size={14} /></button>
-                                </div>
+                                <button
+                                    onClick={() => openPerformanceModal(cls)}
+                                    className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors border border-emerald-100 dark:border-emerald-800/50"
+                                    title="View Academic Performance"
+                                >
+                                    <TrendingUp size={16} />
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 mb-4 mb-5 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+                            <div className="grid grid-cols-3 gap-3 mb-5 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
                                 <div>
                                     <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Students</p>
                                     <p className="text-sm font-semibold flex items-center gap-1 mt-0.5 dark:text-slate-200"><Users size={12} className="text-gray-400 dark:text-slate-500" /> {cls.students}</p>
@@ -92,22 +247,47 @@ export default function SchoolAdminClasses() {
                                     <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Teachers</p>
                                     <p className="text-sm font-semibold flex items-center gap-1 mt-0.5 dark:text-slate-200"><Users size={12} className="text-gray-400 dark:text-slate-500" /> {cls.teachers}</p>
                                 </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Streams</p>
+                                    <p className="text-sm font-semibold flex items-center gap-1 mt-0.5 dark:text-slate-200"><Layers size={12} className="text-gray-400 dark:text-slate-500" /> {cls.streams.length}</p>
+                                </div>
                             </div>
 
-                            <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-500">Assigned Subjects ({cls.subjects.length})</p>
+                            {/* Streams preview */}
+                            <div className="mb-4">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-500 mb-2">Streams</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {cls.streams.map(stream => (
+                                        <span key={stream} className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-md">
+                                            {stream}
+                                        </span>
+                                    ))}
                                 </div>
-                                <div className="flex flex-wrap gap-1.5 mb-4 max-h-20 overflow-y-auto custom-scrollbar pr-1">
+                            </div>
+
+                            {/* Subjects preview */}
+                            <div className="mb-4">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-500 mb-2">Subjects ({cls.subjects.length})</p>
+                                <div className="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto custom-scrollbar pr-1">
                                     {cls.subjects.map(subject => (
                                         <span key={subject} className="px-2 py-1 bg-white dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 text-xs font-medium rounded-md">
                                             {subject}
                                         </span>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* Action buttons */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    onClick={() => openStreamsModal(cls)}
+                                    className="py-2 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-lg border border-indigo-200 dark:border-indigo-800 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Layers size={14} /> View Streams
+                                </button>
                                 <button
                                     onClick={() => openSubjectModal(cls)}
-                                    className="w-full py-2 bg-gray-50 dark:bg-slate-700/30 hover:bg-gray-100 dark:hover:bg-slate-700/60 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-lg border border-gray-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-2"
+                                    className="py-2 bg-gray-50 dark:bg-slate-700/30 hover:bg-gray-100 dark:hover:bg-slate-700/60 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-lg border border-gray-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Library size={14} /> Manage Subjects
                                 </button>
@@ -117,13 +297,68 @@ export default function SchoolAdminClasses() {
                 </div>
             </div>
 
+            {/* View Streams Modal */}
+            <Modal isOpen={modal === 'streams'} onClose={() => setModal(null)} title={`Streams — ${selectedClass?.name}`} size="lg"
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Close</button></>}>
+                <div className="space-y-5">
+                    <p className="text-sm text-gray-600 dark:text-slate-300">
+                        All streams under <strong className="dark:text-white">{selectedClass?.name}</strong>. Each stream has its own timetable and student list.
+                    </p>
+                    <div className="space-y-2">
+                        {selectedClass?.streams.map(stream => (
+                            <div key={stream} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/30 rounded-xl border border-gray-100 dark:border-slate-700 group hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                                        <Layers size={16} className="text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white">{stream}</p>
+                                        <p className="text-xs text-gray-500 dark:text-slate-400">{selectedClass?.name} • Stream</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => navigate(`/schooladmin/primary/timetable?stream=${stream}`)}
+                                        className="px-3 py-1.5 text-xs font-semibold bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors flex items-center gap-1"
+                                    >
+                                        <CalendarDays size={12} /> Timetable
+                                    </button>
+                                    <button
+                                        onClick={() => removeStream(stream)}
+                                        className="p-1.5 text-gray-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        {selectedClass?.streams.length === 0 && (
+                            <div className="p-6 text-center text-gray-400 dark:text-slate-500 text-sm">No streams have been added to this class yet.</div>
+                        )}
+                    </div>
+                    <div className="border-t border-gray-100 dark:border-slate-700 pt-4">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-500 mb-3">Add New Stream</p>
+                        <div className="flex gap-2">
+                            <input
+                                className="input-field flex-1"
+                                placeholder={`e.g. ${selectedClass?.name?.replace('Primary ', 'P')}D`}
+                                value={newStreamName}
+                                onChange={e => setNewStreamName(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && addStream()}
+                            />
+                            <button className="btn-primary" onClick={addStream} disabled={!newStreamName.trim()}>
+                                <Plus size={14} /> Add Stream
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+
             {/* Manage Subjects Modal */}
             <Modal isOpen={modal === 'subjects'} onClose={() => setModal(null)} title={`Manage Subjects — ${selectedClass?.name}`} size="lg"
                 footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}>Save Subject Changes</button></>}>
-
                 <div className="space-y-4">
                     <p className="text-sm text-gray-600 dark:text-slate-300">Select which subjects should be taught in <strong>{selectedClass?.name}</strong>. Teachers can only assign grades for subjects selected here.</p>
-
                     <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 dark:bg-slate-700/30 border border-gray-100 dark:border-slate-700 rounded-xl">
                         {primarySubjects.map(subject => {
                             const isSelected = selectedSubjects.includes(subject);
@@ -144,23 +379,113 @@ export default function SchoolAdminClasses() {
                 </div>
             </Modal>
 
-            {/* Add Class Modal */}
-            <Modal isOpen={modal === 'addClass'} onClose={() => setModal(null)} title="Create New Class"
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary" onClick={() => setModal(null)}><Plus size={14} /> Create Class</button></>}>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Class Name</label>
-                        <input type="text" className="input-field" placeholder="e.g., Senior 1, Primary 8..." />
+            {/* Academic Performance Modal - Enhanced */}
+            <Modal isOpen={modal === 'performance'} onClose={() => setModal(null)} title={`Academic Performance — ${selectedClass?.name}`} size="xl"
+                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Close</button></>}>
+                
+                {selectedClass && (
+                    <div className="space-y-6">
+                        {/* Summary Row */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30 p-4 rounded-xl text-center">
+                                <TrendingUp size={18} className="mx-auto text-emerald-500 mb-1" />
+                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Avg Score</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{selectedClass.performance.avgScore}</p>
+                            </div>
+                            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 p-4 rounded-xl text-center">
+                                <Award size={18} className="mx-auto text-blue-500 mb-1" />
+                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Pass Rate</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{selectedClass.performance.passRate}</p>
+                            </div>
+                            <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 p-4 rounded-xl text-center">
+                                <Layers size={18} className="mx-auto text-indigo-500 mb-1" />
+                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Best Stream</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{selectedClass.performance.bestStream}</p>
+                            </div>
+                            <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/30 p-4 rounded-xl text-center">
+                                <Users size={18} className="mx-auto text-purple-500 mb-1" />
+                                <p className="text-[10px] text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Total Students</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{selectedClass.students}</p>
+                            </div>
+                        </div>
+
+                        {/* Subject Analysis */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                        <BookOpen size={14} className="text-emerald-600 dark:text-emerald-400" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Best Done Subjects</h4>
+                                </div>
+                                <ul className="space-y-1.5">
+                                    {selectedClass.performance.bestSubjects.map((sub, idx) => (
+                                        <li key={idx} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+                                            <span className="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-100 dark:border-emerald-800/30">{idx + 1}</span>
+                                            {sub}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-7 h-7 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                        <AlertCircle size={14} className="text-red-600 dark:text-red-400" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Needs Improvement</h4>
+                                </div>
+                                <ul className="space-y-1.5">
+                                    {selectedClass.performance.worstSubjects.map((sub, idx) => (
+                                        <li key={idx} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+                                            <span className="w-5 h-5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center text-xs font-bold border border-red-100 dark:border-red-800/30">!</span>
+                                            {sub}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Top 10 Students */}
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <Crown size={16} className="text-amber-500" /> Top 10 Scholars
+                                </h4>
+                                <button onClick={() => setShowAllStudents(!showAllStudents)} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1">
+                                    <Eye size={12} /> {showAllStudents ? 'Show Top 10 Only' : `View All Students (${selectedClass.performance.allStudents.length})`}
+                                </button>
+                            </div>
+
+                            <div className="space-y-1.5 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                                {(showAllStudents ? selectedClass.performance.allStudents : selectedClass.performance.topStudents).map((student) => (
+                                    <div key={student.rank} className={`flex items-center gap-3 p-2.5 rounded-xl border transition-colors ${getRankBg(student.rank)}`}>
+                                        {/* Rank */}
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${student.rank <= 3 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-sm' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'}`}>
+                                            {student.rank}
+                                        </div>
+                                        {/* Avatar & Name */}
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                                            {student.name.split(' ').map(n => n[0]).join('')}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate flex items-center gap-1.5">
+                                                {student.name} {getRankIcon(student.rank)}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400">{student.stream}</p>
+                                        </div>
+                                        {/* Score */}
+                                        <div className="text-right">
+                                            <p className={`text-sm font-bold ${getScoreColor(student.avg)}`}>{student.avg}%</p>
+                                            <div className="w-16 bg-gray-100 dark:bg-slate-700 rounded-full h-1 mt-1">
+                                                <div className={`h-1 rounded-full ${student.avg >= 80 ? 'bg-emerald-500' : student.avg >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${student.avg}%` }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Education Level</label>
-                        <select className="select-field">
-                            <option>Nursery</option>
-                            <option>Lower Primary</option>
-                            <option>Upper Primary</option>
-                        </select>
-                    </div>
-                </div>
+                )}
             </Modal>
         </DashboardLayout>
     )

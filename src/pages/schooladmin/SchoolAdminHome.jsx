@@ -5,7 +5,7 @@ import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
 import { LineChart, BarChart } from '../../components/charts/Charts'
-import { Users, GraduationCap, DollarSign, TrendingUp, Plus, Upload, FileText, Bell, AlertCircle } from 'lucide-react'
+import { Users, GraduationCap, DollarSign, TrendingUp, Plus, Upload, FileText, Bell, AlertCircle, Sparkles, ArrowRight } from 'lucide-react'
 
 const enrollmentData = {
     labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],

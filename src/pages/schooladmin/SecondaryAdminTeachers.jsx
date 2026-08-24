@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, Edit2, Trash2, Upload, AlertTriangle, CheckCircle, MoveRight, Clock, CheckCircle2 } from 'lucide-react'
+import { Search, Plus, Eye, Edit2, Trash2, Upload, AlertTriangle, CheckCircle, MoveRight, Clock, CheckCircle2, Check, Camera } from 'lucide-react'
 
 const initialTeachers = [
-    { id: 'TCH-S-001', name: 'Mr. Kenneth Okello', subject: 'Mathematics', class: 'S3, S4', phone: '+256 779 123456', email: 'k.okello@kps.ug', status: 'active', attendance: 96, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
-    { id: 'TCH-S-002', name: 'Ms. Agnes Nassali', subject: 'English', class: 'S1, S2', phone: '+256 752 234567', email: 'a.nassali@kps.ug', status: 'active', attendance: 98, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
-    { id: 'TCH-S-003', name: 'Mr. Ivan Byaruhanga', subject: 'Physics', class: 'S5, S6', phone: '+256 701 345678', email: 'i.byaruhanga@kps.ug', status: 'on-leave', attendance: 88, leaveReason: 'Leave', leaveStart: '2026-02-15', leaveEnd: '2026-03-01', leaveNotes: 'Annual leave' },
-    { id: 'TCH-S-004', name: 'Ms. Patricia Acen', subject: 'History', class: 'S3, S4', phone: '+256 780 456789', email: 'p.acen@kps.ug', status: 'active', attendance: 100, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
-    { id: 'TCH-S-005', name: 'Mr. Samuel Waiswa', subject: 'Chemistry', class: 'S5, S6', phone: '+256 755 567890', email: 's.waiswa@kps.ug', status: 'active', attendance: 94, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
+    { id: 'TCH-S-001', name: 'Mr. Kenneth Okello', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', subject: 'Mathematics', class: 'S3, S4', phone: '+256 779 123456', email: 'k.okello@kps.ug', status: 'active', attendance: 96, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
+    { id: 'TCH-S-002', name: 'Ms. Agnes Nassali', photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', subject: 'English', class: 'S1, S2', phone: '+256 752 234567', email: 'a.nassali@kps.ug', status: 'active', attendance: 98, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
+    { id: 'TCH-S-003', name: 'Mr. Ivan Byaruhanga', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', subject: 'Physics', class: 'S5, S6', phone: '+256 701 345678', email: 'i.byaruhanga@kps.ug', status: 'on-leave', attendance: 88, leaveReason: 'Leave', leaveStart: '2026-02-15', leaveEnd: '2026-03-01', leaveNotes: 'Annual leave' },
+    { id: 'TCH-S-004', name: 'Ms. Patricia Acen', photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80', subject: 'History', class: 'S3, S4', phone: '+256 780 456789', email: 'p.acen@kps.ug', status: 'active', attendance: 100, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
+    { id: 'TCH-S-005', name: 'Mr. Samuel Waiswa', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', subject: 'Chemistry', class: 'S5, S6', phone: '+256 755 567890', email: 's.waiswa@kps.ug', status: 'active', attendance: 94, leaveReason: '', leaveStart: '', leaveEnd: '', leaveNotes: '' },
 ]
 
 const absenceReports = [
@@ -31,6 +31,75 @@ export default function SecondaryAdminTeachers() {
     const [relocateSubject, setRelocateSubject] = useState('')
     const [relocateClasses, setRelocateClasses] = useState([])
     const [successMsg, setSuccessMsg] = useState('')
+
+    // New Teacher Form State (Supports photo upload & multi-class assignment)
+    const [newTeacher, setNewTeacher] = useState({
+        name: '',
+        photo: null,
+        email: '',
+        phone: '',
+        subject: 'Mathematics',
+        classes: ['S1A', 'S1B']
+    })
+
+    const resetNewTeacherForm = () => {
+        setNewTeacher({
+            name: '',
+            photo: null,
+            email: '',
+            phone: '',
+            subject: 'Mathematics',
+            classes: ['S1A', 'S1B']
+        })
+    }
+
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setNewTeacher(prev => ({ ...prev, photo: reader.result }))
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const toggleNewTeacherClass = (cls) => {
+        setNewTeacher(prev => ({
+            ...prev,
+            classes: prev.classes.includes(cls)
+                ? prev.classes.filter(c => c !== cls)
+                : [...prev.classes, cls]
+        }))
+    }
+
+    const handleAddNewTeacher = () => {
+        if (!newTeacher.name.trim()) {
+            setSuccessMsg('Please enter a valid teacher name.')
+            setTimeout(() => setSuccessMsg(''), 3000)
+            return
+        }
+        const createdTeacher = {
+            id: `TCH-S-${String(teachers.length + 1).padStart(3, '0')}`,
+            name: newTeacher.name,
+            photo: newTeacher.photo || null,
+            subject: newTeacher.subject,
+            class: newTeacher.classes.length > 0 ? newTeacher.classes.join(', ') : 'Unassigned',
+            phone: newTeacher.phone || '+256 700 000000',
+            email: newTeacher.email || `${newTeacher.name.toLowerCase().replace(/[^a-z]/g, '')}@kss.ug`,
+            status: 'active',
+            attendance: 100,
+            leaveReason: '',
+            leaveStart: '',
+            leaveEnd: '',
+            leaveNotes: ''
+        }
+        setTeachers(prev => [createdTeacher, ...prev])
+        setModal(null)
+        resetNewTeacherForm()
+        setSuccessMsg(`Secondary Teacher ${createdTeacher.name} successfully added and assigned to ${createdTeacher.class}!`)
+        setTimeout(() => setSuccessMsg(''), 4000)
+    }
 
     const [leaveReason, setLeaveReason] = useState('')
     const [leaveStart, setLeaveStart] = useState('')
@@ -140,7 +209,13 @@ export default function SecondaryAdminTeachers() {
                                         }}>
                                             <td className="table-cell">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">{t.name.split(' ').pop()[0]}</div>
+                                                    {t.photo ? (
+                                                        <img src={t.photo} alt={t.name} className="w-9 h-9 rounded-full object-cover shadow-sm border border-slate-200 dark:border-slate-600 flex-shrink-0" />
+                                                    ) : (
+                                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                                            {t.name.split(' ').pop()[0]}
+                                                        </div>
+                                                    )}
                                                     <div><p className="text-sm font-semibold text-slate-900 dark:text-white">{t.name}</p><p className="text-xs text-slate-500 dark:text-slate-400">{t.email}</p></div>
                                                 </div>
                                             </td>
@@ -185,7 +260,7 @@ export default function SecondaryAdminTeachers() {
                                         <td className="table-cell text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate" title={r.details}>{r.details}</td>
                                         <td className="table-cell"><Badge variant={r.status === 'pending' ? 'danger' : 'success'}>{r.status === 'pending' ? 'Pending Review' : 'Reviewed'}</Badge></td>
                                         <td className="table-cell">
-                                            {r.status === 'pending' && <button className="btn-secondary text-xs px-2 py-1 flex items-center gap-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-200 dark:hover:border-emerald-700"><CheckCircle size={12} /> Mark Reviewed</button>}
+                                            {r.status === 'pending' && <button className="btn-secondary text-xs px-2 py-1 flex items-center gap-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-200 dark:border-emerald-700"><CheckCircle size={12} /> Mark Reviewed</button>}
                                         </td>
                                     </tr>
                                 ))}
@@ -242,14 +317,136 @@ export default function SecondaryAdminTeachers() {
                 )}
             </Modal>
 
-            <Modal isOpen={modal === 'add'} onClose={() => setModal(null)} title="Add New Teacher" size="lg"
-                footer={<><button className="btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => setModal(null)}><Plus size={14} /> Add Teacher</button></>}>
-                <div className="grid grid-cols-2 gap-4">
-                    {[['Full Name', 'text', 'Mr. John Doe'], ['Email', 'email', 'j.doe@school.ug'], ['Phone', '+256 700 000000', 'tel'], ['National ID', 'text', 'CM1234567']].map(([label, ph, type = 'text']) => (
-                        <div key={label}><label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">{label}</label><input type={type} className="input-field" placeholder={ph} /></div>
-                    ))}
-                    <div><label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Main Subject</label><select className="select-field">{allSecondarySubjects.map(sub => <option key={sub} value={sub}>{sub}</option>)}</select></div>
-                    <div><label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Assigned Classes</label><select className="select-field" multiple>{allSecondaryClasses.map(cls => <option key={cls} value={cls}>{cls}</option>)}</select></div>
+            {/* Add Teacher Modal */}
+            <Modal
+                isOpen={modal === 'add'}
+                onClose={() => { setModal(null); resetNewTeacherForm() }}
+                title="Add New Secondary Teacher"
+                size="lg"
+                footer={
+                    <>
+                        <button className="btn-secondary" onClick={() => { setModal(null); resetNewTeacherForm() }}>Cancel</button>
+                        <button className="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white" onClick={handleAddNewTeacher}>
+                            <Plus size={14} /> Add Teacher
+                        </button>
+                    </>
+                }
+            >
+                <div className="space-y-4">
+                    {/* Profile Picture Upload Section */}
+                    <div className="p-3.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-4">
+                        <div className="relative group">
+                            {newTeacher.photo ? (
+                                <img
+                                    src={newTeacher.photo}
+                                    alt="Teacher Preview"
+                                    className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-500 shadow-md"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-slate-700 border-2 border-dashed border-indigo-300 dark:border-slate-600 flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400">
+                                    <Camera size={20} />
+                                    <span className="text-[9px] font-bold mt-0.5">Photo</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex-1 text-center sm:text-left space-y-1">
+                            <label className="text-xs font-bold text-slate-800 dark:text-white block">
+                                Profile Picture
+                            </label>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Upload a professional teacher photo (JPG, PNG).
+                            </p>
+                            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer shadow-sm">
+                                <Upload size={13} />
+                                <span>{newTeacher.photo ? 'Change Photo' : 'Upload Image'}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Full Name *</label>
+                            <input
+                                type="text"
+                                className="input-field"
+                                placeholder="e.g., Dr. Francis Kigozi"
+                                value={newTeacher.name}
+                                onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Email Address *</label>
+                            <input
+                                type="email"
+                                className="input-field"
+                                placeholder="f.kigozi@kss.ug"
+                                value={newTeacher.email}
+                                onChange={e => setNewTeacher({ ...newTeacher, email: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Phone Number *</label>
+                            <input
+                                type="tel"
+                                className="input-field"
+                                placeholder="+256 700 987654"
+                                value={newTeacher.phone}
+                                onChange={e => setNewTeacher({ ...newTeacher, phone: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Main Subject</label>
+                            <select
+                                className="select-field"
+                                value={newTeacher.subject}
+                                onChange={e => setNewTeacher({ ...newTeacher, subject: e.target.value })}
+                            >
+                                {allSecondarySubjects.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Interactive Multi-Class Assignment */}
+                    <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                                Assigned Secondary Classes <span className="text-slate-400 font-normal">(Click multiple classes to assign)</span>
+                            </label>
+                            <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                                {newTeacher.classes.length} {newTeacher.classes.length === 1 ? 'Class' : 'Classes'} Selected
+                            </span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            {allSecondaryClasses.map(cls => {
+                                const isSelected = newTeacher.classes.includes(cls)
+                                return (
+                                    <button
+                                        key={cls}
+                                        type="button"
+                                        onClick={() => toggleNewTeacherClass(cls)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                            isSelected
+                                                ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400'
+                                                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'
+                                        }`}
+                                    >
+                                        {isSelected && <Check size={13} />}
+                                        <span>{cls}</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        {newTeacher.classes.length === 0 && (
+                            <p className="text-[11px] text-amber-600 dark:text-amber-400">Please select at least one class for this teacher.</p>
+                        )}
+                    </div>
                 </div>
             </Modal>
 
@@ -258,7 +455,11 @@ export default function SecondaryAdminTeachers() {
                 {selected && (
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">{selected.name.split(' ').pop()[0]}</div>
+                            {selected.photo ? (
+                                <img src={selected.photo} alt={selected.name} className="w-16 h-16 rounded-2xl object-cover shadow-md border-2 border-white dark:border-slate-700 flex-shrink-0" />
+                            ) : (
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">{selected.name.split(' ').pop()[0]}</div>
+                            )}
                             <div><p className="text-lg font-black text-slate-900 dark:text-white">{selected.name}</p><p className="text-sm font-medium text-slate-500 dark:text-slate-400">{selected.email}</p></div>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-sm">

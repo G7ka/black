@@ -1,39 +1,36 @@
 export const getSubdomain = () => {
-    // Examples: 
-    // localhost:5173 -> return null
-    // kampala.localhost:5173 -> return 'kampala'
-    // xyz.edumanage.com -> return 'xyz'
+    // 1. Check URL search param (?tenant=kampala or ?school=kampala) for offline/local testing
+    const searchParams = new URLSearchParams(window.location.search);
+    const queryTenant = searchParams.get('tenant') || searchParams.get('school') || searchParams.get('subdomain');
+    if (queryTenant) {
+        return queryTenant.toLowerCase();
+    }
 
     const host = window.location.hostname;
 
-    // For local development, treat everything before .localhost or .lvh.me as subdomain
-    if (host.includes('localhost') || host.includes('lvh.me')) {
+    // 2. For local development (e.g. kampala.localhost or kampala.lvh.me)
+    if (host.includes('localhost') || host.includes('lvh.me') || host.includes('127.0.0.1')) {
         const parts = host.split('.');
-        // lvh.me splits into 2 parts. localhost splits into 1.
-        // kampala.lvh.me splits into 3. kampala.localhost splits into 2.
 
         if (host.includes('lvh.me')) {
             if (parts.length > 2) {
-                return parts[0];
+                return parts[0].toLowerCase();
             }
             return null; // Just lvh.me
-        } else {
+        } else if (host.includes('localhost')) {
+            // kampala.localhost splits into ['kampala', 'localhost']
             if (parts.length > 1 && parts[0] !== 'localhost') {
-                return parts[0];
+                return parts[0].toLowerCase();
             }
             return null; // Just localhost
         }
+        return null;
     }
 
-    // For production (e.g., edumanage.com)
-    // Adjust logic accordingly once production domain is known.
-    // For now assuming: subdomain.domain.com
+    // 3. For production (e.g., kampala.edumanage.com)
     const parts = host.split('.');
-
-    // Simplistic check for standard domains (e.g., domain.com)
-    // If it's something like app.co.uk this logic would need tweaking.
     if (parts.length >= 3) {
-        return parts[0];
+        return parts[0].toLowerCase();
     }
 
     return null;

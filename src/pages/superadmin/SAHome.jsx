@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import StatCard from '../../components/ui/StatCard'
 import Modal from '../../components/ui/Modal'
 import { LineChart, BarChart, DoughnutChart } from '../../components/charts/Charts'
 import {
     Building2, Users, DollarSign, TrendingUp,
-    GraduationCap, AlertCircle, CheckCircle, Clock, BookOpen, Book, Send, MessageSquare
+    GraduationCap, AlertCircle, CheckCircle, Clock, BookOpen, Book, Send, MessageSquare,
+    Sparkles, ArrowRight
 } from 'lucide-react'
 
 const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb']
@@ -72,6 +74,7 @@ const schoolList = [
 ]
 
 export default function SAHome() {
+    const navigate = useNavigate()
     const [msgModal, setMsgModal] = useState(false)
     const [msgSchool, setMsgSchool] = useState('')
     const [msgType, setMsgType] = useState('info')
