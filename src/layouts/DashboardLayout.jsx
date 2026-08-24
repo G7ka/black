@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import Modal from '../components/ui/Modal'
 import {
     Menu, X, Bell, ChevronDown, LogOut, User,
     Home, Users, BookOpen, ClipboardList, BarChart3,
     Settings, LifeBuoy, Monitor, TrendingUp,
     Code2, Megaphone, AlertTriangle, CreditCard,
     GraduationCap, CalendarDays, FileText, School,
-    Building2, DollarSign, Award, Sliders, Sparkles
+    Building2, DollarSign, Award, Sliders, Sparkles,
+    Zap, Bot, CheckCircle2, ShieldCheck, Layers, Camera
 } from 'lucide-react'
 
 const navConfigs = {
@@ -123,6 +125,7 @@ export default function DashboardLayout({ role, children }) {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
     const [userMenuOpen, setUserMenuOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
+    const [whatsNewOpen, setWhatsNewOpen] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
     const navItems = navConfigs[role] || navConfigs.teacher
@@ -282,6 +285,17 @@ export default function DashboardLayout({ role, children }) {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {/* X-Men Updates Pill */}
+                        <button
+                            onClick={() => setWhatsNewOpen(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all"
+                            title="View X-Men Release Updates"
+                        >
+                            <Zap size={13} className="text-amber-300 animate-pulse" />
+                            <span className="hidden sm:inline">⚡ X-Men Updates</span>
+                            <span className="sm:hidden">Updates</span>
+                        </button>
+
                         {/* Notifications */}
                         <div className="relative">
                             <button
@@ -408,6 +422,103 @@ export default function DashboardLayout({ role, children }) {
             {(userMenuOpen || notificationsOpen) && (
                 <div className="fixed inset-0 z-40" onClick={() => { setUserMenuOpen(false); setNotificationsOpen(false) }} />
             )}
+
+            {/* X-Men Release Notes / What's New Modal */}
+            <Modal
+                isOpen={whatsNewOpen}
+                onClose={() => setWhatsNewOpen(false)}
+                title="⚡ What's New in X-Men (v2.5 Release)"
+                size="lg"
+                footer={
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Branch:</span>
+                            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                xmen
+                            </span>
+                        </div>
+                        <button className="btn-primary" onClick={() => setWhatsNewOpen(false)}>
+                            Got it, thanks!
+                        </button>
+                    </div>
+                }
+            >
+                <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+                    <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/90 rounded-2xl border border-blue-100 dark:border-slate-700 flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+                            <Zap size={20} className="text-amber-300" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">EduManage X-Men Release Updates</h4>
+                            <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+                                Here is a summary of all recent features, AI tools, and core system upgrades added to this branch:
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        {/* Feature 1: AI Tools */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-blue-600 dark:text-blue-400">
+                                <Bot size={16} /> 1. AI Copilot & Parent Tutor
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Integrated <strong>Admin AI Assistant</strong> for UNEB performance forecasting & fee analytics, plus <strong>Parent AI Chatbot</strong> for homework tutoring & grade explanations.
+                            </p>
+                        </div>
+
+                        {/* Feature 2: Multi-Child Parents */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-emerald-600 dark:text-emerald-400">
+                                <Users size={16} /> 2. Multi-Child Parent Accounts
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Parents can now manage <strong>more than 1 child</strong> under one profile. Includes interactive multi-child linker and quick sibling pre-fill during enrollment.
+                            </p>
+                        </div>
+
+                        {/* Feature 3: 2-Parents Limit & Next of Kin */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-amber-600 dark:text-amber-400">
+                                <ShieldCheck size={16} /> 3. 2-Parents Limit & Next of Kin
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Student enrollment restricts to maximum <strong>2 parents/guardians</strong> plus a mandatory emergency <strong>Next of Kin</strong> with contact number & relationship.
+                            </p>
+                        </div>
+
+                        {/* Feature 4: Photo Uploads */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-indigo-600 dark:text-indigo-400">
+                                <Camera size={16} /> 4. Universal Photo Uploads
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Profile picture and passport photo upload with instant client preview for <strong>Teachers</strong>, <strong>Pupils/Students</strong>, and <strong>Parents</strong>.
+                            </p>
+                        </div>
+
+                        {/* Feature 5: Multi-Class Teachers */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-sky-600 dark:text-sky-400">
+                                <Layers size={16} /> 5. Multi-Class Teachers
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Teachers can now be assigned to <strong>multiple classes/streams</strong> simultaneously (e.g., P6A & P7B or S1A & S2B) with interactive toggle chips.
+                            </p>
+                        </div>
+
+                        {/* Feature 6: Primary vs Secondary */}
+                        <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 space-y-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 font-bold text-purple-600 dark:text-purple-400">
+                                <School size={16} /> 6. Clean Primary / Secondary Split
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                                Separated Primary (P1–P7) and Secondary (S1–S6 O/A-Level) routing, curriculum tables, and standardized clean blue/slate design.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }
