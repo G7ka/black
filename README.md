@@ -2,6 +2,27 @@
 
 This is a frontend UI prototype for a comprehensive School Management System designed specifically for the Ugandan education sector. It features a complete implementation of dashboards for Super Admins, School Administrators, Teachers, Students, and Parents.
 
+## 🌟 What's New in v2.5 (Branch: `xmen`)
+
+- 🤖 **AI Assistant & Copilots**:
+  - **Admin AI Copilot** (`/admin/ai-assistant`, `/schooladmin/*/ai-assistant`): Automated UNEB exam readiness forecasting, fee collection projections, teacher substitution analysis, and instant smart reporting.
+  - **Parent AI Academic Tutor** (`/parent/ai-chat`): Interactive parent chatbot providing grades explanations, homework assistance, attendance alerts, and policy lookups.
+- 👨‍👩‍👧‍👦 **Multi-Child Parent Support**:
+  - Parents can now link and manage **multiple children** attending the school under a single account.
+  - Integrated interactive child picker with search in the Parents directory.
+  - Quick sibling parent pre-filler in student enrollment forms.
+- 🛡️ **Student Enrollment: Max 2 Parents & Next of Kin**:
+  - Enforced a strict maximum of **2 parents** (Parent 1 Primary, Parent 2 Secondary) with relationship tagging.
+  - Enforced a dedicated **Next of Kin (Emergency Line)** with relationship and direct contact number.
+- 📸 **Universal Profile & Passport Photo Uploads**:
+  - Instant portrait photo upload with live client preview for **Teachers**, **Pupils/Students**, and **Parents**.
+- 🏫 **Primary vs. Secondary Complete Domain Separation**:
+  - Dedicated Primary (P1–P7) and Secondary (S1–S6 O-Level/A-Level) school admin workflows, curriculum subjects, and grading systems.
+  - **Multi-Class Teacher Assignments**: Teachers can teach multiple classes simultaneously with interactive selector chips.
+- 🎨 **Clean Design System**: Standardized on Ugandan Navy Blue, Emerald Green, and Neutral Slate (removed arbitrary purple themes).
+
+See the complete release details in [**CHANGELOG.md**](./CHANGELOG.md).
+
 ## Features Included in this Prototype
 
 *   **Super Admin Dashboard:** Manage multiple schools across the country, handle subscriptions, view system-wide analytics, monitor performance, and access developer tools.

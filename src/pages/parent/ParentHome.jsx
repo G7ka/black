@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import { LineChart } from '../../components/charts/Charts'
-import { GraduationCap, CalendarDays, DollarSign, Award, Bell, AlertTriangle, CheckCircle, User, School, BookOpen } from 'lucide-react'
+import { GraduationCap, CalendarDays, DollarSign, Award, Bell, AlertTriangle, CheckCircle, User, School, BookOpen, Sparkles, ArrowRight } from 'lucide-react'
 
 // Mock Data structure reflecting multiple kids in different school levels
 const myChildren = [
@@ -78,6 +79,7 @@ const alertIcons = {
 }
 
 export default function ParentHome() {
+    const navigate = useNavigate()
     const [selectedChildId, setSelectedChildId] = useState(myChildren[0].id)
     const activeChild = myChildren.find(c => c.id === selectedChildId)
 

@@ -6,12 +6,13 @@ import {
     Settings, LifeBuoy, Monitor, TrendingUp,
     Code2, Megaphone, AlertTriangle, CreditCard,
     GraduationCap, CalendarDays, FileText, School,
-    Building2, DollarSign, Award, Sliders
+    Building2, DollarSign, Award, Sliders, Sparkles
 } from 'lucide-react'
 
 const navConfigs = {
     superadmin: [
         { label: 'Overview', icon: Home, path: '/superadmin', home: true },
+        { label: 'AI Assistant', icon: Sparkles, path: '/superadmin/ai-assistant' },
         { label: 'Schools', icon: Building2, path: '/superadmin/schools' },
         { label: 'Subscriptions', icon: CreditCard, path: '/superadmin/subscriptions' },
         { label: 'Analytics', icon: BarChart3, path: '/superadmin/analytics' },
@@ -24,6 +25,7 @@ const navConfigs = {
     ],
     'schooladmin-primary': [
         { label: 'Overview', icon: Home, path: '/schooladmin/primary', home: true },
+        { label: 'AI Assistant', icon: Sparkles, path: '/schooladmin/primary/ai-assistant' },
         { label: 'Timetable', icon: CalendarDays, path: '/schooladmin/primary/timetable' },
         { label: 'Teachers', icon: Users, path: '/schooladmin/primary/teachers' },
         { label: 'Students', icon: GraduationCap, path: '/schooladmin/primary/students' },
@@ -39,6 +41,7 @@ const navConfigs = {
     ],
     'schooladmin-secondary': [
         { label: 'Overview', icon: Home, path: '/schooladmin/secondary', home: true },
+        { label: 'AI Assistant', icon: Sparkles, path: '/schooladmin/secondary/ai-assistant' },
         { label: 'Timetable', icon: CalendarDays, path: '/schooladmin/secondary/timetable' },
         { label: 'Teachers', icon: Users, path: '/schooladmin/secondary/teachers' },
         { label: 'Students', icon: GraduationCap, path: '/schooladmin/secondary/students' },
@@ -73,6 +76,7 @@ const navConfigs = {
     ],
     parent: [
         { label: 'Dashboard', icon: Home, path: '/parent', home: true },
+        { label: 'AI Assistant', icon: Sparkles, path: '/parent/ai-chat' },
         { label: 'Grades', icon: Award, path: '/parent/grades' },
         { label: 'Attendance', icon: CalendarDays, path: '/parent/attendance' },
         { label: 'Fees', icon: DollarSign, path: '/parent/fees' },
@@ -81,6 +85,13 @@ const navConfigs = {
         { label: 'Notifications', icon: Bell, path: '/parent/notifications' },
         { label: 'Settings', icon: Settings, path: '/parent/settings' },
     ],
+}
+
+const aiRouteMap = {
+    superadmin: '/superadmin/ai-assistant',
+    'schooladmin-primary': '/schooladmin/primary/ai-assistant',
+    'schooladmin-secondary': '/schooladmin/secondary/ai-assistant',
+    parent: '/parent/ai-chat',
 }
 
 const roleLabels = {
@@ -371,6 +382,27 @@ export default function DashboardLayout({ role, children }) {
                     {children}
                 </main>
             </div>
+
+            {/* Persistent Floating AI Copilot Trigger (Icon Only) for all AI-enabled roles */}
+            {aiRouteMap[role] && location.pathname !== aiRouteMap[role] && (
+                <div className="fixed bottom-6 right-6 z-40">
+                    <button
+                        onClick={() => navigate(aiRouteMap[role])}
+                        className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-xl shadow-indigo-500/35 hover:shadow-2xl hover:shadow-indigo-500/60 hover:scale-110 active:scale-90 active:rotate-12 transition-all duration-200 border border-white/30 backdrop-blur-md group"
+                        title="AI Assistant"
+                        aria-label="AI Assistant"
+                    >
+                        {/* Subtle ambient light glow */}
+                        <div className="absolute inset-0 rounded-full bg-indigo-400/20 blur-md group-hover:bg-indigo-400/40 transition-colors" />
+
+                        {/* Centered Sparkles icon with light shimmer */}
+                        <div className="relative flex items-center justify-center">
+                            <Sparkles size={22} className="text-amber-300 transition-transform duration-200 group-hover:rotate-12 group-active:scale-125" />
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900 animate-pulse" />
+                        </div>
+                    </button>
+                </div>
+            )}
 
             {/* Close menus when clicking outside */}
             {(userMenuOpen || notificationsOpen) && (
