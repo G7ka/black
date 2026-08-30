@@ -1,28 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Shield, Lock, Mail, ArrowRight } from 'lucide-react';
 
 export default function MainLogin() {
     const navigate = useNavigate();
-    const { loginPlatform } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        setError('');
-        setLoading(true);
-        try {
-            await loginPlatform(email, password);
+        // Demo logic: Hardcode navigation to superadmin
+        if (email.includes('admin')) {
             navigate('/superadmin');
-        } catch (err) {
-            setError(err.message || 'Login failed');
-        } finally {
-            setLoading(false);
+            return;
         }
+        navigate('/superadmin'); // default for demo
     };
 
     return (
@@ -43,11 +35,6 @@ export default function MainLogin() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-slate-800/80 backdrop-blur-xl py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-slate-700/50">
-                    {error && (
-                        <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
-                            <AlertCircle size={16} className="flex-shrink-0" /> {error}
-                        </div>
-                    )}
                     <form className="space-y-6" onSubmit={handleLogin}>
                         <div>
                             <label className="block text-sm font-medium text-slate-300">
@@ -108,10 +95,9 @@ export default function MainLogin() {
                         <div>
                             <button
                                 type="submit"
-                                disabled={loading}
-                                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 focus:ring-offset-slate-900 transition-all disabled:opacity-60"
+                                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 focus:ring-offset-slate-900 transition-all"
                             >
-                                {loading ? 'Signing in…' : 'Secure Login'} {!loading && <ArrowRight size={16} />}
+                                Secure Login <ArrowRight size={16} />
                             </button>
                         </div>
                     </form>
@@ -126,3 +112,4 @@ export default function MainLogin() {
         </div>
     );
 }
+

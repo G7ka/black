@@ -1,43 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getSubdomain } from '../../utils/tenant';
-import { useAuth } from '../../context/AuthContext';
-import { GraduationCap, Mail, Lock, ArrowRight, School, User, BookOpen, Heart, AlertCircle } from 'lucide-react';
-
-// Backend JWT role -> dashboard landing route.
-const ROLE_LANDING = {
-    SCHOOLADMIN_PRIMARY: '/schooladmin/primary',
-    SCHOOLADMIN_SECONDARY: '/schooladmin/secondary',
-    TEACHER: '/teacher',
-    STUDENT: '/student',
-    PARENT: '/parent',
-};
+import { GraduationCap, Mail, Lock, ArrowRight, School, User, BookOpen, Heart } from 'lucide-react';
 
 export default function TenantLogin() {
     const navigate = useNavigate();
-    const { loginTenant } = useAuth();
     const subdomain = getSubdomain() || 'unknown';
     const schoolName = subdomain.charAt(0).toUpperCase() + subdomain.slice(1) + ' High School';
 
     const [role, setRole] = useState('student');
-    const [identifier, setIdentifier] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        setError('');
-        setLoading(true);
-        try {
-            const result = await loginTenant(identifier, password);
-            const landing = ROLE_LANDING[result.profile.role] || '/student';
-            navigate(landing);
-        } catch (err) {
-            setError(err.message || 'Login failed');
-        } finally {
-            setLoading(false);
-        }
+        // Route to proper dashboard based on selected mock role
+        if (role === 'admin') navigate('/schooladmin/secondary');
+        else if (role === 'teacher') navigate('/teacher');
+        else if (role === 'parent') navigate('/parent');
+        else navigate('/student');
     };
 
     return (
@@ -61,11 +40,6 @@ export default function TenantLogin() {
                     </div>
 
                     <div className="mt-8">
-                        {error && (
-                            <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-                                <AlertCircle size={16} className="flex-shrink-0" /> {error}
-                            </div>
-                        )}
                         <form className="space-y-6" onSubmit={handleLogin}>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700">Account Type</label>
@@ -90,9 +64,6 @@ export default function TenantLogin() {
                                         </button>
                                     ))}
                                 </div>
-                                {/* Role selector only pre-fills the placeholder — the backend
-                                    resolves the actual role from the matched account, so a
-                                    mismatched tab selection never grants the wrong access. */}
                             </div>
 
                             <div>
@@ -106,8 +77,6 @@ export default function TenantLogin() {
                                     <input
                                         type="text"
                                         required
-                                        value={identifier}
-                                        onChange={(e) => setIdentifier(e.target.value)}
                                         className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white sm:text-sm"
                                         placeholder={role === 'student' ? 'STU-2026-001' : `yourname@${subdomain}.edu.ug`}
                                     />
@@ -125,8 +94,6 @@ export default function TenantLogin() {
                                     <input
                                         type="password"
                                         required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full pl-10 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow bg-slate-50 focus:bg-white sm:text-sm"
                                         placeholder="••••••••"
                                     />
@@ -153,11 +120,10 @@ export default function TenantLogin() {
 
                             <div>
                                 <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all disabled:opacity-60"
+                                    onClick={handleLogin}
+                                    className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
                                 >
-                                    {loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight size={16} />}
+                                    Sign in <ArrowRight size={16} />
                                 </button>
                             </div>
                         </form>
@@ -190,3 +156,4 @@ export default function TenantLogin() {
         </div >
     );
 }
+

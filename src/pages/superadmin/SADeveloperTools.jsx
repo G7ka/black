@@ -1,37 +1,27 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
-import { Key, Search, Copy, RefreshCw, Terminal, CheckCircle, AlertCircle, DownloadIcon } from 'lucide-react'
-import { developerToolsApi } from '../../api/developerTools.api'
+import { Key, Search, Copy, RefreshCw, ToggleLeft, ToggleRight, Terminal, CheckCircle } from 'lucide-react'
+
+const apiKeys = [
+    { id: 1, name: 'Production API Key', key: 'em_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', created: '2026-01-15', lastUsed: '2026-02-22', status: 'active' },
+    { id: 2, name: 'School Integration Key', key: 'em_school_xxxxxxxxxxxxxxxxxxxxxxxxxxxx', created: '2026-02-01', lastUsed: '2026-02-20', status: 'active' },
+    { id: 3, name: 'Webhook Secret', key: 'whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', created: '2025-12-10', lastUsed: '2026-02-21', status: 'active' },
+]
+
+const sampleLogs = [
+    'GET /api/v1/schools 200 45ms',
+    'POST /api/v1/attendance 201 120ms',
+    'GET /api/v1/students?class=P4 200 38ms',
+    'PUT /api/v1/grades/654321 200 92ms',
+    'POST /api/v1/payments/initiate 200 210ms',
+    'GET /api/v1/schools/507f1f77 404 12ms',
+    'POST /api/v1/sms/send 200 340ms',
+]
 
 export default function SADeveloperTools() {
-    const [apiKeys, setApiKeys] = useState([])
-    const [logs, setLogs] = useState([])
+    const [sandbox, setSandbox] = useState(false)
     const [logQuery, setLogQuery] = useState('')
     const [copied, setCopied] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState('')
-    const [newKeyName, setNewKeyName] = useState('')
-    const [revealedKey, setRevealedKey] = useState(null) // { name, key } — shown once after creation
-    const [creating, setCreating] = useState(false)
-
-    const load = useCallback(async () => {
-        setLoading(true)
-        setError('')
-        try {
-            const [keys, logResult] = await Promise.all([
-                developerToolsApi.listApiKeys(),
-                developerToolsApi.searchLogs(logQuery || undefined),
-            ])
-            setApiKeys(keys)
-            setLogs(logResult)
-        } catch (err) {
-            setError(err.message || 'Failed to load developer tools data')
-        } finally {
-            setLoading(false)
-        }
-    }, [logQuery])
-
-    useEffect(() => { load() }, [load])
 
     const copyKey = (id, key) => {
         navigator.clipboard.writeText(key).catch(() => { })
@@ -39,102 +29,84 @@ export default function SADeveloperTools() {
         setTimeout(() => setCopied(null), 2000)
     }
 
-    const createKey = async () => {
-        if (!newKeyName.trim()) return
-        setCreating(true)
-        setError('')
-        try {
-            const result = await developerToolsApi.createApiKey(newKeyName)
-            setRevealedKey({ name: result.name, key: result.key })
-            setNewKeyName('')
-            await load()
-        } catch (err) {
-            setError(err.message || 'Failed to create API key')
-        } finally {
-            setCreating(false)
-        }
-    }
-
-    const revokeKey = async (id) => {
-        setError('')
-        try {
-            await developerToolsApi.revokeApiKey(id)
-            await load()
-        } catch (err) {
-            setError(err.message || 'Failed to revoke key')
-        }
-    }
+    const filteredLogs = logQuery ? sampleLogs.filter(l => l.toLowerCase().includes(logQuery.toLowerCase())) : sampleLogs
 
     return (
         <DashboardLayout role="superadmin">
             <div className="space-y-6">
-                <div><h1 className="page-title">Developer Tools</h1><p className="page-subtitle">API keys and system activity log</p></div>
+                <div><h1 className="page-title">Developer Tools</h1><p className="page-subtitle">API keys, log searcher, and sandbox environment</p></div>
 
-                {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2">
-                        <AlertCircle size={16} /> {error}
-                    </div>
-                )}
-
-                {revealedKey && (
-                    <div className="card border-2 border-amber-300 bg-amber-50 dark:bg-amber-900/20">
-                        <p className="font-semibold text-amber-800 dark:text-amber-300 mb-1">Copy this key now — it won't be shown again</p>
-                        <div className="flex items-center gap-2">
-                            <code className="flex-1 text-xs bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-amber-200 dark:border-amber-800 break-all">{revealedKey.key}</code>
-                            <button onClick={() => { navigator.clipboard.writeText(revealedKey.key); }} className="btn-secondary text-xs py-1.5"><Copy size={12} /> Copy</button>
-                            <button onClick={() => setRevealedKey(null)} className="btn-primary text-xs py-1.5">Done</button>
-                        </div>
-                    </div>
-                )}
+                {/* Sandbox toggle */}
+                <div className={`card flex items-center justify-between border-2 ${sandbox ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-100 dark:border-slate-700'}`}>
+                    <div><p className="font-semibold text-gray-900 dark:text-white">Sandbox Mode</p><p className="text-sm text-gray-500 dark:text-slate-400">All actions are simulated — no real data is affected</p></div>
+                    <button onClick={() => setSandbox(p => !p)} className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-colors ${sandbox ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border border-transparent dark:border-slate-600'}`}>
+                        {sandbox ? <><ToggleRight size={16} /> SANDBOX ON</> : <><ToggleLeft size={16} /> SANDBOX OFF</>}
+                    </button>
+                </div>
 
                 {/* API Keys */}
                 <div className="card">
-                    <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                    <div className="flex items-center justify-between mb-4">
                         <h2 className="section-title mb-0">API Keys</h2>
-                        <div className="flex gap-2">
-                            <input value={newKeyName} onChange={e => setNewKeyName(e.target.value)} placeholder="Key name (e.g. Integration Key)" className="input-field text-xs py-1.5" />
-                            <button disabled={creating || !newKeyName.trim()} className="btn-primary text-xs py-1.5 disabled:opacity-50" onClick={createKey}><Key size={13} /> {creating ? 'Generating…' : 'Generate New Key'}</button>
-                        </div>
+                        <button className="btn-primary text-xs py-1.5"><Key size={13} /> Generate New Key</button>
                     </div>
                     <div className="space-y-3">
-                        {loading && <p className="text-sm text-gray-400">Loading…</p>}
-                        {!loading && apiKeys.length === 0 && <p className="text-sm text-gray-400">No API keys yet.</p>}
                         {apiKeys.map(k => (
                             <div key={k.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-700">
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-gray-900 dark:text-white">{k.name}</p>
-                                    <p className="text-xs font-mono text-gray-500 dark:text-slate-400 mt-0.5 truncate max-w-xs">{k.keyPrefix}••••••••</p>
-                                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Created: {new Date(k.createdAt).toLocaleDateString()} · Last used: {k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : 'Never'} · <span className={k.status === 'ACTIVE' ? 'text-emerald-600' : 'text-red-500'}>{k.status.toLowerCase()}</span></p>
+                                    <p className="text-xs font-mono text-gray-500 dark:text-slate-400 mt-0.5 truncate max-w-xs">{sandbox ? k.key.replace(/x/g, '*') : k.key}</p>
+                                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Created: {k.created} · Last used: {k.lastUsed}</p>
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0 ml-4">
-                                    <button onClick={() => copyKey(k.id, k.keyPrefix)} className="btn-secondary text-xs py-1.5 px-3">
-                                        {copied === k.id ? <><CheckCircle size={11} className="text-emerald-500 dark:text-emerald-400" /> Copied</> : <><Copy size={11} /> Copy Prefix</>}
+                                    <button onClick={() => copyKey(k.id, k.key)} className="btn-secondary text-xs py-1.5 px-3">
+                                        {copied === k.id ? <><CheckCircle size={11} className="text-emerald-500 dark:text-emerald-400" /> Copied</> : <><Copy size={11} /> Copy</>}
                                     </button>
-                                    {k.status === 'ACTIVE' && (
-                                        <button onClick={() => revokeKey(k.id)} className="btn-danger text-xs py-1.5 px-3"><RefreshCw size={11} /> Revoke</button>
-                                    )}
+                                    <button className="btn-danger text-xs py-1.5 px-3"><RefreshCw size={11} /> Revoke</button>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Log Searcher — real EmailLog + AuditLog activity, not fabricated */}
+                {/* Log Searcher */}
                 <div className="card">
-                    <h2 className="section-title flex items-center gap-2"><Terminal size={16} /> System Activity Log</h2>
-                    <button  className=" justify-between mb-4 ml-auto flex items-center gap-2 btn-secondary text-xs py-1 px-2"><DownloadIcon size={12} /></button>
+                    <h2 className="section-title">API Log Searcher</h2>
                     <div className="relative mb-4">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input value={logQuery} onChange={e => setLogQuery(e.target.value)} className="input-field pl-9" placeholder="Search logs (e.g., FAILED, SCHOOL_APPROVED)..." />
+                        <input value={logQuery} onChange={e => setLogQuery(e.target.value)} className="input-field pl-9" placeholder="Search logs (e.g., POST, 404, /schools)..." />
                     </div>
-                    <div className="bg-gray-950 rounded-xl p-4 font-mono text-xs space-y-1.5 max-h-72 overflow-y-auto">
-                        {logs.length ? logs.map((log, i) => (
+                    <div className="bg-gray-950 rounded-xl p-4 font-mono text-xs space-y-1.5 max-h-56 overflow-y-auto">
+                        {filteredLogs.length ? filteredLogs.map((log, i) => (
                             <div key={i} className="flex gap-3">
-                                <span className="text-gray-500 flex-shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                                <span className={`flex-shrink-0 font-bold w-14 ${log.level === 'ERROR' ? 'text-red-400' : 'text-emerald-400'}`}>{log.source}</span>
-                                <span className={`text-sm ${log.level === 'ERROR' ? 'text-red-300' : 'text-gray-300'}`}>{log.message}</span>
+                                <span className="text-gray-500 flex-shrink-0">09:5{i}:{String(i * 7).padStart(2, '0')}</span>
+                                <span className={`text-sm ${log.includes('404') ? 'text-red-400' : log.includes('POST') ? 'text-amber-300' : 'text-emerald-300'}`}>{log}</span>
                             </div>
                         )) : <p className="text-gray-500">No logs match your query.</p>}
+                    </div>
+                </div>
+
+                {/* Testing Sandbox */}
+                <div className="card">
+                    <h2 className="section-title flex items-center gap-2"><Terminal size={18} /> API Testing Sandbox</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
+                            <select className="select-field"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint</label>
+                            <input className="input-field" defaultValue="/api/v1/schools" />
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Request Body (JSON)</label>
+                        <textarea className="input-field font-mono text-xs resize-none" rows={4} placeholder={'{\n  "name": "Test School"\n}'} />
+                    </div>
+                    <button className="btn-primary mt-4"><Terminal size={14} /> Send Request</button>
+                    <div className="mt-4 bg-gray-950 rounded-xl p-4 text-xs font-mono text-emerald-400">
+                        <p className="text-gray-500 mb-1">// Response</p>
+                        <p>{`{ "status": 200, "data": { "_id": "...", "name": "Greenhill Academy", "subdomain": "greenhill" } }`}</p>
                     </div>
                 </div>
             </div>

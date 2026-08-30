@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { isMainDomain } from './utils/tenant'
-import ProtectedRoute from './components/common/ProtectedRoute'
 
 // Super Admin
 import SAHome from './pages/superadmin/SAHome'
@@ -85,23 +84,6 @@ function RootRoute() {
     return <Landing />;
 }
 
-// Payments (Pesapal redirect target — public, required by the payment flow itself)
-import PaymentCallback from './pages/PaymentCallback'
-
-// Platform-admin roles allowed into any /superadmin/* route. Individual
-// pages don't yet enforce finer-grained sub-permissions (e.g. Finance
-// Admin vs Support Agent) — that matches current frontend behavior,
-// which shows the same nav to every platform admin role.
-const PLATFORM_ROLES = ['SUPER_ADMIN', 'FINANCE_ADMIN', 'SUPPORT_AGENT', 'CONTENT_MANAGER']
-
-function SAGuard({ children }) {
-    return (
-        <ProtectedRoute type="platform" roles={PLATFORM_ROLES} redirectTo="/admin">
-            {children}
-        </ProtectedRoute>
-    )
-}
-
 export default function App() {
     return (
         <BrowserRouter>
@@ -115,7 +97,6 @@ export default function App() {
                 <Route path="/TenantLogin" element={<TenantLogin />} />
                 <Route path="/admin" element={<MainLogin />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/payment/callback" element={<PaymentCallback />} />
 
                 {/* Parent Portal */}
                 <Route path="/parent" element={<ParentHome />} />
@@ -179,19 +160,19 @@ export default function App() {
                 <Route path="/schooladmin/secondary/support" element={<SchoolAdminSupport role="schooladmin-secondary" />} />
                 <Route path="/schooladmin/secondary/settings" element={<SettingsPage role="schooladmin-secondary" />} />
 
-                {/* Super Admin — protected by real platform-admin JWT (Phase 5) */}
-                <Route path="/superadmin" element={<SAGuard><SAHome /></SAGuard>} />
-                <Route path="/superadmin/ai-assistant" element={<SAGuard><AdminAiAssistant role="superadmin" /></SAGuard>} />
+                {/* Super Admin */}
+                <Route path="/superadmin" element={<SAHome />} />
+                <Route path="/superadmin/ai-assistant" element={<AdminAiAssistant role="superadmin" />} />
                 <Route path="/superadmin/ai" element={<Navigate to="/superadmin/ai-assistant" replace />} />
-                <Route path="/superadmin/schools" element={<SAGuard><SASchools /></SAGuard>} />
-                <Route path="/superadmin/subscriptions" element={<SAGuard><SASubscriptions /></SAGuard>} />
-                <Route path="/superadmin/analytics" element={<SAGuard><SAAnalytics /></SAGuard>} />
-                <Route path="/superadmin/users" element={<SAGuard><SAUsers /></SAGuard>} />
-                <Route path="/superadmin/support" element={<SAGuard><SASupport /></SAGuard>} />
-                <Route path="/superadmin/configuration" element={<SAGuard><SAConfiguration /></SAGuard>} />
-                <Route path="/superadmin/monitoring" element={<SAGuard><SAMonitoring /></SAGuard>} />
-                <Route path="/superadmin/devtools" element={<SAGuard><SADeveloperTools /></SAGuard>} />
-                <Route path="/superadmin/emergency" element={<SAGuard><SAEmergency /></SAGuard>} />
+                <Route path="/superadmin/schools" element={<SASchools />} />
+                <Route path="/superadmin/subscriptions" element={<SASubscriptions />} />
+                <Route path="/superadmin/analytics" element={<SAAnalytics />} />
+                <Route path="/superadmin/users" element={<SAUsers />} />
+                <Route path="/superadmin/support" element={<SASupport />} />
+                <Route path="/superadmin/configuration" element={<SAConfiguration />} />
+                <Route path="/superadmin/monitoring" element={<SAMonitoring />} />
+                <Route path="/superadmin/devtools" element={<SADeveloperTools />} />
+                <Route path="/superadmin/emergency" element={<SAEmergency />} />
 
                 {/* Convenient Aliases to prevent 404 Landing Page fallbacks */}
                 <Route path="/schooladmin" element={<Navigate to="/schooladmin/primary" replace />} />
@@ -210,4 +191,3 @@ export default function App() {
         </BrowserRouter>
     );
 }
-

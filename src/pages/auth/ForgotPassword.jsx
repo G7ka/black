@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { GraduationCap, Mail, ArrowLeft, KeyRound, CheckCircle2, ShieldCheck } from 'lucide-react'
-import { authApi } from '../../api/auth.api'
-import { isMainDomain } from '../../utils/tenant'
 
 export default function ForgotPassword() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const returnTo = searchParams.get('from') || '/'
-    // Main domain (edumanage.com) = platform admin reset; any subdomain = tenant user reset.
-    const audience = isMainDomain() ? 'platform' : 'tenant'
 
     const [step, setStep] = useState(1) // 1=email, 2=code, 3=new password, 4=done
     const [email, setEmail] = useState('')
@@ -17,52 +13,28 @@ export default function ForgotPassword() {
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
 
-    const handleSendCode = async (e) => {
+    const handleSendCode = (e) => {
         e.preventDefault()
         if (!email.trim()) return setError('Please enter your email address.')
         setError('')
-        setLoading(true)
-        try {
-            await authApi.forgotPasswordRequest(email, audience)
-            setStep(2)
-        } catch (err) {
-            setError(err.message || 'Could not send verification code.')
-        } finally {
-            setLoading(false)
-        }
+        // Simulate sending verification code to school email
+        setStep(2)
     }
 
-    const handleVerifyCode = async (e) => {
+    const handleVerifyCode = (e) => {
         e.preventDefault()
         if (code.length < 6) return setError('Please enter the 6-digit verification code.')
         setError('')
-        setLoading(true)
-        try {
-            await authApi.forgotPasswordVerify(email, audience, code)
-            setStep(3)
-        } catch (err) {
-            setError(err.message || 'Invalid or expired code.')
-        } finally {
-            setLoading(false)
-        }
+        setStep(3)
     }
 
-    const handleResetPassword = async (e) => {
+    const handleResetPassword = (e) => {
         e.preventDefault()
-        if (newPassword.length < 8) return setError('Password must be at least 8 characters.')
+        if (newPassword.length < 6) return setError('Password must be at least 6 characters.')
         if (newPassword !== confirmPassword) return setError('Passwords do not match.')
         setError('')
-        setLoading(true)
-        try {
-            await authApi.forgotPasswordReset(email, audience, code, newPassword)
-            setStep(4)
-        } catch (err) {
-            setError(err.message || 'Could not reset password.')
-        } finally {
-            setLoading(false)
-        }
+        setStep(4)
     }
 
     return (
@@ -116,8 +88,8 @@ export default function ForgotPassword() {
                                     />
                                 </div>
                             </div>
-                            <button type="submit" disabled={loading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                <Mail size={16} /> {loading ? 'Sending…' : 'Send Verification Code'}
+                            <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                                <Mail size={16} /> Send Verification Code
                             </button>
                         </form>
                     )}
@@ -141,10 +113,10 @@ export default function ForgotPassword() {
                                     required
                                 />
                             </div>
-                            <button type="submit" disabled={loading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                <ShieldCheck size={16} /> {loading ? 'Verifying…' : 'Verify Code'}
+                            <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                                <ShieldCheck size={16} /> Verify Code
                             </button>
-                            <button type="button" onClick={() => { setStep(1); setError('') }} className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                            <button type="button" onClick={() => setStep(1)} className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors">
                                 ← Didn't receive it? Try again
                             </button>
                         </form>
@@ -185,8 +157,8 @@ export default function ForgotPassword() {
                                     />
                                 </div>
                             </div>
-                            <button type="submit" disabled={loading} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                <KeyRound size={16} /> {loading ? 'Resetting…' : 'Reset Password'}
+                            <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                                <KeyRound size={16} /> Reset Password
                             </button>
                         </form>
                     )}

@@ -1,73 +1,91 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import StatCard from '../../components/ui/StatCard'
 import Modal from '../../components/ui/Modal'
-import { DoughnutChart } from '../../components/charts/Charts'
+import { LineChart, BarChart, DoughnutChart } from '../../components/charts/Charts'
 import {
-    Building2, Users, DollarSign, GraduationCap, CheckCircle, Clock,
-    BookOpen, Book, Send, MessageSquare, AlertCircle
+    Building2, Users, DollarSign, TrendingUp,
+    GraduationCap, AlertCircle, CheckCircle, Clock, BookOpen, Book, Send, MessageSquare,
+    Sparkles, ArrowRight
 } from 'lucide-react'
-import { analyticsApi, notificationsApi } from '../../api/platformOps.api'
-import { schoolsAdminApi } from '../../api/schoolsAdmin.api'
 
-const DISTRICT_COLORS = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe', '#e0e7ff']
+const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb']
+
+const revenueData = {
+    labels: months,
+    datasets: [
+        {
+            label: 'Revenue (UGX M)',
+            data: [42, 58, 63, 71, 85, 98, 112],
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.08)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#2563eb',
+            pointRadius: 4,
+        },
+        {
+            label: 'Subscriptions',
+            data: [28, 38, 44, 51, 60, 70, 80],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16,185,129,0.06)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#10b981',
+            pointRadius: 4,
+        },
+    ],
+}
+
+const schoolGrowthData = {
+    labels: months,
+    datasets: [
+        {
+            label: 'New Schools',
+            data: [8, 14, 11, 19, 23, 17, 28],
+            backgroundColor: '#3b82f6',
+            borderRadius: 6,
+        },
+    ],
+}
+
+const districtData = {
+    labels: ['Kampala', 'Wakiso', 'Mukono', 'Gulu', 'Mbarara', 'Others'],
+    datasets: [{
+        data: [34, 22, 18, 12, 9, 5],
+        backgroundColor: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
+        borderWidth: 0,
+    }],
+}
+
+const recentActivity = [
+    { icon: CheckCircle, color: 'text-emerald-500', text: 'Greenhill Academy approved', time: '2 min ago' },
+    { icon: AlertCircle, color: 'text-amber-500', text: 'St. Mary\'s overdue payment', time: '15 min ago' },
+    { icon: Building2, color: 'text-blue-500', text: 'New school application: Kabale PS', time: '1 hr ago' },
+    { icon: Users, color: 'text-purple-500', text: '3 new teachers registered', time: '2 hr ago' },
+    { icon: DollarSign, color: 'text-emerald-500', text: 'Payment received: UGX 400,000', time: '3 hr ago' },
+]
+
+const schoolList = [
+    'Greenhill Academy', 'St. Mary\'s College', 'Kabale Primary School',
+    'Nile International School', 'Buganda Road Primary', 'Aga Khan School',
+    'Mbarara High School', 'Gulu Excellence School',
+]
 
 export default function SAHome() {
-    const [overview, setOverview] = useState(null)
-    const [schools, setSchools] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [loadError, setLoadError] = useState('')
-
+    const navigate = useNavigate()
     const [msgModal, setMsgModal] = useState(false)
     const [msgSchool, setMsgSchool] = useState('')
     const [msgType, setMsgType] = useState('info')
     const [msgText, setMsgText] = useState('')
     const [toast, setToast] = useState(null)
-    const [sending, setSending] = useState(false)
-    const [sendError, setSendError] = useState('')
 
-    const load = useCallback(async () => {
-        setLoading(true)
-        setLoadError('')
-        try {
-            const [overviewResult, schoolsResult] = await Promise.all([
-                analyticsApi.overview(),
-                schoolsAdminApi.list({ status: 'active', pageSize: 100 }),
-            ])
-            setOverview(overviewResult)
-            setSchools(schoolsResult.schools)
-        } catch (err) {
-            setLoadError(err.message || 'Failed to load dashboard data')
-        } finally {
-            setLoading(false)
-        }
-    }, [])
-
-    useEffect(() => { load() }, [load])
-
-    const sendMsg = async () => {
+    const sendMsg = () => {
         if (!msgSchool || !msgText) return
-        setSending(true)
-        setSendError('')
-        try {
-            const result = await notificationsApi.sendToSchool(msgSchool, msgType, msgText)
-            setToast(`Message sent to ${result.sentTo} school(s)`)
-            setTimeout(() => setToast(null), 3000)
-            setMsgModal(false); setMsgSchool(''); setMsgText(''); setMsgType('info')
-        } catch (err) {
-            setSendError(err.message || 'Failed to send message')
-        } finally {
-            setSending(false)
-        }
-    }
-
-    const districtData = overview ? {
-        labels: overview.schoolsByDistrict.map(d => d.district),
-        datasets: [{ data: overview.schoolsByDistrict.map(d => d.count), backgroundColor: DISTRICT_COLORS, borderWidth: 0 }],
-    } : null
-
-    if (loading) {
-        return <DashboardLayout role="superadmin"><p className="text-sm text-gray-400">Loading platform overview…</p></DashboardLayout>
+        setToast(`Message sent to ${msgSchool}`)
+        setTimeout(() => setToast(null), 3000)
+        setMsgModal(false); setMsgSchool(''); setMsgText(''); setMsgType('info')
     }
 
     return (
@@ -79,67 +97,72 @@ export default function SAHome() {
                     <p className="page-subtitle">Welcome back! Here's your platform summary for today.</p>
                 </div>
 
-                {loadError && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2">
-                        <AlertCircle size={16} /> {loadError}
+                {/* Stats */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <StatCard title="Total Schools" value="247" subtitle="+12 this month" icon={Building2} color="blue" trend="up" trendValue="5.1% vs last month" />
+                    <StatCard title="Total Students" value="68,430" subtitle="Across all schools" icon={GraduationCap} color="green" trend="up" trendValue="8.3% growth" />
+                    <StatCard title="Monthly Revenue" value="UGX 112M" subtitle="Feb 2026" icon={DollarSign} color="purple" trend="up" trendValue="14.3% vs Jan" />
+                    <StatCard title="Active Schools" value="231" subtitle="16 pending approval" icon={CheckCircle} color="amber" trend="up" trendValue="93.5% active rate" />
+                </div>
+
+                {/* Secondary stats */}
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <StatCard title="Primary Schools" value="164" subtitle="66.4% of total" icon={BookOpen} color="blue" />
+                    <StatCard title="Secondary Schools" value="83" subtitle="33.6% of total" icon={Book} color="indigo" />
+                    <StatCard title="Total Teachers" value="4,218" icon={Users} color="green" />
+                    <StatCard title="Total Parents" value="12,640" subtitle="Across all schools" icon={Users} color="purple" />
+                    <StatCard title="Pending Applications" value="16" icon={Clock} color="amber" />
+                    <StatCard title="Overdue Payments" value="23" icon={AlertCircle} color="red" />
+                </div>
+
+                {/* Charts row */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="card lg:col-span-2">
+                        <h2 className="section-title">Revenue Growth</h2>
+                        <LineChart data={revenueData} />
                     </div>
-                )}
+                    <div className="card">
+                        <h2 className="section-title">Schools by District</h2>
+                        <DoughnutChart data={districtData} />
+                    </div>
+                </div>
 
-                {overview && (
-                    <>
-                        {/* Stats */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <StatCard title="Total Schools" value={String(overview.totalSchools)} subtitle={`${overview.pendingApplications} pending approval`} icon={Building2} color="blue" />
-                            <StatCard title="Declared Students" value={overview.declaredStudents.toLocaleString()} subtitle="Self-reported at registration" icon={GraduationCap} color="green" />
-                            <StatCard title="Monthly Revenue" value={`UGX ${overview.monthlyRevenue.toLocaleString()}`} subtitle={`@ UGX ${overview.pricePerStudent.toLocaleString()}/student`} icon={DollarSign} color="purple" />
-                            <StatCard title="Active Schools" value={String(overview.activeSchools)} subtitle={`${overview.suspendedSchools} suspended`} icon={CheckCircle} color="amber" />
+                {/* Bottom row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="card">
+                        <h2 className="section-title">Monthly School Registrations</h2>
+                        <BarChart data={schoolGrowthData} />
+                    </div>
+                    <div className="card">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="section-title mb-0">Recent Activity</h2>
+                            <button onClick={() => setMsgModal(true)} className="btn-primary text-xs py-1.5"><Send size={12} /> Send Alert</button>
                         </div>
-
-                        {/* Secondary stats */}
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                            <StatCard title="Primary Schools" value={String(overview.primarySchools)} icon={BookOpen} color="blue" />
-                            <StatCard title="Secondary Schools" value={String(overview.secondarySchools)} icon={Book} color="indigo" />
-                            <StatCard title="Pending Applications" value={String(overview.pendingApplications)} icon={Clock} color="amber" />
-                            <StatCard title="Overdue Invoices" value={String(overview.overdueInvoices)} icon={AlertCircle} color="red" />
-                            <StatCard title="Rejected Applications" value={String(overview.rejectedSchools)} icon={Users} color="gray" />
+                        <div className="space-y-4">
+                            {recentActivity.map((a, i) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <a.icon size={16} className={`mt-0.5 flex-shrink-0 ${a.color}`} />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-gray-700 dark:text-slate-300">{a.text}</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-500">{a.time}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-
-                        {/* Charts row */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="card lg:col-span-2 flex items-center justify-center text-sm text-gray-400">
-                                Revenue growth over time needs multiple months of billing history to chart meaningfully — check back as invoices accumulate.
-                            </div>
-                            <div className="card">
-                                <h2 className="section-title">Active Schools by District</h2>
-                                {districtData && districtData.labels.length > 0
-                                    ? <DoughnutChart data={districtData} />
-                                    : <p className="text-sm text-gray-400">No active schools yet.</p>}
-                            </div>
-                        </div>
-
-                        {/* Bottom row */}
-                        <div className="card">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="section-title mb-0">Send a Message</h2>
-                                <button onClick={() => setMsgModal(true)} className="btn-primary text-xs py-1.5"><Send size={12} /> Send Alert</button>
-                            </div>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Message a specific school or broadcast to all active schools — delivered by email to their registered contact.</p>
-                        </div>
-                    </>
-                )}
+                    </div>
+                </div>
             </div>
 
             {/* Send Message Modal */}
             <Modal isOpen={msgModal} onClose={() => setMsgModal(false)} title="Send Message to School" size="md"
-                footer={<><button className="btn-secondary" onClick={() => setMsgModal(false)}>Cancel</button><button disabled={sending} className="btn-primary" onClick={sendMsg}><Send size={14} /> {sending ? 'Sending…' : 'Send Message'}</button></>}>
+                footer={<><button className="btn-secondary" onClick={() => setMsgModal(false)}>Cancel</button><button className="btn-primary" onClick={sendMsg}><Send size={14} /> Send Message</button></>}>
                 <div className="space-y-4">
-                    {sendError && <p className="text-sm text-red-600">{sendError}</p>}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Select School *</label>
                         <select value={msgSchool} onChange={e => setMsgSchool(e.target.value)} className="select-field">
                             <option value="">Choose a school...</option>
-                            <option value="all">📢 All Active Schools (Broadcast)</option>
-                            {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            <option value="all">📢 All Schools (Broadcast)</option>
+                            {schoolList.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                     </div>
                     <div>
@@ -156,7 +179,7 @@ export default function SAHome() {
                     </div>
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs text-blue-700 dark:text-blue-300">
                         <MessageSquare size={12} className="inline mr-1" />
-                        Delivered by email to the school's registered contact address.
+                        The school admin will receive this message as a notification in their dashboard.
                     </div>
                 </div>
             </Modal>

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Building2, MapPin, FileText, Globe, CheckCircle2, AlertCircle,
     ArrowRight, ArrowLeft, User, Phone, Mail, Lock, Eye, EyeOff,
     GraduationCap, Users, KeyRound, ShieldCheck, PersonStanding, MailIcon
 } from 'lucide-react';
-import { schoolRegistrationApi } from '../../api/schoolRegistration.api';
 
 const TOTAL_STEPS = 6;
 
@@ -64,6 +63,7 @@ export default function SchoolRegistration() {
 
     // Step 1 — School Info
     const [schoolName, setSchoolName] = useState('');
+    const [schoolLevel, setSchoolLevel] = useState('Primary');
     const [physicalAddress, setPhysicalAddress] = useState('');
     const [district, setDistrict] = useState('');
     const [numStudents, setNumStudents] = useState('');
@@ -80,7 +80,6 @@ export default function SchoolRegistration() {
     const [isChecking, setIsChecking] = useState(false);
     const [isAvailable, setIsAvailable] = useState(null);
     const [level, setLevel] = useState('primary');
-    const checkTimer = React.useRef(null);
 
     // Step 4 — Credentials
     const [adminUsername, setAdminUsername] = useState('');
@@ -91,30 +90,17 @@ export default function SchoolRegistration() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Step 5 -> 6 submission state
-    const [submitting, setSubmitting] = useState(false);
-    const [submitError, setSubmitError] = useState('');
-
-const [pricePerStudent, setPricePerStudent] = useState(0);
-
     const checkSubdomain = (val) => {
         const clean = val.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
         setSubdomain(clean);
         setIsAvailable(null);
-        if (checkTimer.current) clearTimeout(checkTimer.current);
         if (clean.length < 3) return;
-
         setIsChecking(true);
-        checkTimer.current = setTimeout(async () => {
-            try {
-                const result = await schoolRegistrationApi.checkSubdomain(clean);
-                setIsAvailable(result.available);
-            } catch {
-                setIsAvailable(null);
-            } finally {
-                setIsChecking(false);
-            }
-        }, 500); // debounce real API calls while typing
+        setTimeout(() => {
+            const taken = ['kampala', 'admin', 'test', 'demo'];
+            setIsAvailable(!taken.includes(clean));
+            setIsChecking(false);
+        }, 600);
     };
 
     const suggestUsername = (name) => {
@@ -160,50 +146,6 @@ const [pricePerStudent, setPricePerStudent] = useState(0);
     const nextStep = () => {
         if (validateStep(step)) setStep(step + 1);
     };
-
-    const handleSubmitRegistration = async () => {
-        setSubmitting(true);
-        setSubmitError('');
-        try {
-            const formData = new FormData();
-            formData.append('schoolName', schoolName);
-            formData.append('level', level);
-            formData.append('physicalAddress', physicalAddress);
-            formData.append('district', district);
-            formData.append('numStudents', numStudents);
-            formData.append('contactName', contactName);
-            formData.append('contactPhone', contactPhone);
-            formData.append('contactEmail', contactEmail);
-            formData.append('schoolWebsite', schoolWebsite || '');
-            formData.append('subdomain', subdomain);
-            formData.append('adminUsername', adminUsername);
-            formData.append('adminPassword', adminPassword);
-            formData.append('confirmPassword', confirmPassword);
-            formData.append('recoveryEmail', recoveryEmail);
-            if (licenseFile) formData.append('licenseFile', licenseFile);
-
-            await schoolRegistrationApi.register(formData);
-            setStep(6);
-        } catch (err) {
-            setSubmitError(err.message || 'Registration failed. Please try again.');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-
-    useEffect(() => {
-        const loadPricing = async () => {
-            try {
-                const data = await schoolRegistrationApi.getPricing();
-                setPricePerStudent(data.pricePerStudent);
-            } catch (err) {
-                console.error('Failed to load pricing', err);
-            }
-        };
-
-        loadPricing();
-    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 py-10 px-4">
@@ -515,7 +457,7 @@ const [pricePerStudent, setPricePerStudent] = useState(0);
 
                             <div className="flex gap-3">
                                 <button onClick={() => setStep(3)} className="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors">Back</button>
-                                <button onClick={() => { if (validateStep(4)) setStep(5); }} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors">
+                                <button onClick={() => setStep(5)} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors">
                                     Review Details <ArrowRight size={16} />
                                 </button>
                             </div>
@@ -529,12 +471,6 @@ const [pricePerStudent, setPricePerStudent] = useState(0);
                                 <FileText size={18} className="text-blue-500" /> Review Application
                             </h2>
                             <p className="text-sm text-slate-500">Please confirm your details before submitting.</p>
-
-                            {submitError && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2">
-                                    <AlertCircle size={16} className="flex-shrink-0" /> {submitError}
-                                </div>
-                            )}
 
                             <div className="space-y-4">
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
@@ -569,12 +505,8 @@ const [pricePerStudent, setPricePerStudent] = useState(0);
 
                             <div className="flex gap-3 pt-2">
                                 <button onClick={() => setStep(4)} className="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors">Back</button>
-                                <button
-                                    onClick={handleSubmitRegistration}
-                                    disabled={submitting}
-                                    className="flex-[2] flex justify-center items-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-emerald-200 border border-emerald-500 disabled:opacity-60"
-                                >
-                                    {submitting ? 'Submitting…' : 'Submit Registration'} {!submitting && <CheckCircle2 size={16} />}
+                                <button onClick={() => setStep(6)} className="flex-[2] flex justify-center items-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-emerald-200 border border-emerald-500">
+                                    Submit Registration <CheckCircle2 size={16} />
                                 </button>
                             </div>
                         </div>
@@ -618,13 +550,11 @@ const [pricePerStudent, setPricePerStudent] = useState(0);
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-slate-600">Rate per student / month</span>
-                                        <span className="font-semibold">
-                                            UGX {pricePerStudent.toLocaleString()}
-                                        </span>
+                                        <span className="font-semibold">UGX 2,000</span>
                                     </div>
                                     <div className="flex justify-between text-sm font-bold border-t border-blue-200 pt-2 mt-1">
                                         <span className="text-slate-800">Estimated monthly bill</span>
-                                        <span className="text-blue-700 text-base">UGX {(Number(numStudents) * pricePerStudent).toLocaleString()}</span>
+                                        <span className="text-blue-700 text-base">UGX {(Number(numStudents) * 2000).toLocaleString()}</span>
                                     </div>
                                     <p className="text-[11px] text-blue-500 mt-2">
                                         * Final pricing will be confirmed and billing details sent to <span className="font-medium">{contactEmail}</span> after approval.
