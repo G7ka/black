@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
     Menu, X, Bell, ChevronDown, LogOut, User,
@@ -6,13 +6,13 @@ import {
     Settings, LifeBuoy, Monitor, TrendingUp,
     Code2, Megaphone, AlertTriangle, CreditCard,
     GraduationCap, CalendarDays, FileText, School,
-    Building2, DollarSign, Award, Sliders, Sparkles
+    Building2, DollarSign, Award, Sliders, Sparkles, Bot
 } from 'lucide-react'
 
 const navConfigs = {
     superadmin: [
         { label: 'Overview', icon: Home, path: '/superadmin', home: true },
-        { label: 'AI Assistant', icon: Sparkles, path: '/superadmin/ai-assistant' },
+        { label: 'AI Assistant', icon: Bot, path: '/superadmin/ai-assistant' },
         { label: 'Schools', icon: Building2, path: '/superadmin/schools' },
         { label: 'Subscriptions', icon: CreditCard, path: '/superadmin/subscriptions' },
         { label: 'Analytics', icon: BarChart3, path: '/superadmin/analytics' },
@@ -25,7 +25,7 @@ const navConfigs = {
     ],
     'schooladmin-primary': [
         { label: 'Overview', icon: Home, path: '/schooladmin/primary', home: true },
-        { label: 'AI Assistant', icon: Sparkles, path: '/schooladmin/primary/ai-assistant' },
+        { label: 'AI Assistant', icon: Bot, path: '/schooladmin/primary/ai-assistant' },
         { label: 'Timetable', icon: CalendarDays, path: '/schooladmin/primary/timetable' },
         { label: 'Teachers', icon: Users, path: '/schooladmin/primary/teachers' },
         { label: 'Students', icon: GraduationCap, path: '/schooladmin/primary/students' },
@@ -41,7 +41,7 @@ const navConfigs = {
     ],
     'schooladmin-secondary': [
         { label: 'Overview', icon: Home, path: '/schooladmin/secondary', home: true },
-        { label: 'AI Assistant', icon: Sparkles, path: '/schooladmin/secondary/ai-assistant' },
+        { label: 'AI Assistant', icon: Bot, path: '/schooladmin/secondary/ai-assistant' },
         { label: 'Timetable', icon: CalendarDays, path: '/schooladmin/secondary/timetable' },
         { label: 'Teachers', icon: Users, path: '/schooladmin/secondary/teachers' },
         { label: 'Students', icon: GraduationCap, path: '/schooladmin/secondary/students' },
@@ -76,7 +76,7 @@ const navConfigs = {
     ],
     parent: [
         { label: 'Dashboard', icon: Home, path: '/parent', home: true },
-        { label: 'AI Assistant', icon: Sparkles, path: '/parent/ai-chat' },
+        { label: 'AI Assistant', icon: Bot, path: '/parent/ai-chat' },
         { label: 'Grades', icon: Award, path: '/parent/grades' },
         { label: 'Attendance', icon: CalendarDays, path: '/parent/attendance' },
         { label: 'Fees', icon: DollarSign, path: '/parent/fees' },
@@ -133,6 +133,74 @@ export default function DashboardLayout({ role, children }) {
             document.documentElement.classList.add('dark')
         }
     }, [])
+
+    // Drag state for AI Button
+    const [aiBtnPos, setAiBtnPos] = useState({ right: 24, bottom: 24 });
+    const [isDraggingAi, setIsDraggingAi] = useState(false);
+    const dragRef = useRef({ startX: 0, startY: 0, startRight: 24, startBottom: 24, dragged: false });
+
+    const handleDragStart = (e) => {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        setIsDraggingAi(true);
+        dragRef.current = {
+            startX: clientX,
+            startY: clientY,
+            startRight: aiBtnPos.right,
+            startBottom: aiBtnPos.bottom,
+            dragged: false
+        };
+    };
+
+    const handleDragMove = (e) => {
+        if (!isDraggingAi) return;
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const dx = clientX - dragRef.current.startX;
+        const dy = clientY - dragRef.current.startY;
+        
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            dragRef.current.dragged = true;
+        }
+
+        // Calculate new position, keep within bounds
+        const newRight = Math.max(0, Math.min(window.innerWidth - 60, dragRef.current.startRight - dx));
+        const newBottom = Math.max(0, Math.min(window.innerHeight - 60, dragRef.current.startBottom - dy));
+        
+        setAiBtnPos({ right: newRight, bottom: newBottom });
+    };
+
+    const handleDragEnd = () => {
+        setIsDraggingAi(false);
+    };
+
+    useEffect(() => {
+        if (isDraggingAi) {
+            window.addEventListener('mousemove', handleDragMove);
+            window.addEventListener('mouseup', handleDragEnd);
+            window.addEventListener('touchmove', handleDragMove, { passive: false });
+            window.addEventListener('touchend', handleDragEnd);
+            
+            return () => {
+                window.removeEventListener('mousemove', handleDragMove);
+                window.removeEventListener('mouseup', handleDragEnd);
+                window.removeEventListener('touchmove', handleDragMove);
+                window.removeEventListener('touchend', handleDragEnd);
+            };
+        }
+    }, [isDraggingAi]);
+
+    const handleAiClick = (e) => {
+        if (dragRef.current.dragged) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        navigate(aiRouteMap[role]);
+    };
 
     // Close mobile sidebar on any route change
     useEffect(() => {
@@ -385,19 +453,24 @@ export default function DashboardLayout({ role, children }) {
 
             {/* Persistent Floating AI Copilot Trigger (Icon Only) for all AI-enabled roles */}
             {aiRouteMap[role] && location.pathname !== aiRouteMap[role] && (
-                <div className="fixed bottom-6 right-6 z-40">
+                <div 
+                    className={`fixed z-40 ${isDraggingAi ? 'cursor-grabbing' : 'cursor-grab'}`}
+                    style={{ right: `${aiBtnPos.right}px`, bottom: `${aiBtnPos.bottom}px`, touchAction: 'none' }}
+                    onMouseDown={handleDragStart}
+                    onTouchStart={handleDragStart}
+                >
                     <button
-                        onClick={() => navigate(aiRouteMap[role])}
-                        className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-xl shadow-indigo-500/35 hover:shadow-2xl hover:shadow-indigo-500/60 hover:scale-110 active:scale-90 active:rotate-12 transition-all duration-200 border border-white/30 backdrop-blur-md group"
+                        onClick={handleAiClick}
+                        className={`relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-xl shadow-indigo-500/35 hover:shadow-2xl hover:shadow-indigo-500/60 transition-all duration-200 border border-white/30 backdrop-blur-md group ${isDraggingAi ? 'scale-110' : 'hover:scale-110 active:scale-90 active:rotate-12'}`}
                         title="AI Assistant"
                         aria-label="AI Assistant"
                     >
                         {/* Subtle ambient light glow */}
                         <div className="absolute inset-0 rounded-full bg-indigo-400/20 blur-md group-hover:bg-indigo-400/40 transition-colors" />
 
-                        {/* Centered Sparkles icon with light shimmer */}
+                        {/* Centered Bot icon */}
                         <div className="relative flex items-center justify-center">
-                            <Sparkles size={22} className="text-amber-300 transition-transform duration-200 group-hover:rotate-12 group-active:scale-125" />
+                            <Bot size={22} className="text-white transition-transform duration-200 group-hover:rotate-12 group-active:scale-125" />
                             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900 animate-pulse" />
                         </div>
                     </button>

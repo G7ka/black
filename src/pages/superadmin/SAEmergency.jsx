@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Modal from '../../components/ui/Modal'
-import { AlertTriangle, RefreshCw, LogOut, Megaphone, PowerOff, ShieldAlert, CheckCircle2 } from 'lucide-react'
+import { AlertTriangle, RefreshCw, LogOut, Megaphone, PowerOff, ShieldAlert, CheckCircle2, Download } from 'lucide-react'
 
 const actions = [
     { id: 'shutdown', label: 'Platform Shutdown', desc: 'Immediately shut down all services. Use only in extreme emergencies.', icon: PowerOff, color: 'bg-red-600 hover:bg-red-700', confirm: 'SHUTDOWN' },
@@ -95,7 +95,19 @@ export default function SAEmergency() {
 
                 {/* Audit log */}
                 <div className="card">
-                    <h2 className="section-title">Emergency Action Audit Log</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="section-title mb-0">Emergency Action Audit Log</h2>
+                        <button onClick={() => {
+                            const content = auditLogs.map(l => `${l.time} | ${l.action} | By: ${l.by} | Reason: ${l.reason}`).join('\n')
+                            const blob = new Blob([content], { type: 'text/plain' })
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url; a.download = `emergency_audit_log_${new Date().toISOString().slice(0,10)}.log`; a.click()
+                            URL.revokeObjectURL(url)
+                        }} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5" title="Download Audit Log">
+                            <Download size={13} /> Download
+                        </button>
+                    </div>
                     <div className="space-y-3">
                         {auditLogs.map((log, i) => (
                             <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/30 rounded-xl border border-gray-100 dark:border-slate-700 relative overflow-hidden">

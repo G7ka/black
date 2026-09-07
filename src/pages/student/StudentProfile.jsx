@@ -18,7 +18,7 @@ export default function StudentProfile() {
                     {/* Avatar */}
                     <div className="card flex flex-col items-center text-center gap-4">
                         <div className="relative">
-                            <img src="https://randomuser.me/api/portraits/men/12.jpg" alt="Ivan Namukasa" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white" />
+                            <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=150&auto=format&fit=crop&q=80" alt="Ivan Namukasa" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white" />
                         </div>
                         <div>
                             <p className="font-bold text-gray-900 text-lg">Ivan Namukasa</p>

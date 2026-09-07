@@ -19,7 +19,7 @@ export default function ParentProfile() {
                     {/* Avatar (Editable) */}
                     <div className="card flex flex-col items-center text-center gap-4">
                         <div className="relative cursor-pointer group">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mary Namukasa" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white group-hover:opacity-90 transition-opacity" />
+                            <img src="https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?w=150&auto=format&fit=crop&q=80" alt="Mary Namukasa" className="w-24 h-24 rounded-2xl object-cover shadow-lg border-2 border-white group-hover:opacity-90 transition-opacity" />
                             <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-orange-700 transition-colors">
                                 <Camera size={14} />
                             </button>

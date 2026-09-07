@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import { Search, Plus, Eye, CheckCircle, XCircle, Pause, Trash2, LogIn, FileText, Upload, Edit3, DollarSign } from 'lucide-react'
+import { Search, Plus, Eye, CheckCircle, XCircle, Pause, Trash2, LogIn, FileText, Upload, Edit3, DollarSign, RefreshCw, Lock, Copy, CheckCircle as CheckCircle2 } from 'lucide-react'
 
 const PRICE_PER_STUDENT = 2000 // UGX per student per month
 
@@ -29,6 +29,24 @@ export default function SASchools() {
     const [selected, setSelected] = useState(null)
     const [rejectReason, setRejectReason] = useState('')
     const [newSchoolStudents, setNewSchoolStudents] = useState('')
+    const [newSchoolPassword, setNewSchoolPassword] = useState('')
+    const [passwordCopied, setPasswordCopied] = useState(false)
+
+    const generatePassword = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*'
+        let pwd = ''
+        for (let i = 0; i < 16; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length))
+        setNewSchoolPassword(pwd)
+        setPasswordCopied(false)
+    }
+
+    const copyPassword = () => {
+        if (newSchoolPassword) {
+            navigator.clipboard.writeText(newSchoolPassword).catch(() => {})
+            setPasswordCopied(true)
+            setTimeout(() => setPasswordCopied(false), 2000)
+        }
+    }
 
     const filtered = schools.filter(s => {
         const matchStatus = filter === 'all' || s.status === filter
@@ -39,7 +57,7 @@ export default function SASchools() {
     })
 
     const openModal = (type, school) => { setModal(type); setSelected(school) }
-    const closeModal = () => { setModal(null); setSelected(null); setRejectReason(''); setNewSchoolStudents('') }
+    const closeModal = () => { setModal(null); setSelected(null); setRejectReason(''); setNewSchoolStudents(''); setNewSchoolPassword(''); setPasswordCopied(false) }
 
     return (
         <DashboardLayout role="superadmin">
@@ -363,6 +381,38 @@ export default function SASchools() {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Subdomain *</label>
                                 <input type="text" placeholder="greenhill" className="input-field" />
                                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Will be: subdomain.edumanage.ug</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1"><Lock size={13} className="inline mr-1" />Admin Password *</label>
+                                <div className="flex gap-2">
+                                    <div className="relative flex-1">
+                                        <input type="text" value={newSchoolPassword} onChange={e => setNewSchoolPassword(e.target.value)} placeholder="Enter or generate password" className="input-field font-mono text-sm pr-10" />
+                                        {newSchoolPassword && (
+                                            <button onClick={copyPassword} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors" title="Copy password">
+                                                {passwordCopied ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Copy size={14} className="text-gray-400" />}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <button type="button" onClick={generatePassword} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 flex-shrink-0">
+                                        <RefreshCw size={12} /> Generate
+                                    </button>
+                                </div>
+                                {newSchoolPassword && (
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className={`h-1.5 flex-1 rounded-full ${
+                                            newSchoolPassword.length >= 12 && /[A-Z]/.test(newSchoolPassword) && /[0-9]/.test(newSchoolPassword) && /[!@#$%&*]/.test(newSchoolPassword)
+                                                ? 'bg-emerald-400' : newSchoolPassword.length >= 8 ? 'bg-amber-400' : 'bg-red-400'
+                                        }`} />
+                                        <span className={`text-[11px] font-medium ${
+                                            newSchoolPassword.length >= 12 && /[A-Z]/.test(newSchoolPassword) && /[0-9]/.test(newSchoolPassword) && /[!@#$%&*]/.test(newSchoolPassword)
+                                                ? 'text-emerald-600 dark:text-emerald-400' : newSchoolPassword.length >= 8 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
+                                        }`}>
+                                            {newSchoolPassword.length >= 12 && /[A-Z]/.test(newSchoolPassword) && /[0-9]/.test(newSchoolPassword) && /[!@#$%&*]/.test(newSchoolPassword)
+                                                ? 'Strong' : newSchoolPassword.length >= 8 ? 'Medium' : 'Weak'}
+                                        </span>
+                                    </div>
+                                )}
+                                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">This will be the school admin's initial login password.</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Billing</label>

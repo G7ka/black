@@ -5,7 +5,7 @@ import {
     Sparkles, Send, Bot, DollarSign, Calendar,
     BookOpen, CheckCircle2, AlertCircle, RefreshCw,
     Download, Phone, ArrowRight, Shield, Award, MessageSquare,
-    ChevronDown, ThumbsUp, ThumbsDown, Copy, Check, Search,
+    ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, Copy, Check, Search,
     BarChart3, Users, Building2, FileText, Settings, Compass,
     Zap, ExternalLink, HelpCircle, Layers, Sliders, TrendingUp
 } from 'lucide-react';
@@ -16,6 +16,8 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
     const [isTyping, setIsTyping] = useState(false);
     const [copiedIndex, setCopiedIndex] = useState(null);
     const [activeFilter, setActiveFilter] = useState('all');
+    const [topicsOpen, setTopicsOpen] = useState(true);
+    const [suggestionsOpen, setSuggestionsOpen] = useState(true);
     const messagesEndRef = useRef(null);
 
     const isSuper = role === 'superadmin';
@@ -42,8 +44,8 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
 
     // Mock Knowledge Base for Admin
     const initialWelcomeMessage = isSuper
-        ? `Greetings, Platform Administrator! I am your EduManage Super Admin AI Assistant. I can help you monitor multi-school health, inspect tenant subscriptions, analyze platform revenue (UGX 112M ARR), locate configuration panels, or troubleshoot server and tenant issues. What would you like to investigate today?`
-        : `Hello Administrator! I am your EduManage AI Assistant for ${schoolTitle}. I have complete visibility across fees, UNEB academic records, staff timetables, parent directories, and attendance reports. I can instantly analyze your school data or guide you to any resource. How can I help you today?`;
+        ? `Greetings, Platform Administrator! How can I help you today?`
+        : `Hello Administrator! I am your EduManage AI Assistant for ${schoolTitle}. How can i help you today?`;
 
     const [messages, setMessages] = useState([
         {
@@ -403,17 +405,17 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
                 <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-slate-800 flex-shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
-                            <Sparkles size={20} />
+                            <Bot size={20} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin AI Intelligence Hub</h1>
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Kratos AI</h1>
                                 <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                     {isSuper ? 'Cloud Multi-Tenant AI' : 'School Executive Copilot'}
                                 </span>
                             </div>
                             <p className="text-xs text-gray-500 dark:text-slate-400">
-                                {schoolTitle} • Real-time Data Analytics & Deep Resource Navigator
+                                {schoolTitle} • Your own AI Assistant
                             </p>
                         </div>
                     </div>
@@ -430,36 +432,45 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
                     </div>
                 </div>
 
-                {/* Filter Category Chips */}
-                <div className="flex items-center gap-1.5 py-3 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-slate-800/60 flex-shrink-0 text-xs">
-                    <span className="text-gray-400 dark:text-slate-500 font-medium mr-1 flex items-center gap-1">
-                        <Compass size={13} /> Topics:
-                    </span>
-                    {[
-                        { id: 'all', label: 'All Queries' },
-                        { id: 'finance', label: '💰 Finance & Fees' },
-                        { id: 'navigator', label: '🧭 Page Finder' },
-                        ...(isSuper ? [
-                            { id: 'monitoring', label: '🖥️ Cloud Telemetry' },
-                            { id: 'schools', label: '🏫 School Tenants' }
-                        ] : [
-                            { id: 'academics', label: '📊 UNEB & Grades' },
-                            { id: 'staff', label: '🧑‍🏫 Staff & Rota' }
-                        ]),
-                        { id: 'generator', label: '📝 Draft Templates' },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveFilter(tab.id)}
-                            className={`px-3 py-1 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                                activeFilter === tab.id
-                                    ? 'bg-blue-600 text-white shadow-sm'
-                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                {/* Collapsible Filter Category Chips */}
+                <div className="border-b border-gray-100 dark:border-slate-800/60 flex-shrink-0">
+                    <button
+                        onClick={() => setTopicsOpen(prev => !prev)}
+                        className="flex items-center justify-between w-full py-2.5 text-xs text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 transition-colors group"
+                    >
+                        <span className="font-medium flex items-center gap-1.5">
+                            <Compass size={13} /> Topics
+                        </span>
+                        <ChevronDown size={14} className={`transition-transform duration-200 ${topicsOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${topicsOpen ? 'max-h-20 opacity-100 pb-2.5' : 'max-h-0 opacity-0'}`}>
+                        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+                            {[
+                                { id: 'all', label: 'All Queries' },
+                                { id: 'finance', label: '💰 Finance & Fees' },
+                                { id: 'navigator', label: '🧭 Page Finder' },
+                                ...(isSuper ? [
+                                    { id: 'monitoring', label: '🖥️ Cloud Telemetry' },
+                                    { id: 'schools', label: '🏫 School Tenants' }
+                                ] : [
+                                    { id: 'academics', label: '📊 UNEB & Grades' },
+                                    { id: 'staff', label: '🧑‍🏫 Staff & Rota' }
+                                ]),
+                                { id: 'generator', label: '📝 Draft Templates' },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveFilter(tab.id)}
+                                    className={`px-3 py-1 rounded-lg font-medium whitespace-nowrap transition-colors ${activeFilter === tab.id
+                                        ? 'bg-blue-600 text-white shadow-sm'
+                                        : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Chat Messages Stream */}
@@ -477,35 +488,15 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
 
                             <div className={`max-w-3xl space-y-3 ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
                                 <div
-                                    className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                                        msg.sender === 'user'
-                                            ? 'bg-blue-600 text-white rounded-tr-none shadow-sm'
-                                            : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 rounded-tl-none shadow-sm'
-                                    }`}
+                                    className={`p-4 rounded-2xl text-sm leading-relaxed ${msg.sender === 'user'
+                                        ? 'bg-blue-600 text-white rounded-tr-none shadow-sm'
+                                        : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 rounded-tl-none shadow-sm'
+                                        }`}
                                 >
                                     <p className="whitespace-pre-line">{msg.text}</p>
 
                                     {/* Card: Welcome / Capabilities */}
-                                    {msg.cardType === 'welcome' && (
-                                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700/80 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-200/60 dark:border-slate-700/60">
-                                                <p className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-                                                    <Compass size={14} /> Instant Resource Finder
-                                                </p>
-                                                <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">
-                                                    Ask "Where do I configure fees?" or "How to export marksheets" to jump straight to that dashboard.
-                                                </p>
-                                            </div>
-                                            <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-200/60 dark:border-slate-700/60">
-                                                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                                                    <BarChart3 size={14} /> Live Data & UNEB Calculations
-                                                </p>
-                                                <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">
-                                                    Query fee defaulters, PLE/UCE division standings, teacher attendance, or stream capacity in seconds.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
+
 
                                     {/* Card: Deep Navigator / Resource Locator */}
                                     {msg.cardType === 'navigator' && msg.cardData && (
@@ -882,19 +873,30 @@ export default function AdminAiAssistant({ role = 'schooladmin-primary' }) {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Prompt Suggestions Bar */}
+                {/* Collapsible Prompt Suggestions Bar */}
                 <div className="pt-2 pb-1.5 flex-shrink-0">
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                        {filteredPrompts.slice(0, 4).map((p, pIdx) => (
-                            <button
-                                key={pIdx}
-                                onClick={() => handleSendMessage(p.query)}
-                                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-gray-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 text-xs text-gray-700 dark:text-slate-300 font-medium whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm"
-                            >
-                                <span>{p.label}</span>
-                                <ArrowRight size={11} className="text-gray-400" />
-                            </button>
-                        ))}
+                    <button
+                        onClick={() => setSuggestionsOpen(prev => !prev)}
+                        className="flex items-center justify-between w-full pb-1.5 text-xs text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 transition-colors group"
+                    >
+                        <span className="font-medium flex items-center gap-1.5">
+                            <Zap size={12} /> Suggestions
+                        </span>
+                        <ChevronDown size={14} className={`transition-transform duration-200 ${suggestionsOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${suggestionsOpen ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                            {filteredPrompts.slice(0, 4).map((p, pIdx) => (
+                                <button
+                                    key={pIdx}
+                                    onClick={() => handleSendMessage(p.query)}
+                                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-gray-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 text-xs text-gray-700 dark:text-slate-300 font-medium whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm"
+                                >
+                                    <span>{p.label}</span>
+                                    <ArrowRight size={11} className="text-gray-400" />
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

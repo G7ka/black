@@ -213,7 +213,7 @@ export default function StudentAssignments() {
 
                     {/* Student info preview */}
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                        <img src="https://randomuser.me/api/portraits/men/12.jpg" alt="Student" className="w-10 h-10 rounded-xl object-cover" />
+                        <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=150&auto=format&fit=crop&q=80" alt="Student" className="w-10 h-10 rounded-xl object-cover" />
                         <div>
                             <p className="text-sm font-bold text-gray-900">Ivan Namukasa</p>
                             <p className="text-xs text-gray-500">P.7 Blue • Student ID: STU-2026-019</p>

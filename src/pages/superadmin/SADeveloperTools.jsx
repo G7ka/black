@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
-import { Key, Search, Copy, RefreshCw, ToggleLeft, ToggleRight, Terminal, CheckCircle } from 'lucide-react'
+import { Key, Search, Copy, RefreshCw, ToggleLeft, ToggleRight, Terminal, CheckCircle, Download } from 'lucide-react'
 
 const apiKeys = [
     { id: 1, name: 'Production API Key', key: 'em_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', created: '2026-01-15', lastUsed: '2026-02-22', status: 'active' },
@@ -71,7 +71,19 @@ export default function SADeveloperTools() {
 
                 {/* Log Searcher */}
                 <div className="card">
-                    <h2 className="section-title">API Log Searcher</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="section-title mb-0">API Log Searcher</h2>
+                        <button onClick={() => {
+                            const content = filteredLogs.map((log, i) => `09:5${i}:${String(i * 7).padStart(2, '0')} ${log}`).join('\n')
+                            const blob = new Blob([content], { type: 'text/plain' })
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url; a.download = `api_logs_${new Date().toISOString().slice(0,10)}.log`; a.click()
+                            URL.revokeObjectURL(url)
+                        }} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5" title="Download Logs">
+                            <Download size={13} /> Download
+                        </button>
+                    </div>
                     <div className="relative mb-4">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input value={logQuery} onChange={e => setLogQuery(e.target.value)} className="input-field pl-9" placeholder="Search logs (e.g., POST, 404, /schools)..." />

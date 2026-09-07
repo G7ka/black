@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import Badge from '../../components/ui/Badge'
-import { Activity, Server, HardDrive, Users, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
+import { Activity, Server, HardDrive, Users, AlertTriangle, CheckCircle, XCircle, RefreshCw, Download } from 'lucide-react'
 
 const initialAlerts = [
     { id: 1, level: 'critical', message: 'High memory usage on server-01 (92%)', time: '2 min ago' },
@@ -105,6 +105,14 @@ export default function SAMonitoring() {
                                 <button key={l} onClick={() => setLogFilter(l)} className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${logFilter === l ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{l}</button>
                             ))}
                             <button className="btn-secondary text-xs py-1 px-2"><RefreshCw size={12} /></button>
+                            <button onClick={() => {
+                                const content = filteredLogs.map(l => `${l.time} [${l.level}] ${l.message}`).join('\n')
+                                const blob = new Blob([content], { type: 'text/plain' })
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url; a.download = `system_logs_${new Date().toISOString().slice(0,10)}.log`; a.click()
+                                URL.revokeObjectURL(url)
+                            }} className="btn-secondary text-xs py-1 px-2" title="Download Logs"><Download size={12} /></button>
                         </div>
                     </div>
                     <div className="bg-gray-950 rounded-xl p-4 font-mono text-xs space-y-1.5 max-h-64 overflow-y-auto">
